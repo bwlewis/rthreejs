@@ -5,15 +5,15 @@
 function renderer(el, width, height)
 {
   var r;
-  if(Detector.webgl)
-  {
-    r = new THREE.WebGLRenderer({antialias: true});
-    GL=true;
-  } else
-  {
+//  if(Detector.webgl)
+//  {
+//    r = new THREE.WebGLRenderer({antialias: true});
+//    GL=true;
+//  } else
+//  {
     r = new THREE.CanvasRenderer();
     GL=false;
-  }
+//  }
   r.setSize(parseInt(width), parseInt(height));
   r.setClearColor("white");
   d3.select(el).node().appendChild(r.domElement);
@@ -25,7 +25,7 @@ function renderer(el, width, height)
 // x.options.grid true/false draw xz grid (requires xtick.length==ztick.length)
 // x.options.stroke (optional) stroke color
 // x.options.color (optional) either a single color or a vector of colors
-// x.options size (optional) either a single size or a vector of sizes
+// x.options.size (optional) either a single size or a vector of sizes
 // x.options 
 //   xtick:[0,0.5,1]
 //   xticklab:["1","2","3"]
@@ -79,16 +79,15 @@ function scatter(el, x, object)
       if(Array.isArray(x.options.size)) scale = 0.03*x.options.size[i];
       else scale = 0.03*x.options.size;
     }
-//    if(GL)
-//    {
-// XXX error: don't use this in gl (no program). Use pointcloud? sphere?
-//      var material = new THREE.SpriteMaterial( {
-//        color: col, program: program } );
-//    } else
-//    {
+    if(GL)
+    {
+// XXX Use pointcloud? sphere?
+      var material = new THREE.SpriteMaterial( {color: col } );
+    } else
+    {
       var material = new THREE.SpriteCanvasMaterial( {
         color: col, program: program , opacity:0.9} );
-//    }
+    }
     var particle = new THREE.Sprite( material );
     particle.position.x = x.data[i][0];
     particle.position.y = x.data[i][1];

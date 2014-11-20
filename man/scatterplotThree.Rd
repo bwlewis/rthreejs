@@ -4,8 +4,8 @@
 \title{scatterplotThree Threejs 3D scatterplot example}
 \usage{
 scatterplotThree(x, height = NULL, width = NULL, axis = TRUE,
-  tick.marks = TRUE, num.ticks = c(6, 6, 6), color = "steelblue",
-  size = 0.15, grid = TRUE)
+  num.ticks = c(6, 6, 6), color = "steelblue", stroke = "black",
+  size = 1, grid = TRUE)
 }
 \arguments{
 \item{x}{A data matrix with three columns corresponding to the x,y,z
@@ -15,13 +15,14 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 
 \item{width}{The container div width.}
 
-\item{tick.marks}{Set FALSE to disable display of tick marks.}
-
 \item{num.ticks}{A three-element vector with the suggested number of
 ticks to display per axis.}
 
 \item{color}{Either a single valid RGB, hex or named color name, or
 a vector of valid color names of length \code{nrow(x)}.}
+
+\item{stroke}{A single color stroke value (surrounding each point). Set to
+null to omit stroke.}
 
 \item{size}{The plot point radius, either as a single number or a
 vector of sizes of length \code{nrow(x)}.}
@@ -36,10 +37,11 @@ A basic 3D scatterplot using d3.js and three.js.
 # A stand-alone example
 set.seed(1)
 x <- matrix(rnorm(100*3),ncol=3)
-scatterplotThree(x)
+scatterplotThree(x, color=substr(heat.colors(100), 1, 7))
 
 # A shiny example
-runApp(system.file("examples/shiny",package="three"))
+library("shiny")
+runApp(system.file("examples/shiny",package="threejs"))
 }
 \references{
 The threejs project \url{http://threejs.org}.
