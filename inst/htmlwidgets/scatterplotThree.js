@@ -18,7 +18,6 @@ HTMLWidgets.widget(
   {
 // parse the JSON string from R
     x.data = JSON.parse(x.data);
-foo=x;
     scatter(el, x, renderer);
   }
 })
