@@ -5,15 +5,18 @@
 function renderer(el, width, height)
 {
   var r;
-  if(Detector.webgl)
-  {
-    r = new THREE.WebGLRenderer({antialias: true});
-    GL=true;
-  } else
-  {
+// I prefer the way the canvas program looks, so we always use the
+// canvas renderer here. Change this to use WebGL (but then you'll also
+// want to change the way the points are drawn below).
+//  if(Detector.webgl)
+//  {
+//    r = new THREE.WebGLRenderer({antialias: true});
+//    GL=true;
+//  } else
+//  {
     r = new THREE.CanvasRenderer();
     GL=false;
-  }
+//  }
   r.setSize(parseInt(width), parseInt(height));
   r.setClearColor("white");
   d3.select(el).node().appendChild(r.domElement);
@@ -79,29 +82,14 @@ function scatter(el, x, object)
       if(Array.isArray(x.options.size)) scale = 0.03*x.options.size[i];
       else scale = 0.03*x.options.size;
     }
-    if(GL)
-    {
-// XXX
-      var material = new THREE.MeshBasicMaterial({
-	color: col });
-      var geo = new THREE.SphereGeometry(1,32,32);
-      var sphere = new THREE.Mesh( geo, material );
-      sphere.position.x = x.data[i][0];
-      sphere.position.y = x.data[i][1];
-      sphere.position.z = x.data[i][2];
-      sphere.scale.x = sphere.scale.y = sphere.scale.z = scale;
-      group.add( sphere );
-    } else
-    {
-      var material = new THREE.SpriteCanvasMaterial( {
+    var material = new THREE.SpriteCanvasMaterial( {
         color: col, program: program , opacity:0.9} );
-      var particle = new THREE.Sprite( material );
-      particle.position.x = x.data[i][0];
-      particle.position.y = x.data[i][1];
-      particle.position.z = x.data[i][2];
-      particle.scale.x = particle.scale.y = scale;
-      group.add( particle );
-    }
+    var particle = new THREE.Sprite( material );
+    particle.position.x = x.data[i][0];
+    particle.position.y = x.data[i][1];
+    particle.position.z = x.data[i][2];
+    particle.scale.x = particle.scale.y = scale;
+    group.add( particle );
   }
 
 // helper function to add text to object

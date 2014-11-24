@@ -3,7 +3,7 @@ library("threejs")
 
 shinyUI(fluidPage(
   
-  titlePanel("Shiny threejs examples"),
+  titlePanel("Shiny three.js scatterplot example"),
   
   sidebarLayout(
     sidebarPanel(
@@ -14,9 +14,7 @@ shinyUI(fluidPage(
       p("Use the mouse zoom to zoom in/out.")
     ),
     mainPanel(
-      tabsetPanel(
-        tabPanel("scatterplot", scatterplotThreeOutput("scatterplot"))
-      )
+        scatterplotThreeOutput("scatterplot")
     )
   )
 ))

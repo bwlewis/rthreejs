@@ -1,4 +1,4 @@
-#' scatterplotThree Threejs 3D scatterplot example
+#' scatterplotThree Three.js 3D scatterplot example
 #'
 #' A basic 3D scatterplot using d3.js and three.js.
 #'
@@ -17,7 +17,7 @@
 #' null to omit stroke.
 #'
 #' @references
-#' The threejs project \url{http://threejs.org}.
+#' The three.js project \url{http://threejs.org}.
 #' 
 #' @examples
 #' ## dontrun
@@ -28,9 +28,9 @@
 #'
 #' # A shiny example
 #' library("shiny")
-#' runApp(system.file("examples/shiny",package="threejs"))
+#' runApp(system.file("examples/scatterplot",package="threejs"))
 #' 
-#' @seealso scatterplot3d, rgl, scatterplotx3
+#' @seealso scatterplot3d, rgl
 #' @importFrom rjson toJSON
 #' @export
 scatterplotThree <- function(
