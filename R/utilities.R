@@ -24,10 +24,17 @@
 #' Binary image data are encoded and inserted into three.js without using
 #' files.
 #'
+#' Raster images may include an alpha channel.
+#'
 #' Note that this method limits each image dimension to a power of two
-#' (see \url{https://github.com/mrdoob/three.js/issues/1277}). Also note
-#' that this is not that efficient for large images. Consider using shiny
-#' and file references in that case.
+#' (see \url{https://github.com/mrdoob/three.js/issues/1277}). The
+#' \code{texture} function embeds non-power of two dimensions into the next
+#' largest power of two to handle this restriction. For example, a
+#' 256 x 72 image will be embedded in a 256 x 128 image.
+#' (Alternatively, you might want to consider scaling your image to fit.)
+#"
+#' Also note that this function is not very efficient for large images.
+#' Consider using shiny and file references.
 #'
 #' @references
 #' The threejs project \url{http://threejs.org}.
