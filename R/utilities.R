@@ -9,8 +9,29 @@
 #' @param alpha The default alpha level in [0,1] to use if not
 #' specified in the raster image format.
 #'
+#' @return JSON-formatted string suitable for use as a three.js
+#' texture.
+#'
+#' @note
+#' Due to browser
+#' "same origin policy" security restrictions, loading textures
+#' from a file system in three.js may lead to a security exception,
+#' see 
+#' \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
+#' References to file locations work in Shiny apps, but not in stand-alone
+#' examples. The \code{texture} function facilitates transfer of image
+#' texture data from R using the three.js \code{DataTexture} function.
+#' Binary image data are encoded and inserted into three.js without using
+#' files.
+#'
+#' Note that this method limits each image dimension to a power of two
+#' (see \url{https://github.com/mrdoob/three.js/issues/1277}). Also note
+#' that this is not that efficient for large images. Consider using shiny
+#' and file references in that case.
+#'
 #' @references
 #' The threejs project \url{http://threejs.org}.
+#' \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
 #' 
 #' @examples
 #' ## dontrun
