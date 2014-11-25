@@ -16,7 +16,7 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 \item{width}{The container div width.}
 
 \item{num.ticks}{A three-element vector with the suggested number of
-ticks to display per axis.}
+ticks to display per axis. Set to NULL to not display ticks.}
 
 \item{color}{Either a single valid RGB, hex or named color name, or
 a vector of valid color names of length \code{nrow(x)}.}

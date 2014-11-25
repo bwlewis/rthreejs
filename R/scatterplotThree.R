@@ -7,7 +7,7 @@
 #' @param width The container div width.
 #' @param height The container div height.
 #' @param num.ticks A three-element vector with the suggested number of
-#' ticks to display per axis.
+#' ticks to display per axis. Set to NULL to not display ticks.
 #' @param color Either a single valid RGB, hex or named color name, or
 #' a vector of valid color names of length \code{nrow(x)}.
 #' @param size The plot point radius, either as a single number or a

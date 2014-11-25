@@ -47,10 +47,6 @@ function scatter(el, x, object)
   camera.position.x = 2.75;
   camera.position.y = 1.25;
 
-// tooltip emulation
-  var mouse = {x:0, y:0};
-  var projector = new THREE.Projector();
-
   var scene = new THREE.Scene();
   var group = new THREE.Object3D();
   scene.add( group );
@@ -210,8 +206,6 @@ function scatter(el, x, object)
   window.onmousemove = function(ev)
   { 
     ev.preventDefault();
-mouse.x = event.clientX;
-mouse.y = event.clientY;
     if (down) {
       var dx = ev.clientX - sx;
       var dy = ev.clientY - sy;
@@ -224,15 +218,9 @@ mouse.y = event.clientY;
 
   function render()
   { 
-
-var vec = new THREE.Vector3( mouse.x, mouse.y,2);
-vec.unproject( camera );
-var ray = new THREE.Raycaster( camera.position, vec.sub( camera.position ).normalize() );
-intersects = ray.intersectObjects( group.children );
-
-      object.clear();
-      camera.lookAt(scene.position);
-      object.render(scene, camera);
+    object.clear();
+    camera.lookAt(scene.position);
+    object.render(scene, camera);
   }
   function animate()
   {
