@@ -139,7 +139,7 @@ HTMLWidgets.widget(
       point.position.z = 200 * Math.sin(phi) * Math.sin(theta);
       point.scale.x = point.scale.y = 1; point.scale.z = size;
       point.lookAt(earth.position);
-      point.updateMatrix();
+//      point.updateMatrix();
       var j;
       for (j = 0; j<point.geometry.faces.length; j++) {
         point.geometry.faces[j].color = new THREE.Color(colr);
