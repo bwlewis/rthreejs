@@ -7,6 +7,13 @@
 \description{
 Tools for creating threejs and d3.js graphics from R
 }
+\examples{
+## dontrun
+library("threejs")
+runApp(system.file("examples/globe",package="threejs"))
+runApp(system.file("examples/scatterplot",package="threejs"))
+runApp(system.file("examples/hello",package="threejs"))
+}
 \references{
 \url{http://threejs.org}
 \url{http://www.html5rocks.com/en/tutorials/three/intro/}

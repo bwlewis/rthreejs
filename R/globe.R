@@ -37,7 +37,6 @@
 #'
 #' # A shiny example:
 #' runApp(system.file("examples/globe",package="threejs"))
-
 #' 
 #' @importFrom rjson toJSON
 #' @importFrom png readPNG

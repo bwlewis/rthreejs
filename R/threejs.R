@@ -8,6 +8,13 @@
 #' \url{http://threejs.org}
 #' \url{http://www.html5rocks.com/en/tutorials/three/intro/}
 #' @aliases threejs
+#' @examples
+#' ## dontrun
+#' library("threejs")
+#' runApp(system.file("examples/globe",package="threejs"))
+#' runApp(system.file("examples/scatterplot",package="threejs"))
+#' runApp(system.file("examples/hello",package="threejs"))
+#' 
 #' @docType package
 NULL
 
