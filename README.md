@@ -1,6 +1,15 @@
+# Three.js and R
+
 Tools for and examples of working with three.js graphics in R and shiny.
-See http://threejs.org for details on three.js.
-Examples follow.
+See http://threejs.org for details on three.js.  Examples follow.
+
+## NOTE!
+
+These examples generally run much better in WebGL-enabled browsers.
+I have found that either Firefox or Chrome generally produce the
+best experience.
+
+## Examples
 
 A shiny hello world:
 ```r
