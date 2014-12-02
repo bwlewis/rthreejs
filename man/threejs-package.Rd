@@ -7,4 +7,8 @@
 \description{
 Tools for creating threejs and d3.js graphics from R
 }
+\references{
+\url{http://threejs.org}
+\url{http://www.html5rocks.com/en/tutorials/three/intro/}
+}
 

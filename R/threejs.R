@@ -4,6 +4,9 @@
 #' Tools for creating threejs and d3.js graphics from R
 #'
 #' @name threejs-package
+#' @references
+#' \url{http://threejs.org}
+#' \url{http://www.html5rocks.com/en/tutorials/three/intro/}
 #' @aliases threejs
 #' @docType package
 NULL

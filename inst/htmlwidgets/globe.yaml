@@ -1,0 +1,25 @@
+dependencies:
+  - name: d3
+    version: 3.4.11
+    src: "htmlwidgets/lib/d3-3.4.11"
+    script: d3.v3.min.js
+  - name: three
+    version: 69
+    src: "htmlwidgets/lib/three"
+    script: three.min.js
+  - name: detector
+    version: 69
+    src: "htmlwidgets/lib/detector"
+    script: Detector.js
+  - name: projector
+    version: 69
+    src: "htmlwidgets/lib/projector"
+    script: Projector.js
+  - name: canvas
+    version: 69
+    src: "htmlwidgets/lib/canvas"
+    script: CanvasRenderer.js
+  - name: globe
+    version: 1
+    src: "htmlwidgets/lib/globe"
+    script: globe.js
