@@ -5,7 +5,7 @@ See http://threejs.org for details on three.js.  Examples follow.
 
 ## NOTE!
 
-These examples generally run much better in WebGL-enabled browsers.
+These examples generally run best in WebGL-enabled browsers.
 I have found that either Firefox or Chrome generally produce the
 best experience.
 
@@ -23,10 +23,9 @@ runApp(system.file("examples/scatterplot",package="threejs"))
 ```
 
 Here is nifty example that plots the relative population of some cities using
-data from the R maps package (http://cran.r-project.org/web/packages/maps/)
-on a globe, inspired by the  dat.globe Javascript WebGL Globe Toolkit
-(http://dataarts.github.com/dat.globe) by the Google Creative Lab Data Arts
-Team:
+data from the R maps package (http://cran.r-project.org/web/packages/maps/) on
+a globe, based on the Javascript WebGL Globe Toolkit
+(https://github.com/dataarts) by the Google Creative Lab Data Arts Team:
 ```r
 runApp(system.file("examples/globe",package="threejs"))
 ```
