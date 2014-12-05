@@ -10,7 +10,7 @@
 #' @aliases threejs
 #' @examples
 #' ## dontrun
-#' library("threejs")
+#' library("shiny")
 #' runApp(system.file("examples/globe",package="threejs"))
 #' runApp(system.file("examples/scatterplot",package="threejs"))
 #' runApp(system.file("examples/hello",package="threejs"))
