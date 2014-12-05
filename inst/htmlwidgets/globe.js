@@ -74,7 +74,7 @@ HTMLWidgets.widget(
       tex.needsUpdate = true;
     } else
     {
-      tex = THREE.ImageUtils.loadTexture( x );
+      tex = THREE.ImageUtils.loadTexture( x.img );
     }
 
     var material = new THREE.MeshLambertMaterial({map: tex, color: 0x0000ff, emissive:0x0000ff});

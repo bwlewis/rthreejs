@@ -43,7 +43,7 @@ HTMLWidgets.widget(
       tex.image = img;
     } else
     {
-      tex = THREE.ImageUtils.loadTexture( x );
+      tex = THREE.ImageUtils.loadTexture( x.img );
     }
 
       scene = new THREE.Scene();
