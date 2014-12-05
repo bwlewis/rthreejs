@@ -28,25 +28,30 @@ HTMLWidgets.widget(
     renderer.setSize( width, height );
   },
 
-// We expect x to contain an x.data field representing a Uint8Array
-// three.js DataTexture and texheight and texwidth elements indicating
-// the texture height and width, respectively.
   renderValue: function(el, x, renderer)
   {
     var img, scene, camera, geometry, tex, object, directionalLight, particleLight, pointLight;
+    x = JSON.parse(x);
 
     if(FIRST)
     {
-      img = new Uint8Array(JSON.parse(x.data));
+    if(x.dataURI)
+    { 
+      img = document.createElement("img");
+      img.src = x.img;
+      tex = new THREE.Texture();
+      tex.image = img;
+    } else
+    {
+      tex = THREE.ImageUtils.loadTexture( x );
+    }
+
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera( 40, renderer.domElement.width / renderer.domElement.height, 1, 2000 );
       camera.position.set( 0, 200, 0 );
       camera.lookAt(scene.position);
 
       geometry = new THREE.SphereGeometry(50,32,32);
-      tex = new THREE.DataTexture(img, x.texwidth, x.texheight, THREE.RGBAFormat );
-      tex.repeat.set(x.repeatX,x.repeatY);
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
 
       tex.needsUpdate = true;
       material = new THREE.MeshPhongMaterial( { map: tex, bumpMap: tex, bumpScale: 1, color: "black", ambient: x.ambient, specular: x.specular, shininess: x.shininess, metal: true, shading:  THREE.SmoothShading } );

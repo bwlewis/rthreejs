@@ -3,11 +3,12 @@
 \alias{globe.js}
 \title{globe.js Three.js globe example.}
 \usage{
-globe.js(img = readJPEG(system.file("images/world.jpg", package = "threejs")),
-  lat, long, color = "red", value = 40, height = NULL, width = NULL)
+globe.js(img, lat, long, color = "red", value = 40, height = NULL,
+  width = NULL)
 }
 \arguments{
-\item{img}{Either a matrix or raster image representation or a character string indicating a file path.}
+\item{img}{A character string representing an image file path, or a dataURI
+image prepared by the \code{texture} function.}
 
 \item{lat}{Data point latitudes (negative values indicate south, positive north).}
 
@@ -20,28 +21,32 @@ globe.js(img = readJPEG(system.file("images/world.jpg", package = "threejs")),
 \item{height}{The container div height.}
 
 \item{width}{The container div width.}
-
-\item{imwidth}{Image width.}
-
-\item{imheight}{Image height.}
 }
 \description{
 Three.js example that maps points onto the earth.
 }
 \note{
 The \code{img} argument may be a relative file location string pointing to
-an image file in shiny applications (see the examples below). The \code{img}
-argument must be a matrix or raster image representation for non-shiny
-file-based use. The shiny method can be *much* faster. This limitation comes
-from the way Three.js loads image textures.
+an image file in shiny applications (see the examples below). For non-shiny
+use, prepare the image file as a dataURI with the \code{texture} function
+(see the examples).
 }
 \examples{
 ## dontrun
-# Stand-alone examples:
-library("threejs")
-
 # A shiny example:
 runApp(system.file("examples/globe",package="threejs"))
+
+# A Stand-alone example:
+library("threejs")
+library("maps")
+data(world.cities, package="maps")
+cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
+value  <- 100 * cities$pop / max(cities$pop)
+# THREE.Color only accepts RGB form, drop the A value:
+col <- sapply(heat.colors(10), function(x) substr(x,1,7))
+names(col) <- c()
+col <- col[floor(length(col)*(100-value)/100) + 1]
+globe.js(img=texture(system.file("images/world.png",package="threejs")),lat=cities$lat, long=cities$long, value=value, color=col)
 }
 \references{
 The threejs project \url{http://threejs.org}.

@@ -29,9 +29,9 @@ HTMLWidgets.widget(
 
 // We expect x to contain the following fields:
 // x.img: Either a string path to a texture image (server mode), or
-//        a Uint8Array DataTexture.
-// x.imheight: The height of the DataTexture in pixels
-// x.imwidth: The width of the DataTexture in pixels.
+//        a list that contains a base64-encoded image. We detect the
+//        latter case by looking for a variable named dataURI.
+// x.dataURI Optional. If present indicates x.img is a dataURI.
 // x.lat: Latitude data points (north degrees, use negative for south)
 // x.long: Longitude data points (west degrees, use negative for east)
 // x.color: Either a single color value, or a vector of color values
@@ -64,20 +64,20 @@ HTMLWidgets.widget(
 
     scene = new THREE.Scene();
     geometry = new THREE.SphereGeometry(200,50,50);
-    img = JSON.parse(x.img);
-    if(typeof(img)=="string")
+    x = JSON.parse(x);
+    if(x.dataURI)
     {
-      tex = THREE.ImageUtils.loadTexture( img );
+      img = document.createElement("img");
+      img.src = x.img;
+      tex = new THREE.Texture();
+      tex.image = img;
+      tex.needsUpdate = true;
     } else
     {
-      img = new Uint8Array(img);
-      tex = new THREE.DataTexture(img, x.imwidth, x.imheight, THREE.RGBAFormat );
-      tex.repeat.set(1,1);
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.needsUpdate = true;
+      tex = THREE.ImageUtils.loadTexture( x );
     }
 
-    var material = new THREE.MeshLambertMaterial({map: tex, color: 0x000000, emissive:0x0000ff});
+    var material = new THREE.MeshLambertMaterial({map: tex, color: 0x0000ff, emissive:0x0000ff});
 
     earth = new THREE.Mesh( geometry, material );
     earth.position.x = earth.position.y = 0;

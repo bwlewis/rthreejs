@@ -2,9 +2,8 @@
 #'
 #' Three.js example that maps points onto the earth.
 #'
-#' @param img Either a matrix or raster image representation or a character string indicating a file path.
-#' @param imwidth Image width.
-#' @param imheight Image height.
+#' @param img A character string representing an image file path, or a dataURI
+#'  image prepared by the \code{texture} function.
 #' @param lat Data point latitudes (negative values indicate south, positive north).
 #' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
 #' @param value Either a single value indicating the height of all data points, or a vector of values of length x.lat indicating height of each point.
@@ -14,10 +13,9 @@
 #'
 #' @note
 #' The \code{img} argument may be a relative file location string pointing to
-#' an image file in shiny applications (see the examples below). The \code{img}
-#' argument must be a matrix or raster image representation for non-shiny
-#' file-based use. The shiny method can be *much* faster. This limitation comes
-#' from the way Three.js loads image textures.
+#' an image file in shiny applications (see the examples below). For non-shiny
+#' use, prepare the image file as a dataURI with the \code{texture} function
+#' (see the examples).
 #'
 #' @references
 #' The threejs project \url{http://threejs.org}.
@@ -32,39 +30,41 @@
 #' 
 #' @examples
 #' ## dontrun
-#' # Stand-alone examples:
-#' library("threejs")
-#'
 #' # A shiny example:
 #' runApp(system.file("examples/globe",package="threejs"))
 #' 
+#' # A Stand-alone example:
+#' library("threejs")
+#' library("maps")
+#' data(world.cities, package="maps")
+#' cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
+#' value  <- 100 * cities$pop / max(cities$pop)
+#' # THREE.Color only accepts RGB form, drop the A value:
+#' col <- sapply(heat.colors(10), function(x) substr(x,1,7))
+#' names(col) <- c()
+#' col <- col[floor(length(col)*(100-value)/100) + 1]
+#' globe.js(img=texture(system.file("images/world.png",package="threejs")),lat=cities$lat, long=cities$long, value=value, color=col)
+#'
 #' @importFrom rjson toJSON
-#' @importFrom png readPNG
-#' @importFrom jpeg readJPEG
 #' @import maps
 #' @export
 globe.js <- function(
-  img=readJPEG(system.file("images/world.jpg",package="threejs")),
-  lat,
-  long,
+  img, lat, long,
   color="red", value=40,
   height = NULL,
   width = NULL)
 {
-  # create widget
-  if(typeof(img)=="character")
+  options = list(lat=lat, long=long, color=color, value=value)
+  if(is.list(img))
   {
-    d = c(0,0)
-    img = sprintf("\"%s\"",img)
+    x = c(img, options)
   } else
   {
-    d = 2^ceiling(log(dim(img),2))
-    img = texture(img)
+    x = c(options, img=x)
   }
   htmlwidgets::createWidget(
       name = "globe",
-      x = list(img=img, imwidth=d[1], imheight=d[2],
-               lat=lat, long=long, color=color, value=value),
+      x = toJSON(x),
                width = width,
                height = height,
                htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),

@@ -3,16 +3,12 @@
 \alias{helloThree.js}
 \title{helloThree.js  Three.js hello world example.}
 \usage{
-helloThree.js(img = readPNG(system.file("img/Rlogo.png", package = "png")),
-  repeatX = 8, repeatY = 8, ambient = "#999", specular = "#ffa",
-  shininess = 10, height = NULL, width = NULL)
+helloThree.js(img, ambient = "#999", specular = "#ffa", shininess = 10,
+  height = NULL, width = NULL)
 }
 \arguments{
-\item{img}{Either a matrix or raster image representation.}
-
-\item{repeatX}{The number of times to repeat the image along the X axis.}
-
-\item{repeatY}{The number of times to repeat the image along the Y axis.}
+\item{img}{Either a character string indicating a path to a file
+(shiny apps), or an image texture prepared by \code{texture}.}
 
 \item{ambient}{The intensity/color of object light scattering.}
 
@@ -31,10 +27,11 @@ Three.js hello world example, maps an image onto a rotating sphere.
 ## dontrun
 # Stand-alone examples:
 library("threejs")
-helloThree.js(readPNG(system.file("img/Rlogo.png",package="png")))
-helloThree.js(readJPEG(system.file("images/moon_1024.jpg",package="threejs")))
+helloThree.js(texture(system.file("img/Rlogo.png",package="png")))
+helloThree.js(texture(system.file("images/moon_1024.png",package="threejs")))
 
 # A shiny example:
+library("shiny")
 runApp(system.file("examples/hello",package="threejs"), launch.browser=FALSE)
 }
 \references{

@@ -13,9 +13,7 @@ Depends:
 Imports:
     htmlwidgets (>= 0.2.2),
     plyr,
-    rjson,
-    png,
-    jpeg
+    rjson
 Suggests:
     htmltools (>= 0.2.6),
     RCurl
