@@ -31,6 +31,7 @@
 #' @examples
 #' ## dontrun
 #' # A shiny example:
+#' library("shiny")
 #' runApp(system.file("examples/globe",package="threejs"))
 #' 
 #' # A Stand-alone example:

@@ -34,6 +34,7 @@ use, prepare the image file as a dataURI with the \code{texture} function
 \examples{
 ## dontrun
 # A shiny example:
+library("shiny")
 runApp(system.file("examples/globe",package="threejs"))
 
 # A Stand-alone example:
