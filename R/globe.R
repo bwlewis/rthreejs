@@ -69,7 +69,7 @@ globe.js <- function(
     x = c(img, options)
   } else
   {
-    x = c(options, img=x)
+    x = c(options, img=img)
   }
   htmlwidgets::createWidget(
       name = "globe",
