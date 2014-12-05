@@ -6,18 +6,20 @@ data(world.cities, package="maps")
 
 shinyServer(function(input, output) {
 
+  h <- 100
+
   cull <- reactive({
      world.cities[order(world.cities$pop,decreasing=TRUE)[1:input$N],]
   })
 
   values <- reactive({
     cities <- cull()
-    value <- input$multiplier * cities$pop / max(cities$pop)
+    value <- h * cities$pop / max(cities$pop)
     # THREE.Color only accepts RGB form, drop the A value:
     col <- sapply(heat.colors(10), function(x) substr(x,1,7))
     names(col) <- c()
     # Extend palette to data values
-    col <- col[floor(length(col)*(input$multiplier-value)/input$multiplier) + 1]
+    col <- col[floor(length(col)*(h-value)/h) + 1]
     list(value=value, color=col, cities=cities)
   })
 
