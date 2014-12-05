@@ -42,11 +42,19 @@ library("maps")
 data(world.cities, package="maps")
 cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
 value  <- 100 * cities$pop / max(cities$pop)
-# THREE.Color only accepts RGB form, drop the A value:
+
+# Set up a color map, noting that THREE.Color only accepts RGB form
+# so we need to drop the A value from the colors:
 col <- sapply(heat.colors(10), function(x) substr(x,1,7))
 names(col) <- c()
 col <- col[floor(length(col)*(100-value)/100) + 1]
-globe.js(img=texture(system.file("images/world.png",package="threejs")),lat=cities$lat, long=cities$long, value=value, color=col)
+
+# Load the map of the world as a dataURI image using the \\code{texture}
+# function. This is required for non-shiny use (shiny apps can just use
+# the file name directly).
+picture <- texture(system.file("images/world.jpg",package="threejs"))
+
+globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 }
 \references{
 The threejs project \url{http://threejs.org}.
