@@ -7,7 +7,7 @@ HTMLWidgets.widget(
   initialize: function(el, width, height)
   {
     var r;
-    FIRST = true;
+    UPDATE_IMAGE = true;
     if(Detector.webgl)
     {
       r = new THREE.WebGLRenderer({antialias: true});
@@ -30,10 +30,14 @@ HTMLWidgets.widget(
 
   renderValue: function(el, x, renderer)
   {
-    var img, scene, camera, geometry, tex, object, directionalLight, particleLight, pointLight;
+    var img, scene, camera, geometry, tex, object, directionalLight, particleLight, pointLight, tex;
     x = JSON.parse(x);
+    if(x.UPDATE_IMAGE)
+    {
+      UPDATE_IMAGE = x.UPDATE_IMAGE;
+    }
 
-    if(FIRST)
+    if(UPDATE_IMAGE)
     {
       if(x.dataURI)
       { 
@@ -45,6 +49,7 @@ HTMLWidgets.widget(
       {
         tex = THREE.ImageUtils.loadTexture( x.img );
       }
+      tex.needsUpdate = true;
 
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera( 40, renderer.domElement.width / renderer.domElement.height, 1, 2000 );
@@ -53,7 +58,6 @@ HTMLWidgets.widget(
 
       geometry = new THREE.SphereGeometry(50,32,32);
 
-      tex.needsUpdate = true;
       material = new THREE.MeshPhongMaterial( { map: tex, bumpMap: tex, bumpScale: 1, color: "black", ambient: x.ambient, specular: x.specular, shininess: x.shininess, metal: true, shading:  THREE.SmoothShading } );
 
       object = new THREE.Mesh( geometry, material );
@@ -69,7 +73,7 @@ HTMLWidgets.widget(
       scene.add( particleLight );
       pointLight = new THREE.PointLight( 0xffffff, 2, 800 );
       particleLight.add( pointLight );
-      FIRST = false;
+      UPDATE_IMAGE = false;
       animate();
     } else
     {
@@ -84,7 +88,7 @@ HTMLWidgets.widget(
     }
     function render() {
       var timer = Date.now() * 0.00025;
-      object.rotation.y += 0.01;
+      object.rotation.y += 0.02;
       object.rotation.x += 0.01;
       particleLight.position.x = Math.sin( timer * 7 ) * 300;
       particleLight.position.y = Math.cos( timer * 5 ) * 400;
@@ -92,6 +96,4 @@ HTMLWidgets.widget(
       renderer.render( scene, camera );
     }
   }
-
-
 })
