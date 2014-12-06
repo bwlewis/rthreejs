@@ -22,9 +22,9 @@ runApp(system.file("examples/scatterplot",package="threejs"))
 ```
 
 Here is nifty example that plots the relative population of some cities using
-data from the R maps package (http://cran.r-project.org/web/packages/maps/) on
-a globe, based on the Javascript WebGL Globe Toolkit
-(https://github.com/dataarts) by the Google Creative Lab Data Arts Team:
+data from the R maps package on
+a globe. It's based on the Javascript WebGL Globe Toolkit
+(https://github.com/dataarts) by the Google Creative Lab Data Arts Team.
 ```r
 runApp(system.file("examples/globe",package="threejs"))
 ```
@@ -32,7 +32,7 @@ Run
 ```r
 ?globe.js
 ```
-for examples and help plotting your data on the globe.
+for examples and help plotting data and using other map images on the globe.
 
 The globe example now works in shiny and by direct invocation! Non
 WebGL-capable browsers are also better supported.
