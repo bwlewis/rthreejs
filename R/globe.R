@@ -85,11 +85,11 @@ globe.js <- function(
   }
   htmlwidgets::createWidget(
       name = "globe",
-      x = toJSON(x),
-               width = width,
-               height = height,
-               htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
-               package = "threejs")
+      x = x,
+      width = width,
+      height = height,
+      htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+      package = "threejs")
 }
 
 #' @rdname threejs-shiny
