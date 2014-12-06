@@ -60,7 +60,7 @@ col <- col[floor(length(col)*(100-value)/100) + 1]
 # Load the map of the world as a dataURI image using the \\code{texture}
 # function. This is required for non-shiny use (shiny apps can just use
 # the file name directly).
-picture <- texture(system.file("images/world.jpg",package="threejs"))
+picture <- texture(system.file("htmlwidgets/lib/globe/world.jpg",package="threejs"))
 globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 
 # Plot them on the moon
