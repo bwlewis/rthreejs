@@ -9,7 +9,7 @@
 \alias{threejs-shiny}
 \title{Shiny bindings for threejs widgets}
 \usage{
-globeOutput(outputId, width = "100\%", height = "500px")
+globeOutput(outputId, width = "100\%", height = "600px")
 
 renderGlobe(expr, env = parent.frame(), quoted = FALSE)
 
