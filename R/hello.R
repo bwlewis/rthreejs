@@ -34,7 +34,7 @@ helloThree.js <- function(
   height = NULL, width = NULL)
 {
   # create widget
-  options=list(ambient=ambient,specular=specular)
+  options=list(ambient=ambient,specular=specular, shininess=shininess)
   if(is.list(img))
   {
     x = c(img,options)

@@ -35,16 +35,16 @@ HTMLWidgets.widget(
 
     if(FIRST)
     {
-    if(x.dataURI)
-    { 
-      img = document.createElement("img");
-      img.src = x.img;
-      tex = new THREE.Texture();
-      tex.image = img;
-    } else
-    {
-      tex = THREE.ImageUtils.loadTexture( x.img );
-    }
+      if(x.dataURI)
+      { 
+        img = document.createElement("img");
+        img.src = x.img;
+        tex = new THREE.Texture();
+        tex.image = img;
+      } else
+      {
+        tex = THREE.ImageUtils.loadTexture( x.img );
+      }
 
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera( 40, renderer.domElement.width / renderer.domElement.height, 1, 2000 );
