@@ -9,7 +9,7 @@ shinyUI(fluidPage(
     sidebarPanel(
       sliderInput("N", "Number of largest population cities to plot", value=1000, min = 100, max = 10000, step = 100),
       hr(),
-      p("Use the mouse zoom to zoom in/out.")
+      p("Use the mouse zoom to zoom in/out."),
       p("Click and drag to rotate.")
     ),
     mainPanel(

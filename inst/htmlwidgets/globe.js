@@ -38,6 +38,7 @@ HTMLWidgets.widget(
 //          of length x.data.length for each point.
 // x.value: Either a single height value, or a vector of values
 //          of length x.data.length for each point.
+// x.lightcolor: A color value for the ambient light in the scene
   renderValue: function(el, x, renderer)
   {
     var img, scene,  geometry, tex, earth;
@@ -109,8 +110,9 @@ HTMLWidgets.widget(
     atmo.scale.multiplyScalar(1.03);
     if(GL) scene.add(atmo);
 
-    scene.add( new THREE.AmbientLight( 0xddddff ) );
-    scene.add( new THREE.AmbientLight( 0x9999ff ) );
+    if(!x.lightcolor) x.lightcolor = 0x9999ff;
+    scene.add( new THREE.AmbientLight( x.lightcolor ) );
+    scene.add( new THREE.AmbientLight( x.lightcolor ) );
 
 // Add the data points
     var phi, theta, lat, lng, colr, size;

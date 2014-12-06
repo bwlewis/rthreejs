@@ -3,7 +3,7 @@
 #' Three.js example that maps points onto the earth.
 #'
 #' @param img A character string representing an image file path, or a dataURI
-#'  image prepared by the \code{texture} function.
+#'  image prepared by the \code{texture} function, of an image to plot on the globe.
 #' @param lat Data point latitudes (negative values indicate south, positive north).
 #' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
 #' @param value Either a single value indicating the height of all data points, or a vector of values of length x.lat indicating height of each point.
@@ -51,7 +51,10 @@
 #' # function. This is required for non-shiny use (shiny apps can just use
 #' # the file name directly).
 #' picture <- texture(system.file("images/world.jpg",package="threejs"))
+#' globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 #'
+#' # Plot them on the moon
+#' picture <- texture(system.file("images/moon.jpg",package="threejs"))
 #' globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 #'
 #' @importFrom rjson toJSON

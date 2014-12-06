@@ -20,7 +20,7 @@
 #' # Stand-alone examples:
 #' library("threejs")
 #' helloThree.js(texture(system.file("img/Rlogo.png",package="png")))
-#' helloThree.js(texture(system.file("images/moon_1024.png",package="threejs")))
+#' helloThree.js(texture(system.file("images/moon.jpg",package="threejs")))
 #'
 #' # A shiny example:
 #' library("shiny")

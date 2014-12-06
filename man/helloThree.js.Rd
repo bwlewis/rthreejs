@@ -28,7 +28,7 @@ Three.js hello world example, maps an image onto a rotating sphere.
 # Stand-alone examples:
 library("threejs")
 helloThree.js(texture(system.file("img/Rlogo.png",package="png")))
-helloThree.js(texture(system.file("images/moon_1024.png",package="threejs")))
+helloThree.js(texture(system.file("images/moon.png",package="threejs")))
 
 # A shiny example:
 library("shiny")
