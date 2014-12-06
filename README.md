@@ -5,9 +5,8 @@ See http://threejs.org for details on three.js.  Examples follow.
 
 ## NOTE!
 
-These examples generally run best in WebGL-enabled browsers.
-I have found that either Firefox or Chrome generally produce the
-best experience.
+These examples generally run best in WebGL-enabled browsers.  I have found that
+either Firefox or Chrome generally produce the best experience.
 
 ## Examples
 
@@ -29,8 +28,14 @@ a globe, based on the Javascript WebGL Globe Toolkit
 ```r
 runApp(system.file("examples/globe",package="threejs"))
 ```
-The globe example only works from shiny right now--I hope to have a fix
-for running that without shiny soon.
+Run
+```r
+?globe.js
+```
+for examples and help plotting your data on the globe.
+
+The globe example now works in shiny and by direct invocation! Non
+WebGL-capable browsers are also better supported.
 
 # Licenses
 
