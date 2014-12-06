@@ -66,6 +66,10 @@ HTMLWidgets.widget(
     scene = new THREE.Scene();
     geometry = new THREE.SphereGeometry(200,50,50);
     x = JSON.parse(x);
+    if(!x.lightcolor) x.lightcolor = 0x9999ff;
+    if(!x.emissive) x.emissive = 0x0000ff;
+    if(!x.bodycolor) x.bodycolor = 0x0000ff;
+
     if(x.dataURI)
     {
       img = document.createElement("img");
@@ -78,7 +82,7 @@ HTMLWidgets.widget(
       tex = THREE.ImageUtils.loadTexture( x.img );
     }
 
-    var material = new THREE.MeshLambertMaterial({map: tex, color: 0x0000ff, emissive:0x0000ff});
+    var material = new THREE.MeshLambertMaterial({map: tex, color: x.bodycolor, emissive:x.emissive});
 
     earth = new THREE.Mesh( geometry, material );
     earth.position.x = earth.position.y = 0;
@@ -89,6 +93,7 @@ HTMLWidgets.widget(
     camera.position.y = 800*Math.sin(earth.rotation.y);
     camera.position.z = 800*Math.cos(earth.rotation.x) * Math.cos(earth.rotation.y);
     camera.lookAt(scene.position);
+
 
     var customMaterial = new THREE.ShaderMaterial( 
     {
@@ -110,7 +115,6 @@ HTMLWidgets.widget(
     atmo.scale.multiplyScalar(1.03);
     if(GL) scene.add(atmo);
 
-    if(!x.lightcolor) x.lightcolor = 0x9999ff;
     scene.add( new THREE.AmbientLight( x.lightcolor ) );
     scene.add( new THREE.AmbientLight( x.lightcolor ) );
 
