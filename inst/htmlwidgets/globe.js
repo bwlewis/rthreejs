@@ -25,6 +25,7 @@ HTMLWidgets.widget(
   resize: function(el, width, height, renderer)
   {
     renderer.setSize( width, height );
+    camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  renderer.domElement.width/renderer.domElement.height, camera.near, camera.far);
   },
 
 // We expect x to contain the following fields:

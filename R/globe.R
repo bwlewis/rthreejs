@@ -1,6 +1,6 @@
 #' globe.js Three.js globe example.
 #'
-#' Three.js example that maps points onto the earth.
+#' Three.js example that maps points and an image on a globe.
 #'
 #' @param img A character string representing an image file path, or a dataURI
 #'  image prepared by the \code{texture} function, of an image to plot on the globe.
@@ -8,6 +8,9 @@
 #' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
 #' @param value Either a single value indicating the height of all data points, or a vector of values of length x.lat indicating height of each point.
 #' @param color Either a single color value indicating the color of all data points, or a vector of values of length x.lat indicating color of each point.
+#' @param bodycolor The diffuse reflective color of the globe object.
+#' @param emissive The emissive color of the globe object.
+#' @param lightcolor The color of the ambient light in the scene.
 #' @param width The container div width.
 #' @param height The container div height.
 #'
@@ -55,8 +58,9 @@
 #'
 #' # Plot them on the moon
 #' picture <- texture(system.file("images/moon.jpg",package="threejs"))
-#' globe.js(img=c(picture,bodycolor="#555555",emissive="#444444",lightcolor="#555555"),
-#'          lat=cities$lat, long=cities$long, value=value, color=col)
+#' globe.js(img=picture, bodycolor="#555555", emissive="#444444",
+#'          lightcolor="#555555", lat=cities$lat, long=cities$long,
+#'          value=value, color=col)
 #'
 #' @importFrom rjson toJSON
 #' @import maps
@@ -64,10 +68,12 @@
 globe.js <- function(
   img, lat, long,
   color="red", value=40,
+  bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff",
   height = NULL,
   width = NULL)
 {
-  options = list(lat=lat, long=long, color=color, value=value)
+  options = list(lat=lat, long=long, color=color, value=value,
+                 bodycolor=bodycolor, emissive=emissive, lightcolor=lightcolor)
   if(is.list(img))
   {
     x = c(img, options)
@@ -86,7 +92,7 @@ globe.js <- function(
 
 #' @rdname threejs-shiny
 #' @export
-globeOutput <- function(outputId, width = "100%", height = "500px") {
+globeOutput <- function(outputId, width = "100%", height = "600px") {
     shinyWidgetOutput(outputId, "globe", width, height,
                         package = "threejs")
 }

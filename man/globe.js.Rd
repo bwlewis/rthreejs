@@ -3,7 +3,8 @@
 \alias{globe.js}
 \title{globe.js Three.js globe example.}
 \usage{
-globe.js(img, lat, long, color = "red", value = 40, height = NULL,
+globe.js(img, lat, long, color = "red", value = 40, bodycolor = "#0000ff",
+  emissive = "#0000ff", lightcolor = "#9999ff", height = NULL,
   width = NULL)
 }
 \arguments{
@@ -18,12 +19,18 @@ image prepared by the \code{texture} function, of an image to plot on the globe.
 
 \item{value}{Either a single value indicating the height of all data points, or a vector of values of length x.lat indicating height of each point.}
 
+\item{bodycolor}{The diffuse reflective color of the globe object.}
+
+\item{emissive}{The emissive color of the globe object.}
+
+\item{lightcolor}{The color of the ambient light in the scene.}
+
 \item{height}{The container div height.}
 
 \item{width}{The container div width.}
 }
 \description{
-Three.js example that maps points onto the earth.
+Three.js example that maps points and an image on a globe.
 }
 \note{
 The \code{img} argument may be a relative file location string pointing to
@@ -58,8 +65,9 @@ globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 
 # Plot them on the moon
 picture <- texture(system.file("images/moon.jpg",package="threejs"))
-globe.js(img=c(picture,bodycolor="#555555",emissive="#444444",lightcolor="#555555"),
-         lat=cities$lat, long=cities$long, value=value, color=col)
+globe.js(img=picture, bodycolor="#555555", emissive="#444444",
+         lightcolor="#555555", lat=cities$lat, long=cities$long,
+         value=value, color=col)
 }
 \references{
 The threejs project \url{http://threejs.org}.
