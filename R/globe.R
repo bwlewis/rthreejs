@@ -1,9 +1,11 @@
-#' globe.js Three.js globe example.
+#' globe.js Three.js globe widget
 #'
-#' Three.js example that maps points and an image on a globe.
+#' Three.js widget for mapping points and an image on a globe. The globe can
+#' be rotated and and zoomed.
 #'
-#' @param img A character string representing an image file path, or a dataURI
-#'  image prepared by the \code{texture} function, of an image to plot on the globe.
+#' @param img A character string representing an image file path
+#' of an image to plot on the globe, or or a dataURI image prepared by the \code{texture}
+#' function.
 #' @param lat Data point latitudes (negative values indicate south, positive north).
 #' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
 #' @param value Either a single value indicating the height of all data points, or a vector of values of length x.lat indicating height of each point.
