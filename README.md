@@ -16,10 +16,11 @@ See http://bwlewis.github.io/rthreejs  for an example.
 
 ## NOTE!
 
-These examples generally run best in WebGL-enabled browsers.  Either Firefox or
-Chrome generally produce the best experience.  We do try to maintain reasonable
-support for non-WebGL equipped browsers in the package, but the performance and
-rendering quality will generally be inferior to WebGL visualizations.
+These examples generally run best in WebGL-enabled browsers, including at least
+Chrome, Firefox, and recent versions of Internet Explorer.  We do try to
+maintain basic support for non-WebGL equipped browsers in the package, but the
+performance and rendering quality will generally be inferior to WebGL
+visualizations.
 
 ## Examples
 
