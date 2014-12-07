@@ -42,8 +42,7 @@
      cities &lt;- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
      value  &lt;- 100 * cities$pop / max(cities$pop)
      
-     col &lt;- sapply(heat.colors(10), function(x) substr(x,1,7))
-     names(col) &lt;- c()
+     col &lt;- sapply(heat.colors(10), function(x) substr(x,1,7), USE.NAMES=FALSE)
      col &lt;- col[floor(length(col)*(100-value)/100) + 1]
      
      picture &lt;- texture(system.file("htmlwidgets/lib/globe/world.jpg",package="threejs"))
