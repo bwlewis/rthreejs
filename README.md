@@ -1,30 +1,26 @@
 # Three.js and R
 
-Tools for and examples of working with three.js graphics in R and shiny.
-See http://threejs.org for details on three.js.  Examples follow.
+Tools for and examples of working with three.js graphics in R and shiny,
+including a 3D scatterplot widget and a globe plotting widget.  See
+http://threejs.org for details on three.js.
 
 ## NOTE!
 
-These examples generally run best in WebGL-enabled browsers.  I have found that
-either Firefox or Chrome generally produce the best experience.
+These examples generally run best in WebGL-enabled browsers.  Either Firefox or
+Chrome generally produce the best experience.  We do try to maintain reasonable
+support for non-WebGL equipped browsers.
 
 ## Examples
 
-A shiny hello world:
-```r
-library("shiny")
-runApp(system.file("examples/hello",package="threejs"))
-```
-
-A nice 3-d Canvas-based scatterplot:
+The following example illustrats the 3D scatterplot widget.
 ```r
 runApp(system.file("examples/scatterplot",package="threejs"))
 ```
 
-Here is nifty example that plots the relative population of some cities using
-data from the R maps package on
-a globe. It's based on the Javascript WebGL Globe Toolkit
-(https://github.com/dataarts) by the Google Creative Lab Data Arts Team.
+The next example illustrates the globe widget by plotting the relative
+population of some cities using data from the R maps package on a globe. It's
+based on the Javascript WebGL Globe Toolkit (https://github.com/dataarts) by
+the Google Creative Lab Data Arts Team.
 ```r
 runApp(system.file("examples/globe",package="threejs"))
 ```
@@ -33,9 +29,6 @@ Run
 ?globe.js
 ```
 for examples and help plotting data and using other map images on the globe.
-
-The globe example now works in shiny and by direct invocation! Non
-WebGL-capable browsers are also better supported.
 
 # Licenses
 
