@@ -186,10 +186,11 @@ function scatter(el, x, object)
 
   var down = false;
   var sx = 0, sy = 0;
-  window.onmousedown = function (ev)
+  el.onmousedown = function (ev)
   {
     down = true; sx = ev.clientX; sy = ev.clientY;
   };
+  el.onmouseup = function(){ down = false; };
   function mousewheel(event)
   {
     var fovMAX = 160;
@@ -198,12 +199,11 @@ function scatter(el, x, object)
     camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
     camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  object.domElement.width/object.domElement.height, camera.near, camera.far);
   }
-  window.onmousewheel = function(ev) {ev.preventDefault();};
-  window.addEventListener('DOMMouseScroll', mousewheel, true);
-  window.addEventListener('mousewheel', mousewheel, true);
+  el.onmousewheel = function(ev) {ev.preventDefault();};
+  el.addEventListener('DOMMouseScroll', mousewheel, true);
+  el.addEventListener('mousewheel', mousewheel, true);
 
-  window.onmouseup = function(){ down = false; };
-  window.onmousemove = function(ev)
+  el.onmousemove = function(ev)
   { 
     ev.preventDefault();
     if (down) {
