@@ -3,6 +3,8 @@
 Three.js widgets for R and shiny.
 See http://threejs.org for details on three.js.
 
+See http://bwlewis.github.io/rthreejs  for an example.
+
 ## NOTE!
 
 These examples generally run best in WebGL-enabled browsers.  Either Firefox or
