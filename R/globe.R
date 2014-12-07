@@ -61,7 +61,7 @@
 #' globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 #'
 #' # Plot them on the moon
-#' picture <- texture(system.file("images/moon.jpg",package="threejs"))
+#' picture <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
 #' globe.js(img=picture, bodycolor="#555555", emissive="#444444",
 #'          lightcolor="#555555", lat=cities$lat, long=cities$long,
 #'          value=value, color=col)

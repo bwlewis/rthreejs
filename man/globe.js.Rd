@@ -66,7 +66,7 @@ picture <- texture(system.file("htmlwidgets/lib/globe/world.jpg",package="threej
 globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 
 # Plot them on the moon
-picture <- texture(system.file("images/moon.jpg",package="threejs"))
+picture <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
 globe.js(img=picture, bodycolor="#555555", emissive="#444444",
          lightcolor="#555555", lat=cities$lat, long=cities$long,
          value=value, color=col)
@@ -81,5 +81,7 @@ Includes ideas and images from the dat.globe Javascript WebGL Globe Toolkit
 Copyright 2011 Data Arts Team, Google Creative Lab
 Licensed under the Apache License, Version 2.0
 \url{http://www.apache.org/licenses/LICENSE-2.0}
+
+\url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
 }
 

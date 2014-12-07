@@ -14,4 +14,8 @@ dependencies:
   - name: globe
     version: 1
     src: "htmlwidgets/lib/globe"
-    attachment: world.jpg
+    attachment:
+      - world.jpg
+      - moon.jpg
+      - mars.jpg
+      - jupiter.jpg

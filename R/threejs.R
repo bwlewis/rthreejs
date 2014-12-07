@@ -13,7 +13,8 @@
 #' library("shiny")
 #' runApp(system.file("examples/globe",package="threejs"))
 #' runApp(system.file("examples/scatterplot",package="threejs"))
-#' runApp(system.file("examples/hello",package="threejs"))
+#'
+#' # See also help for globe.js and scatterplot3.js
 #' 
 #' @docType package
 NULL

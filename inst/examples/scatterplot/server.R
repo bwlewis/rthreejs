@@ -13,11 +13,11 @@ shinyServer(function(input, output) {
     color <- palette()[rep(1:input$colors, length.out=nrow(example_data))]
     color <- gsub("[0-9]","",color)
     sizes <- rep(c(0.5, 1, 2)[1:input$sizes], length.out=nrow(example_data))
-    scatterplotThree(x=example_data,
-                  num.ticks=num.ticks,
-                  color=color,
-                  size=sizes,
-                  grid=input$grid)
+    scatterplot3.js(x=example_data,
+                    num.ticks=num.ticks,
+                    color=color,
+                    size=sizes,
+                    grid=input$grid)
   })
   
 })

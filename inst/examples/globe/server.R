@@ -6,7 +6,7 @@ data(world.cities, package="maps")
 
 shinyServer(function(input, output) {
 
-  h <- 100
+  h <- 100 # height of the bar
 
   cull <- reactive({
      world.cities[order(world.cities$pop,decreasing=TRUE)[1:input$N],]

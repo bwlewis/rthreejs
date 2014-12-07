@@ -1,4 +1,4 @@
-#' scatterplotThree Three.js 3D scatterplot example
+#' scatterplot3.js Three.js 3D scatterplot example
 #'
 #' A basic 3D scatterplot using d3.js and three.js.
 #'
@@ -24,7 +24,7 @@
 #' # A stand-alone example
 #' set.seed(1)
 #' x <- matrix(rnorm(100*3),ncol=3)
-#' scatterplotThree(x, color=substr(heat.colors(100), 1, 7))
+#' scatterplot3.js(x, color=substr(heat.colors(100), 1, 7))
 #'
 #' # A shiny example
 #' library("shiny")
@@ -33,7 +33,7 @@
 #' @seealso scatterplot3d, rgl
 #' @importFrom rjson toJSON
 #' @export
-scatterplotThree <- function(
+scatterplot3.js <- function(
   x,
   height = NULL,
   width = NULL,

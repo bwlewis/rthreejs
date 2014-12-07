@@ -2,12 +2,9 @@
 
 export(globe.js)
 export(globeOutput)
-export(helloOutput)
-export(helloThree.js)
 export(renderGlobe)
-export(renderHello)
 export(renderScatterplotThree)
-export(scatterplotThree)
+export(scatterplot3.js)
 export(scatterplotThreeOutput)
 export(texture)
 import(maps)
