@@ -4,8 +4,8 @@
 \title{globe.js Three.js globe widget}
 \usage{
 globe.js(img, lat, long, color = "red", value = 40, bodycolor = "#0000ff",
-  emissive = "#0000ff", lightcolor = "#9999ff", height = NULL,
-  width = NULL)
+  emissive = "#0000ff", lightcolor = "#9999ff", atmosphere = TRUE,
+  height = NULL, width = NULL)
 }
 \arguments{
 \item{img}{A character string representing an image file path
@@ -25,6 +25,8 @@ function.}
 \item{emissive}{The emissive color of the globe object.}
 
 \item{lightcolor}{The color of the ambient light in the scene.}
+
+\item{atmosphere}{TRUE enables WebGL atmpsphere effect.}
 
 \item{height}{The container div height.}
 
@@ -68,7 +70,7 @@ globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 # Plot them on the moon
 picture <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
 globe.js(img=picture, bodycolor="#555555", emissive="#444444",
-         lightcolor="#555555", lat=cities$lat, long=cities$long,
+         lightcolor="#555555", lat=cities$lat, long=cities$long, atmosphere=FALSE
          value=value, color=col)
 }
 \references{

@@ -113,7 +113,7 @@ HTMLWidgets.widget(
     var atmo = new THREE.Mesh( geometry.clone(), customMaterial.clone() );
     atmo.position = earth.position;
     atmo.scale.multiplyScalar(1.03);
-    if(GL) scene.add(atmo);
+    if(GL && x.atmosphere) scene.add(atmo);
 
     scene.add( new THREE.AmbientLight( x.lightcolor ) );
     scene.add( new THREE.AmbientLight( x.lightcolor ) );
@@ -155,10 +155,11 @@ HTMLWidgets.widget(
     var points = new THREE.Mesh(group, bm);
     scene.add(points);
 
-    window.onmousedown = function (ev)
+    el.onmousedown = function (ev)
     {
       down = true; sx = ev.clientX; sy = ev.clientY;
     };
+    el.onmouseup = function(){ down = false; };
 
     function mousewheel(event)
     {
@@ -168,12 +169,11 @@ HTMLWidgets.widget(
       camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
       camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  renderer.domElement.width/renderer.domElement.height, camera.near, camera.far);
     }
-    window.onmousewheel = function(ev) {ev.preventDefault();};
-    window.addEventListener('DOMMouseScroll', mousewheel, true);
-    window.addEventListener('mousewheel', mousewheel, true);
+    el.onmousewheel = function(ev) {ev.preventDefault();};
+    el.addEventListener('DOMMouseScroll', mousewheel, true);
+    el.addEventListener('mousewheel', mousewheel, true);
 
-    window.onmouseup = function(){ down = false; };
-    window.onmousemove = function(ev)
+    el.onmousemove = function(ev)
     {
       ev.preventDefault();
       if (down) {
