@@ -82,6 +82,12 @@ Copyright 2011 Data Arts Team, Google Creative Lab
 Licensed under the Apache License, Version 2.0
 \url{http://www.apache.org/licenses/LICENSE-2.0}
 
-\url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
+Image reference \url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
+
+Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
+
+Mars image: \url{http://pdsmaps.wr.usgs.gov/PDS/public/explorer/html/marsadvc.htm}.
+
+Jupiter image: \url{http://maps.jpl.nasa.gov/textures/jup0vtt2.jpg}.
 }
 
