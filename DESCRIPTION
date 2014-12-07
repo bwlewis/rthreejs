@@ -13,8 +13,10 @@ Depends:
 Imports:
     htmlwidgets (>= 0.2.2),
     plyr,
-    rjson
+    rjson,
+    base64
 Suggests:
     htmltools (>= 0.2.6),
-    RCurl
+    RCurl,
+    maps
 Enhances: knitr, shiny
