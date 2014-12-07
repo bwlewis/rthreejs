@@ -1,8 +1,7 @@
 # Three.js and R
 
-Tools for and examples of working with three.js graphics in R and shiny,
-including a 3D scatterplot widget and a globe plotting widget.  See
-http://threejs.org for details on three.js.
+Three.js widgets for R and shiny.
+See http://threejs.org for details on three.js.
 
 ## NOTE!
 
