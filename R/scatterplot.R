@@ -8,13 +8,23 @@
 #' @param height The container div height.
 #' @param num.ticks A three-element vector with the suggested number of
 #' ticks to display per axis. Set to NULL to not display ticks.
-#' @param color Either a single valid RGB, hex or named color name, or
-#' a vector of valid color names of length \code{nrow(x)}.
+#' @param color Either a single hex or named color name, or
+#' a vector of color names of length \code{nrow(x)} (see note below).
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}.
 #' @param grid Set FALSE to disable display of a grid.
 #' @param stroke A single color stroke value (surrounding each point). Set to
 #' null to omit stroke.
+#'
+#' @note
+#' The three.js color specifications used in this function accept RGB colors
+#' specified by color names or hex color value like \code{"#ff22aa"}. Most
+#' of R's color palette functions return RGBA hex color value strings, and
+#' the extra alpha specification is not compatible with the three.js color
+#' specification used here (by the \code{THREE.Color} javascript function).
+#' When using R color palette hex values, it is necessary to truncate the
+#' last two alpha characters, for example with the \code{substr} function as
+#' illustrated in the example below.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.

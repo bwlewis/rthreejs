@@ -18,8 +18,8 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 \item{num.ticks}{A three-element vector with the suggested number of
 ticks to display per axis. Set to NULL to not display ticks.}
 
-\item{color}{Either a single valid RGB, hex or named color name, or
-a vector of valid color names of length \code{nrow(x)}.}
+\item{color}{Either a single hex or named color name, or
+a vector of color names of length \code{nrow(x)} (see note below).}
 
 \item{stroke}{A single color stroke value (surrounding each point). Set to
 null to omit stroke.}
@@ -31,6 +31,16 @@ vector of sizes of length \code{nrow(x)}.}
 }
 \description{
 A 3D scatterplot widget using d3.js and three.js.
+}
+\note{
+The three.js color specifications used in this function accept RGB colors
+specified by color names or hex color value like \code{"#ff22aa"}. Most
+of R's color palette functions return RGBA hex color value strings, and
+the extra alpha specification is not compatible with the three.js color
+specification used here (by the \code{THREE.Color} javascript function).
+When using R color palette hex values, it is necessary to truncate the
+last two alpha characters, for example with the \code{substr} function as
+illustrated in the example below.
 }
 \examples{
 ## dontrun
