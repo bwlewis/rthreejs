@@ -36,11 +36,12 @@ the Google Creative Lab Data Arts Team.
 ```r
 runApp(system.file("examples/globe",package="threejs"))
 ```
-Run
+
+For detailed help on the widgets and additional examples, see
 ```r
+?scatterplot3.js
 ?globe.js
 ```
-for examples and help plotting data and using other map images on the globe.
 
 # Licenses
 
