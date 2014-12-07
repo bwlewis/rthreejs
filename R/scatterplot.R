@@ -1,6 +1,6 @@
-#' scatterplot3.js Three.js 3D scatterplot example
+#' scatterplot3.js Three.js 3D scatterplot widget.
 #'
-#' A basic 3D scatterplot using d3.js and three.js.
+#' A 3D scatterplot widget using d3.js and three.js.
 #'
 #' @param x A data matrix with three columns corresponding to the x,y,z
 #' coordinate axes. Column labels, if present, are used as axis labels.

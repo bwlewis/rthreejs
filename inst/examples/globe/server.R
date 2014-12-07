@@ -25,7 +25,15 @@ shinyServer(function(input, output) {
 
   output$globe <- renderGlobe({
     v <- values()
-    globe.js(img="globe-1/world.jpg",lat=v$cities$lat, long=v$cities$long, value=v$value, color=v$color)
+    p <- input$map
+    col <- list(
+      earth=list(img="globe-1/world.jpg",bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff"),
+      moon=list(img="globe-1/moon.jpg",bodycolor="#555555", emissive="#444444", lightcolor="#555555"),
+      mars=list(img="globe-1/mars.jpg",bodycolor="#ff0000", emissive="#000000", lightcolor="#aa5555"),
+      jupiter=list(img="globe-1/jupiter.jpg",bodycolor="#222222", emissive="#000000", lightcolor="#aaaaaa")
+    )
+    args = c(col[[input$map]] , list(lat=v$cities$lat, long=v$cities$long, value=v$value, color=v$color))
+    do.call(globe.js, args=args)
   })
   
 })
