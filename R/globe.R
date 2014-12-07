@@ -32,6 +32,8 @@
 #' Copyright 2011 Data Arts Team, Google Creative Lab
 #' Licensed under the Apache License, Version 2.0
 #' \url{http://www.apache.org/licenses/LICENSE-2.0}
+#'
+#' \url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
 #' 
 #' @examples
 #' ## dontrun

@@ -66,7 +66,6 @@ HTMLWidgets.widget(
 
     scene = new THREE.Scene();
     geometry = new THREE.SphereGeometry(200,50,50);
-    x = JSON.parse(x);
     if(!x.lightcolor) x.lightcolor = 0x9999ff;
     if(!x.emissive) x.emissive = 0x0000ff;
     if(!x.bodycolor) x.bodycolor = 0x0000ff;
