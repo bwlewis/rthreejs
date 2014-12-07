@@ -14,6 +14,10 @@ See http://threejs.org for details on three.js.
 
 See http://bwlewis.github.io/rthreejs  for an example.
 
+This project is based on the new htmlwidgets package. See
+https://github.com/ramnathv/htmlwidgets for details and links to several
+amazingly cool visualization widgets for R.
+
 ## NOTE!
 
 These examples generally run best in WebGL-enabled browsers, including at least
