@@ -5,8 +5,8 @@ Three.js widgets for R and shiny. The package includes
 * globe.js A widget that plots data and images on a 3-d globe
 * scatterplot3.js A 3-d scatterplot widget
 
-Both widgets are easy to use and render directly in RStudio and in web
-browsers. The widgets can be invoked directly or in Shiny applications. They
+Both widgets are easy to use and render directly in RStudio or in web
+browsers. The widgets can be invoked directly or from Shiny applications. They
 produce high-quality interactive visualizations with just a few lines of R
 code.
 
