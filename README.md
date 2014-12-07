@@ -1,6 +1,15 @@
 # Three.js and R
 
-Three.js widgets for R and shiny.
+Three.js widgets for R and shiny. The package includes
+
+* globe.js A widget that plots data and images on a 3-d globe
+* scatterplot3.js A 3-d scatterplot widget
+
+Both widgets are easy to use and render directly in RStudio and in web
+browsers. The widgets can be invoked directly or in Shiny applications. They
+produce high-quality interactive visualizations with just a few lines of R
+code.
+
 See http://threejs.org for details on three.js.
 
 See http://bwlewis.github.io/rthreejs  for an example.
@@ -9,18 +18,19 @@ See http://bwlewis.github.io/rthreejs  for an example.
 
 These examples generally run best in WebGL-enabled browsers.  Either Firefox or
 Chrome generally produce the best experience.  We do try to maintain reasonable
-support for non-WebGL equipped browsers.
+support for non-WebGL equipped browsers in the package, but the performance and
+rendering quality will generally be inferior to WebGL visualizations.
 
 ## Examples
 
-The following example illustrats the 3D scatterplot widget.
+The following example illustrates the 3D scatterplot widget.
 ```r
 runApp(system.file("examples/scatterplot",package="threejs"))
 ```
 
 The next example illustrates the globe widget by plotting the relative
 population of some cities using data from the R maps package on a globe. It's
-based on the Javascript WebGL Globe Toolkit (https://github.com/dataarts) by
+based on the JavaScript WebGL Globe Toolkit (https://github.com/dataarts) by
 the Google Creative Lab Data Arts Team.
 ```r
 runApp(system.file("examples/globe",package="threejs"))
@@ -59,7 +69,7 @@ THE SOFTWARE.
 
 ## Globe example
 
-Includes ideas and images from the dat.globe Javascript WebGL Globe Toolkit
+Includes ideas and images from the dat.globe JavaScript WebGL Globe Toolkit
 https://github.com/dataarts/webgl-globe
 
 Copyright 2011 Data Arts Team, Google Creative Lab
