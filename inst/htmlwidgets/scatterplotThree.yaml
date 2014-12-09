@@ -11,7 +11,3 @@ dependencies:
       - Detector.js
       - Projector.js
       - CanvasRenderer.js
-  - name: s3d
-    version: 1
-    src: "htmlwidgets/lib/s3d"
-    script: s3d.js
