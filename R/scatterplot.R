@@ -12,7 +12,8 @@
 #' @param width The container div width.
 #' @param height The container div height.
 #' @param num.ticks A three-element vector with the suggested number of
-#' ticks to display per axis. Set to NULL to not display ticks.
+#' ticks to display per axis. Set to NULL to not display ticks. The number
+#' of ticks may be adjusted by the program.
 #' @param color Either a single hex or named color name, or
 #' a vector of color names of length \code{nrow(x)} (see note below).
 #' @param size The plot point radius, either as a single number or a
@@ -71,7 +72,7 @@ scatterplot3.js <- function(
   i = grep("\\.",names(options))
   if(length(i)>0) names(options)[i] = gsub("\\.","",names(options)[i])
 
-
+  # re-order so z points up as expected.
   x = x[,c(1,3,2)]
 
   # Our s3d.js Javascript code assumes a coordinate system in the unit box.
@@ -87,35 +88,21 @@ scatterplot3.js <- function(
   colnames(x)=c()
   x = toJSON(Reduce(c,apply(x,1,list)))
 
-  # R does a nice job of making reasonable ticks.
+  # R does a nice job of making reasonable ticks. Use R's choices.
   if(!is.null(num.ticks))
   {
     if(length(num.ticks)!=3) stop("num.ticks must have length 3")
 
-    t1 = axisTicks(c(mn[1],mx[1]),FALSE,nint=num.ticks[1])
+    t1 = seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
     p1 = (t1 - mn[1])/(mx[1] - mn[1])
     t2 = axisTicks(c(mn[2],mx[2]),FALSE,nint=num.ticks[2])
     p2 = (t2 - mn[2])/(mx[2] - mn[2])
-    t3 = axisTicks(c(mn[3],mx[3]),FALSE,nint=num.ticks[3])
+    t3 = seq(from=mn[3], to=mx[3], length.out=num.ticks[3])
     p3 = (t3 - mn[3])/(mx[3] - mn[3])
 
     options$xticklab = sprintf("%.2f",t1)
     options$yticklab = sprintf("%.2f",t2)
     options$zticklab = sprintf("%.2f",t3)
-    # handle mismatched x-z ticks when the grid is indicated
-    if(grid && (length(options$xticklab) != length(options$zticklab)))
-    {
-      s = sapply(seq(from=1,to=1.5,length.out=20),function(s)s*(length(axisTicks(c(mn[1],mx[1]),FALSE,nint=6))==length(axisTicks(s*c(mn[3],mx[3]),FALSE,nint=6))))
-      if(max(s)>0)
-      {
-        s = min(s[s>0])
-        mn[3] = s*mn[3]
-        mx[3] = s*mx[3]
-        t3 = axisTicks(c(mn[3],mx[3]),FALSE,nint=num.ticks[3])
-        p3 = (t3 - mn[3])/(mx[3] - mn[3])
-        options$zticklab = sprintf("%.2f",t3)
-      }
-    }
     options$xtick = p1
     options$ytick = p2
     options$ztick = p3
