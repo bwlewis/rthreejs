@@ -1,4 +1,4 @@
-#' globe.js Three.js globe widget
+#' globejs Three.js globe widget
 #'
 #' Three.js widget for mapping points and an image on a globe. The globe can
 #' be rotated and and zoomed.
@@ -26,7 +26,7 @@
 #' @references
 #' The threejs project \url{http://threejs.org}.
 #' The corresponding javascript file in
-#' \code{ system.file("htmlwidgets/globe.js",package="threejs")}.
+#' \code{ system.file("htmlwidgets/globejs",package="threejs")}.
 #'
 #' Includes ideas and images from the dat.globe Javascript WebGL Globe Toolkit
 #' \url{http://dataarts.github.com/dat.globe},
@@ -64,20 +64,20 @@
 #' # function. This is required for non-shiny use (shiny apps can just use
 #' # the file name directly).
 #' picture <- texture(system.file("htmlwidgets/lib/globe/world.jpg",package="threejs"))
-#' globe.js(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
+#' globejs(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 #'
 #' # Plot them on the moon
 #' picture <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
-#' globe.js(img=picture, bodycolor="#555555", emissive="#444444",
+#' globejs(img=picture, bodycolor="#555555", emissive="#444444",
 #'          lightcolor="#555555", lat=cities$lat, long=cities$long, atmosphere=FALSE
 #'          value=value, color=col)
 #'
 #' @importFrom rjson toJSON
 #' @import maps
 #' @export
-globe.js <- function(
+globejs <- function(
   img, lat, long,
-  color="red", value=40,
+  color="#00ffff", value=40,
   bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff",
   atmosphere=TRUE,
   height = NULL,

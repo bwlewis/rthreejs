@@ -1,4 +1,4 @@
-#' scatterplot3.js Three.js 3D scatterplot widget.
+#' scatterplot3js Three.js 3D scatterplot widget.
 #'
 #' A 3D scatterplot widget using d3.js and three.js.
 #'
@@ -43,7 +43,7 @@
 #' # A stand-alone example
 #' set.seed(1)
 #' x <- matrix(rnorm(100*3),ncol=3)
-#' scatterplot3.js(x, color=substr(heat.colors(100), 1, 7))
+#' scatterplot3js(x, color=substr(heat.colors(100), 1, 7))
 #'
 #' # Example 1 from the scatterplot3d package (cf.)
 #'   z <- seq(-10, 10, 0.01)
@@ -58,7 +58,7 @@
 #' @seealso scatterplot3d, rgl
 #' @importFrom rjson toJSON
 #' @export
-scatterplot3.js <- function(
+scatterplot3js <- function(
   x, y, z,
   height = NULL,
   width = NULL,

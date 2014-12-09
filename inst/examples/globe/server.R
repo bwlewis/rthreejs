@@ -34,7 +34,7 @@ shinyServer(function(input, output) {
     )
     atmo <- ifelse(input$map=="earth", TRUE, FALSE)
     args = c(col[[input$map]] , list(lat=v$cities$lat, long=v$cities$long, value=v$value, color=v$color, atmosphere=atmo))
-    do.call(globe.js, args=args)
+    do.call(globejs, args=args)
   })
   
 })
