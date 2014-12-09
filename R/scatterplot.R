@@ -2,8 +2,13 @@
 #'
 #' A 3D scatterplot widget using d3.js and three.js.
 #'
-#' @param x A data matrix with three columns corresponding to the x,y,z
+#' @param x Either a vector of x-coordinate values or a  three-column
+#' data matrix with three columns corresponding to the x,y,z
 #' coordinate axes. Column labels, if present, are used as axis labels.
+#' @param y (Optional) vector of y-coordinate values, not required if
+#' \code{x} is a matrix.
+#' @param z (Optional) vector of z-coordinate values, not required if
+#' \code{x} is a matrix.
 #' @param width The container div width.
 #' @param height The container div height.
 #' @param num.ticks A three-element vector with the suggested number of
@@ -44,7 +49,7 @@
 #' @importFrom rjson toJSON
 #' @export
 scatterplot3.js <- function(
-  x,
+  x, y, z,
   height = NULL,
   width = NULL,
   axis = TRUE,
@@ -55,6 +60,7 @@ scatterplot3.js <- function(
   grid = TRUE)
 {
   # validate input
+  if(!missing(y) && !missing(z)) x = cbind(x=x,y=y,z=z)
   if(ncol(x)!=3) stop("x must be a three column matrix")
   if(is.data.frame(x)) x = as.matrix(x)
   if(!is.matrix(x)) stop("x must be a three column matrix")
@@ -64,6 +70,9 @@ scatterplot3.js <- function(
   # javascript does not like dots in names
   i = grep("\\.",names(options))
   if(length(i)>0) names(options)[i] = gsub("\\.","",names(options)[i])
+
+
+  x = x[,c(1,3,2)]
 
   # Our s3d.js Javascript code assumes a coordinate system in the unit box.
   # Scale x to fit in there.
@@ -82,9 +91,17 @@ scatterplot3.js <- function(
   if(!is.null(num.ticks))
   {
     if(length(num.ticks)!=3) stop("num.ticks must have length 3")
-    options$xticklab = as.character(axisTicks(c(mn[1],mx[1]),FALSE,nint=num.ticks[1]))
-    options$yticklab = as.character(axisTicks(c(mn[2],mx[2]),FALSE,nint=num.ticks[2]))
-    options$zticklab = as.character(axisTicks(c(mn[3],mx[3]),FALSE,nint=num.ticks[3]))
+
+    t1 = axisTicks(c(mn[1],mx[1]),FALSE,nint=num.ticks[1])
+    p1 = (t1 - mn[1])/(mx[1] - mn[1])
+    t2 = axisTicks(c(mn[2],mx[2]),FALSE,nint=num.ticks[2])
+    p2 = (t2 - mn[2])/(mx[2] - mn[2])
+    t3 = axisTicks(c(mn[3],mx[3]),FALSE,nint=num.ticks[3])
+    p3 = (t3 - mn[3])/(mx[3] - mn[3])
+
+    options$xticklab = sprintf("%.2f",t1)
+    options$yticklab = sprintf("%.2f",t2)
+    options$zticklab = sprintf("%.2f",t3)
     # handle mismatched x-z ticks when the grid is indicated
     if(grid && (length(options$xticklab) != length(options$zticklab)))
     {
@@ -94,12 +111,14 @@ scatterplot3.js <- function(
         s = min(s[s>0])
         mn[3] = s*mn[3]
         mx[3] = s*mx[3]
-        options$zticklab = as.character(axisTicks(c(mn[3],mx[3]),FALSE,nint=num.ticks[3]))
+        t3 = axisTicks(c(mn[3],mx[3]),FALSE,nint=num.ticks[3])
+        p3 = (t3 - mn[3])/(mx[3] - mn[3])
+        options$zticklab = sprintf("%.2f",t3)
       }
     }
-    options$xtick = seq(from=0,to=1,length.out=length(options$xticklab))
-    options$ytick = seq(from=0,to=1,length.out=length(options$yticklab))
-    options$ztick = seq(from=0,to=1,length.out=length(options$zticklab))
+    options$xtick = p1
+    options$ytick = p2
+    options$ztick = p3
   }
 
   # create widget

@@ -3,13 +3,20 @@
 \alias{scatterplot3.js}
 \title{scatterplot3.js Three.js 3D scatterplot widget.}
 \usage{
-scatterplot3.js(x, height = NULL, width = NULL, axis = TRUE,
+scatterplot3.js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   num.ticks = c(6, 6, 6), color = "steelblue", stroke = "black",
   size = 1, grid = TRUE)
 }
 \arguments{
-\item{x}{A data matrix with three columns corresponding to the x,y,z
+\item{x}{Either a vector of x-coordinate values or a  three-column
+data matrix with three columns corresponding to the x,y,z
 coordinate axes. Column labels, if present, are used as axis labels.}
+
+\item{y}{(Optional) vector of y-coordinate values, not required if
+\code{x} is a matrix.}
+
+\item{z}{(Optional) vector of z-coordinate values, not required if
+\code{x} is a matrix.}
 
 \item{height}{The container div height.}
 
