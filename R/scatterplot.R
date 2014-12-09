@@ -49,7 +49,7 @@
 #'   z <- seq(-10, 10, 0.01)
 #'   x <- cos(z)
 #'   y <- sin(z)
-#'   scatterplot3d(x,y,z)
+#'   scatterplot3js(x,y,z)
 #'
 #' # A shiny example
 #' library("shiny")

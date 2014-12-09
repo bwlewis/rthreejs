@@ -241,6 +241,7 @@ function scatter(el, x, object)
     }
   };
 
+  var a = 1;
   function render()
   { 
     object.clear();
@@ -250,7 +251,10 @@ function scatter(el, x, object)
   function animate()
   {
     requestAnimationFrame(animate);
-    render();
+    a = a + 1;
+// Reduce CPU load
+    if(a % 3 ==0) render();
+    if(a>100) a = 0;
   }
   animate();
 
