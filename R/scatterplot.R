@@ -18,6 +18,9 @@
 #' a vector of color names of length \code{nrow(x)} (see note below).
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}.
+#' @param flip.y Reverse the direction of the y-axis (the default value of
+#' TRUE produces plots similar to those rendered by the R
+#' \code{scatterplot3d} package).
 #' @param grid Set FALSE to disable display of a grid.
 #' @param stroke A single color stroke value (surrounding each point). Set to
 #' null to omit stroke.
@@ -42,6 +45,12 @@
 #' x <- matrix(rnorm(100*3),ncol=3)
 #' scatterplot3.js(x, color=substr(heat.colors(100), 1, 7))
 #'
+#' # Example 1 from the scatterplot3d package (cf.)
+#'   z <- seq(-10, 10, 0.01)
+#'   x <- cos(z)
+#'   y <- sin(z)
+#'   scatterplot3d(x,y,z)
+#'
 #' # A shiny example
 #' library("shiny")
 #' runApp(system.file("examples/scatterplot",package="threejs"))
@@ -58,6 +67,7 @@ scatterplot3.js <- function(
   color = "steelblue",
   stroke = "black",
   size = 1,
+  flip.y = TRUE,
   grid = TRUE)
 {
   # validate input
@@ -81,6 +91,7 @@ scatterplot3.js <- function(
   mn = apply(x,2,min)
   mx = apply(x,2,max)
   x = (x - rep(mn, each=n))/(rep(mx - mn, each=n))
+  if(flip.y) x[,3] = 1-x[,3]
   
   # convert matrix to a JSON array required by scatterplotThree.js and strip
   # them (required by s3d.js)
@@ -99,6 +110,7 @@ scatterplot3.js <- function(
     p2 = (t2 - mn[2])/(mx[2] - mn[2])
     t3 = seq(from=mn[3], to=mx[3], length.out=num.ticks[3])
     p3 = (t3 - mn[3])/(mx[3] - mn[3])
+    if(flip.y) t3 = t3[length(t3):1]
 
     options$xticklab = sprintf("%.2f",t1)
     options$yticklab = sprintf("%.2f",t2)

@@ -5,7 +5,7 @@
 \usage{
 scatterplot3.js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   num.ticks = c(6, 6, 6), color = "steelblue", stroke = "black",
-  size = 1, grid = TRUE)
+  size = 1, flip.y = TRUE, grid = TRUE)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -23,7 +23,8 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 \item{width}{The container div width.}
 
 \item{num.ticks}{A three-element vector with the suggested number of
-ticks to display per axis. Set to NULL to not display ticks.}
+ticks to display per axis. Set to NULL to not display ticks. The number
+of ticks may be adjusted by the program.}
 
 \item{color}{Either a single hex or named color name, or
 a vector of color names of length \code{nrow(x)} (see note below).}
@@ -33,6 +34,10 @@ null to omit stroke.}
 
 \item{size}{The plot point radius, either as a single number or a
 vector of sizes of length \code{nrow(x)}.}
+
+\item{flip.y}{Reverse the direction of the y-axis (the default value of
+TRUE produces plots similar to those rendered by the R
+\code{scatterplot3d} package).}
 
 \item{grid}{Set FALSE to disable display of a grid.}
 }
@@ -55,6 +60,12 @@ illustrated in the example below.
 set.seed(1)
 x <- matrix(rnorm(100*3),ncol=3)
 scatterplot3.js(x, color=substr(heat.colors(100), 1, 7))
+
+# Example 1 from the scatterplot3d package (cf.)
+  z <- seq(-10, 10, 0.01)
+  x <- cos(z)
+  y <- sin(z)
+  scatterplot3d(x,y,z)
 
 # A shiny example
 library("shiny")
