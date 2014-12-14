@@ -31,7 +31,7 @@ of ticks may be adjusted by the program.}
 a vector of color names of length \code{nrow(x)} (see note below).}
 
 \item{stroke}{A single color stroke value (surrounding each point). Set to
-null to omit stroke. (Only available in the CanvasRenderer.)}
+null to omit stroke (only available in the CanvasRenderer).}
 
 \item{size}{The plot point radius, either as a single number or a
 vector of sizes of length \code{nrow(x)}. Note that the Canvas renderer
@@ -48,8 +48,8 @@ TRUE produces plots similar to those rendered by the R
 'auto', 'canvas', or 'webgl'.}
 
 \item{pch}{An optional data texture image prepared by the \code{texture}
-  function used by the WebGL renderer to draw the points--only available
-  in the WebGL renderer.}
+  function used by the WebGL renderer to draw the points (only available
+  in the WebGL renderer).}
 }
 \description{
 A 3D scatterplot widget using d3.js and three.js.

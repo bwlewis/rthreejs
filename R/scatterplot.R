@@ -25,12 +25,12 @@
 #' \code{scatterplot3d} package).
 #' @param grid Set FALSE to disable display of a grid.
 #' @param stroke A single color stroke value (surrounding each point). Set to
-#' null to omit stroke. (Only available in the CanvasRenderer.)
+#' null to omit stroke (only available in the CanvasRenderer).
 #' @param renderer Select from available plot rendering techniques of
 #' 'auto', 'canvas', or 'webgl'.
 #' @param pch An optional data texture image prepared by the \code{texture}
-#'   function used by the WebGL renderer to draw the points--only available
-#'   in the WebGL renderer.
+#'   function used by the WebGL renderer to draw the points (only available
+#'   in the WebGL renderer).
 #'
 #' @note
 #' Use the \code{renderer} option to manually select from the available
