@@ -29,6 +29,7 @@ visualizations.
 
 The following example illustrates the 3D scatterplot widget.
 ```r
+library("shiny")
 runApp(system.file("examples/scatterplot",package="threejs"))
 ```
 
