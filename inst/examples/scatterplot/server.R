@@ -17,6 +17,7 @@ shinyServer(function(input, output) {
                     num.ticks=num.ticks,
                     color=color,
                     size=sizes,
+                    renderer=input$renderer,
                     grid=input$grid)
   })
 })

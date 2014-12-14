@@ -10,17 +10,21 @@ HTMLWidgets.widget(
 
   initialize: function(el, width, height)
   {
-    var r = renderer(el, width, height);
+    var r = {width:width, height:height};
     return r;
   },
 
-  resize: function(el, width, height, renderer)
+  resize: function(el, width, height, obj)
   {
     renderer.setSize(parseInt(width), parseInt(height));
   },
 
-  renderValue: function(el, x, renderer)
+  renderValue: function(el, x, obj)
   {
+// Note that renderer is a global variable. It's accessed by resize above.
+// We need to defer creating the renderer because our choice of rendering
+// method is defined in x.
+    renderer = render_init(el, obj.width, obj.height, x.options.renderer);
 // parse the JSON string from R
     x.data = JSON.parse(x.data);
     scatter(el, x, renderer);
@@ -28,10 +32,10 @@ HTMLWidgets.widget(
 })
 
 
-function renderer(el, width, height)
+function render_init(el, width, height, choice)
 {
   var r;
-  if(Detector.webgl)
+  if(Detector.webgl && (choice=="auto" || choice=="webgl"))
   {
     r = new THREE.WebGLRenderer({antialias: true});
     GL=true;
@@ -42,6 +46,7 @@ function renderer(el, width, height)
   }
   r.setSize(parseInt(width), parseInt(height));
   r.setClearColor("white");
+  d3.select(el).node().innerHTML="";
   d3.select(el).node().appendChild(r.domElement);
   return r;
 }
@@ -101,7 +106,7 @@ function scatter(el, x, object)
     var geometry = new THREE.Geometry();
     var colors = [];
     var col = new THREE.Color("steelblue");
-    var scale = 0.2;
+    var scale = 0.1;
     if(x.options.size && !Array.isArray(x.options.size)) scale = 0.2 * x.options.size;
     for ( var i = 0; i < x.data.length; i++ )
     {
@@ -287,9 +292,12 @@ function scatter(el, x, object)
   function animate()
   {
     requestAnimationFrame(animate);
-// Reduce CPU load
-    a = (a + 1) % 3;
-    if(a==0) render();
+    if(!GL)
+    {
+      // Reduce Canvas CPU load (adds a bit of choppiness though)
+      a = (a + 1) % 3;
+      if(a==0) render();
+    } else render();
   }
   animate();
 }

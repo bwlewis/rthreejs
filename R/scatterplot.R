@@ -26,12 +26,16 @@
 #' @param grid Set FALSE to disable display of a grid.
 #' @param stroke A single color stroke value (surrounding each point). Set to
 #' null to omit stroke. (Only available in the CanvasRenderer.)
+#' @param renderer Select from available plot rendering techniques of
+#' 'auto', 'canvas', or 'webgl'.
 #' @param pch An optional data texture image prepared by the \code{texture}
 #'   function used by the WebGL renderer to draw the points--only available
 #'   in the WebGL renderer.
 #'
 #' @note
-#' The plot function chooses WebGL or Canvas rendering automatically based
+#' Use the \code{renderer} option to manually select from the available
+#' rendering options. The default value of \code{'auto'} chooses WebGL
+#' or Canvas rendering automatically based
 #' on the available output device. The two renderers are slightly different
 #' and have different available options (see above).
 #'
@@ -78,6 +82,7 @@ scatterplot3js <- function(
   size = 1,
   flip.y = TRUE,
   grid = TRUE,
+  renderer = c("auto","canvas","webgl"),
   pch)
 {
   # validate input
@@ -86,6 +91,7 @@ scatterplot3js <- function(
   if(is.data.frame(x)) x = as.matrix(x)
   if(!is.matrix(x)) stop("x must be a three column matrix")
   if(missing(pch)) pch = texture(system.file("images/disc.png",package="threejs"))
+  renderer = match.arg(renderer)
 
   # create options
   options = as.list(environment())[-1]
