@@ -16,7 +16,10 @@ HTMLWidgets.widget(
 
   resize: function(el, width, height, obj)
   {
+    renderer.clear();
     renderer.setSize(parseInt(width), parseInt(height));
+    camera.lookAt(scene.position);
+    renderer.render(scene, camera);
   },
 
   renderValue: function(el, x, obj)
@@ -72,12 +75,12 @@ function render_init(el, width, height, choice)
 
 function scatter(el, x, object)
 {
-  var camera = new THREE.PerspectiveCamera(38, object.domElement.width/object.domElement.height, 1, 10000);
+  camera = new THREE.PerspectiveCamera(38, object.domElement.width/object.domElement.height, 1, 10000);
   camera.position.z = 2;
   camera.position.x = 2.55;
   camera.position.y = 1.25;
 
-  var scene = new THREE.Scene();
+  scene = new THREE.Scene();
   var group = new THREE.Object3D();
   scene.add( group );
 
@@ -264,6 +267,7 @@ function scatter(el, x, object)
     camera.fov -= event.wheelDeltaY * 0.02;
     camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
     camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  object.domElement.width/object.domElement.height, camera.near, camera.far);
+    render();
   }
   el.onmousewheel = function(ev) {ev.preventDefault();};
   el.addEventListener('DOMMouseScroll', mousewheel, true);
@@ -279,25 +283,17 @@ function scatter(el, x, object)
       camera.position.y += 0.05*dy;
       sx += dx;
       sy += dy;
+      render();
     }
   };
 
-  var a = 1;
   function render()
   { 
     object.clear();
     camera.lookAt(scene.position);
     object.render(scene, camera);
   }
-  function animate()
-  {
-    requestAnimationFrame(animate);
-    if(!GL)
-    {
-      // Reduce Canvas CPU load (adds a bit of choppiness though)
-      a = (a + 1) % 3;
-      if(a==0) render();
-    } else render();
-  }
-  animate();
+
+  render();
+// See the note about rendering in the globe.js widget.
 }

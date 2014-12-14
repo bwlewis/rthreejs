@@ -24,8 +24,11 @@ HTMLWidgets.widget(
 
   resize: function(el, width, height, renderer)
   {
+    renderer.clear();
     renderer.setSize( width, height );
     camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  renderer.domElement.width/renderer.domElement.height, camera.near, camera.far);
+    camera.lookAt(scene.position);
+    renderer.render( scene, camera );
   },
 
 // We expect x to contain the following fields:
@@ -42,7 +45,7 @@ HTMLWidgets.widget(
 // x.lightcolor: A color value for the ambient light in the scene
   renderValue: function(el, x, renderer)
   {
-    var img, scene,  geometry, tex, earth;
+    var img, geometry, tex, earth;
     var down = false;
     var sx = 0, sy = 0;
 
@@ -168,6 +171,7 @@ HTMLWidgets.widget(
       camera.fov -= event.wheelDeltaY * 0.02;
       camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
       camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  renderer.domElement.width/renderer.domElement.height, camera.near, camera.far);
+      render();
     }
     el.onmousewheel = function(ev) {ev.preventDefault();};
     el.addEventListener('DOMMouseScroll', mousewheel, true);
@@ -185,18 +189,26 @@ HTMLWidgets.widget(
         points.rotation.x += 0.01*dy;
         sx += dx;
         sy += dy;
+        render();
       }
     };
 
-    animate();
+    render();
+//  We disabled the usual Three.js animation technique in favor of
+//  simply rendering after mouse updates. This results in a bit of
+//  choppiness for Canvas renderings, but is compatible with more
+//  browsers and with older versions of RStudio because it doesn't
+//  need requestAnimationFrame.
 
-    function animate() {
-      renderer.clear();
-      requestAnimationFrame( animate );
-      render();
-    }
+//    animate();
+//    function animate() {
+//      renderer.clear();
+//      requestAnimationFrame( animate );
+//      render();
+//    }
 
     function render() {
+      renderer.clear();
       camera.lookAt(scene.position);
       renderer.render( scene, camera );
     }
