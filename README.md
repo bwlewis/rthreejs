@@ -2,8 +2,8 @@
 
 Three.js widgets for R and shiny. The package includes
 
-* globejs A widget that plots data and images on a 3-d globe
-* scatterplot3js A 3-d scatterplot widget
+* globejs:  a widget that plots data and images on a 3-d globe
+* scatterplot3js:  a 3-d scatterplot widget.
 
 Both widgets are easy to use and render directly in RStudio or in web browsers.
 The widgets can be invoked directly or from Shiny applications. They produce
@@ -19,9 +19,9 @@ amazingly cool visualization widgets for R.
 
 ## NOTE!
 
-These examples generally run best in WebGL-enabled browsers, including at least
-Chrome, Firefox, and recent versions of Internet Explorer.  We do try to
-maintain basic support for non-WebGL equipped browsers in the package, but the
+These examples generally run best in WebGL-enabled viewers, including at least
+Chrome, Firefox, and recent versions of Internet Explorer web browsers.  We do
+try to maintain basic support for non-WebGL equipped browsers, but the
 performance and rendering quality will generally be inferior to WebGL
 visualizations.
 
@@ -80,4 +80,3 @@ https://github.com/dataarts/webgl-globe
 Copyright 2011 Data Arts Team, Google Creative Lab
 Licensed under the Apache License, Version 2.0
 http://www.apache.org/licenses/LICENSE-2.0.
-

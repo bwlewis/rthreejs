@@ -19,5 +19,4 @@ shinyServer(function(input, output) {
                     size=sizes,
                     grid=input$grid)
   })
-  
 })

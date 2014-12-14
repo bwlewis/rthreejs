@@ -17,15 +17,24 @@
 #' @param color Either a single hex or named color name, or
 #' a vector of color names of length \code{nrow(x)} (see note below).
 #' @param size The plot point radius, either as a single number or a
-#' vector of sizes of length \code{nrow(x)}.
+#' vector of sizes of length \code{nrow(x)}. Note that the Canvas renderer
+#' supports a vector of sizes but the WebGL renderer only supports one
+#' overall size right now.
 #' @param flip.y Reverse the direction of the y-axis (the default value of
 #' TRUE produces plots similar to those rendered by the R
 #' \code{scatterplot3d} package).
 #' @param grid Set FALSE to disable display of a grid.
 #' @param stroke A single color stroke value (surrounding each point). Set to
-#' null to omit stroke.
+#' null to omit stroke. (Only available in the CanvasRenderer.)
+#' @param pch An optional data texture image prepared by the \code{texture}
+#'   function used by the WebGL renderer to draw the points--only available
+#'   in the WebGL renderer.
 #'
 #' @note
+#' The plot function chooses WebGL or Canvas rendering automatically based
+#' on the available output device. The two renderers are slightly different
+#' and have different available options (see above).
+#'
 #' The three.js color specifications used in this function accept RGB colors
 #' specified by color names or hex color value like \code{"#ff22aa"}. Most
 #' of R's color palette functions return RGBA hex color value strings, and
@@ -68,13 +77,15 @@ scatterplot3js <- function(
   stroke = "black",
   size = 1,
   flip.y = TRUE,
-  grid = TRUE)
+  grid = TRUE,
+  pch)
 {
   # validate input
   if(!missing(y) && !missing(z)) x = cbind(x=x,y=y,z=z)
   if(ncol(x)!=3) stop("x must be a three column matrix")
   if(is.data.frame(x)) x = as.matrix(x)
   if(!is.matrix(x)) stop("x must be a three column matrix")
+  if(missing(pch)) pch = texture(system.file("images/disc.png",package="threejs"))
 
   # create options
   options = as.list(environment())[-1]
@@ -123,7 +134,7 @@ scatterplot3js <- function(
   # create widget
   htmlwidgets::createWidget(
       name = "scatterplotThree",
-      x = list(data=x, options=options),
+      x = list(data=x, options=options, pch=pch),
                width = width,
                height = height,
                htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),

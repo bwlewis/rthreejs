@@ -1,4 +1,4 @@
-/* s3d.js
+/* scatterplotThree.js
  * A set of example Javascript functions that support a threejs-based 3d
  * scatterplot in R, geared for use with the htmlwidgets and shiny packages.
  */
@@ -16,6 +16,7 @@ HTMLWidgets.widget(
 
   resize: function(el, width, height, renderer)
   {
+    renderer.setSize(parseInt(width), parseInt(height));
   },
 
   renderValue: function(el, x, renderer)
@@ -30,18 +31,15 @@ HTMLWidgets.widget(
 function renderer(el, width, height)
 {
   var r;
-// I prefer the way the canvas program looks, so we always use the
-// canvas renderer here. Change this to use WebGL (but then you'll also
-// want to change the way the points are drawn below).
-//  if(Detector.webgl)
-//  {
-//    r = new THREE.WebGLRenderer({antialias: true});
-//    GL=true;
-//  } else
-//  {
+  if(Detector.webgl)
+  {
+    r = new THREE.WebGLRenderer({antialias: true});
+    GL=true;
+  } else
+  {
     r = new THREE.CanvasRenderer();
     GL=false;
-//  }
+  }
   r.setSize(parseInt(width), parseInt(height));
   r.setClearColor("white");
   d3.select(el).node().appendChild(r.domElement);
@@ -63,19 +61,23 @@ function renderer(el, width, height)
 //   zticklab:["-1","0","1"]
 //   NOTE: ticks must be in [0,1].
 // x.data JSON 3-column data matrix. Data are assumed to be already
-// scaled in a unit box (that is, all coordinates are assumed to lie in the
-// interval [0,1]).
+//   scaled in a unit box (that is, all coordinates are assumed to lie in the
+//   interval [0,1]).
+// x.pch.img is an encoded image dataURI used by the WebGL PointCloud renderer only
+
 function scatter(el, x, object)
 {
-  var camera = new THREE.PerspectiveCamera(45, object.domElement.width/object.domElement.height, 1, 100000);
+  var camera = new THREE.PerspectiveCamera(39, object.domElement.width/object.domElement.height, 1, 10000);
   camera.position.z = 2;
-  camera.position.x = 2.75;
+  camera.position.x = 2.55;
   camera.position.y = 1.25;
 
   var scene = new THREE.Scene();
   var group = new THREE.Object3D();
   scene.add( group );
-// program for drawing a point
+
+
+// program for drawing a Canvas point
   var program = function ( context )
   {
     context.beginPath();
@@ -89,28 +91,62 @@ function scatter(el, x, object)
     context.fill();
   };
 // add the points
-  var col = new THREE.Color("steelblue");
-  var scale = 0.05;
-  for ( var i = 0; i < x.data.length; i++ )
+  if(GL)
   {
-    if(x.options.color)
+    var img = document.createElement("img");
+    img.src = x.pch.img;
+    tex = new THREE.Texture();
+    tex.image = img;
+    tex.needsUpdate = true;
+    var geometry = new THREE.Geometry();
+    var colors = [];
+    var col = new THREE.Color("steelblue");
+    var scale = 0.2;
+    if(x.options.size && !Array.isArray(x.options.size)) scale = 0.2 * x.options.size;
+    for ( var i = 0; i < x.data.length; i++ )
     {
-      if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
-      else col = new THREE.Color(x.options.color);
+      if(x.options.color)
+      {
+        if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
+        else col = new THREE.Color(x.options.color);
+      }
+      colors[i] = col;
+      var vertex = new THREE.Vector3();
+      vertex.x = x.data[i][0];
+      vertex.y = x.data[i][1];
+      vertex.z = x.data[i][2];
+      geometry.vertices.push( vertex );
     }
-    if(x.options.size)
+    geometry.colors = colors;
+    var pcmaterial = new THREE.PointCloudMaterial( {map:tex, size: scale, vertexColors: THREE.VertexColors, transparent: true,  opacity: 0.9} );
+    var particles = new THREE.PointCloud( geometry, pcmaterial );
+    particles.sortParticles = true;
+    group.add(particles);
+  }
+  else {
+    var col = new THREE.Color("steelblue");
+    var scale = 0.05;
+    for ( var i = 0; i < x.data.length; i++ )
     {
-      if(Array.isArray(x.options.size)) scale = 0.03*x.options.size[i];
-      else scale = 0.03*x.options.size;
+      if(x.options.color)
+      {
+        if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
+        else col = new THREE.Color(x.options.color);
+      }
+      if(x.options.size)
+      {
+        if(Array.isArray(x.options.size)) scale = 0.03*x.options.size[i];
+        else scale = 0.03*x.options.size;
+      }
+      var material = new THREE.SpriteCanvasMaterial( {
+          color: col, program: program , opacity:0.9} );
+      var particle = new THREE.Sprite( material );
+      particle.position.x = x.data[i][0];
+      particle.position.y = x.data[i][1];
+      particle.position.z = x.data[i][2];
+      particle.scale.x = particle.scale.y = scale;
+      group.add( particle );
     }
-    var material = new THREE.SpriteCanvasMaterial( {
-        color: col, program: program , opacity:0.9} );
-    var particle = new THREE.Sprite( material );
-    particle.position.x = x.data[i][0];
-    particle.position.y = x.data[i][1];
-    particle.position.z = x.data[i][2];
-    particle.scale.x = particle.scale.y = scale;
-    group.add( particle );
   }
 
 // helper function to add text to object
@@ -256,5 +292,4 @@ function scatter(el, x, object)
     if(a==0) render();
   }
   animate();
-
-};
+}
