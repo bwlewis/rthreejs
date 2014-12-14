@@ -1,5 +1,4 @@
 library("shiny")
-library("jpeg")
 library("threejs")
 library("maps")
 data(world.cities, package="maps")
