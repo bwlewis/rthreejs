@@ -3,6 +3,19 @@ library("threejs")
 library("maps")
 data(world.cities, package="maps")
 
+# We had some rendering problems serving these images directly, it
+# seems to work more reliably if we send them as dataURIs.
+earth   <- texture(system.file("htmlwidgets/lib/globe/world.jpg",package="threejs"))
+moon    <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
+mars    <- texture(system.file("htmlwidgets/lib/globe/mars.jpg",package="threejs"))
+jupiter <- texture(system.file("htmlwidgets/lib/globe/jupiter.jpg",package="threejs"))
+col <- list(
+    earth=list(img=earth,bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff"),
+    moon=list(img=moon,bodycolor="#555555", emissive="#444444", lightcolor="#555555"),
+    mars=list(img=mars,bodycolor="#aaaaaa", emissive="#000000", lightcolor="#aaaaaa"),
+    jupiter=list(img=jupiter,bodycolor="#222222", emissive="#000000", lightcolor="#aaaaaa")
+)
+
 shinyServer(function(input, output) {
 
   h <- 100 # height of the bar
@@ -25,12 +38,6 @@ shinyServer(function(input, output) {
   output$globe <- renderGlobe({
     v <- values()
     p <- input$map
-    col <- list(
-      earth=list(img="globe-1/world.jpg",bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff"),
-      moon=list(img="globe-1/moon.jpg",bodycolor="#555555", emissive="#444444", lightcolor="#555555"),
-      mars=list(img="globe-1/mars.jpg",bodycolor="#aaaaaa", emissive="#000000", lightcolor="#aaaaaa"),
-      jupiter=list(img="globe-1/jupiter.jpg",bodycolor="#222222", emissive="#000000", lightcolor="#aaaaaa")
-    )
     atmo <- ifelse(input$map=="earth", TRUE, FALSE)
     args = c(col[[input$map]] , list(lat=v$cities$lat, long=v$cities$long, value=v$value, color=v$color, atmosphere=atmo))
     do.call(globejs, args=args)

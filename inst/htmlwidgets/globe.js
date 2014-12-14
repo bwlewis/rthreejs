@@ -193,7 +193,6 @@ HTMLWidgets.widget(
       }
     };
 
-    render();
 //  We disabled the usual Three.js animation technique in favor of
 //  simply rendering after mouse updates. This results in a bit of
 //  choppiness for Canvas renderings, but is compatible with more
@@ -212,7 +211,6 @@ HTMLWidgets.widget(
       camera.lookAt(scene.position);
       renderer.render( scene, camera );
     }
-
+    render();
   }
-
 })
