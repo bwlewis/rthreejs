@@ -72,7 +72,7 @@ function render_init(el, width, height, choice)
 
 function scatter(el, x, object)
 {
-  var camera = new THREE.PerspectiveCamera(39, object.domElement.width/object.domElement.height, 1, 10000);
+  var camera = new THREE.PerspectiveCamera(38, object.domElement.width/object.domElement.height, 1, 10000);
   camera.position.z = 2;
   camera.position.x = 2.55;
   camera.position.y = 1.25;
@@ -107,7 +107,7 @@ function scatter(el, x, object)
     var colors = [];
     var col = new THREE.Color("steelblue");
     var scale = 0.1;
-    if(x.options.size && !Array.isArray(x.options.size)) scale = 0.2 * x.options.size;
+    if(x.options.size && !Array.isArray(x.options.size)) scale = 0.1 * x.options.size;
     for ( var i = 0; i < x.data.length; i++ )
     {
       if(x.options.color)
