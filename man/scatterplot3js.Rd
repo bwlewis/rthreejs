@@ -27,16 +27,16 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 ticks to display per axis. Set to NULL to not display ticks. The number
 of ticks may be adjusted by the program.}
 
-\item{color}{Either a single hex or named color name, or
-a vector of color names of length \code{nrow(x)} (see note below).}
+\item{color}{Either a single hex or named color name, or a vector of
+hex or named color names as long as the number of data points to plot.}
 
 \item{stroke}{A single color stroke value (surrounding each point). Set to
 null to omit stroke (only available in the CanvasRenderer).}
 
 \item{size}{The plot point radius, either as a single number or a
-vector of sizes of length \code{nrow(x)}. The Canvas renderer
-supports a vector of sizes but the WebGL renderer only supports one
-overall size right now.}
+vector of sizes of length \code{nrow(x)}. A vector of sizes is only
+supported by the \code{canvas} renderer. The \code{webgl} renderers accept
+a single point size value.}
 
 \item{flip.y}{Reverse the direction of the y-axis (the default value of
 TRUE produces plots similar to those rendered by the R
@@ -67,28 +67,19 @@ It is automatically selected if \code{renderer} is not explicitly
 specified and the number of points is greater than 10,000. The
 \code{webgl-buffered} renderer can handle up to a million points
 or so with reasonable performance on typical desktop graphics cards.
-
-The three.js color specifications used in this function accept RGB colors
-specified by color names or hex color value like \code{"#ff22aa"}. Most
-of R's color palette functions return RGBA hex color value strings, and
-the extra alpha specification is not compatible with the three.js color
-specification used here (by the \code{THREE.Color} javascript function).
-When using R color palette hex values, it is necessary to truncate the
-last two alpha characters, for example with the \code{substr} function as
-illustrated in the example below.
 }
 \examples{
 ## dontrun
 # A stand-alone example
 set.seed(1)
 x <- matrix(rnorm(100*3),ncol=3)
-scatterplot3js(x, color=substr(heat.colors(100), 1, 7))
+scatterplot3js(x, color=heat.colors(100))
 
 # Example 1 from the scatterplot3d package (cf.)
-  z <- seq(-10, 10, 0.01)
-  x <- cos(z)
-  y <- sin(z)
-  scatterplot3js(x,y,z)
+z <- seq(-10, 10, 0.01)
+x <- cos(z)
+y <- sin(z)
+scatterplot3js(x,y,z, rainbow(length(z)))
 
 # A shiny example
 library("shiny")

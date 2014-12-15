@@ -14,12 +14,12 @@
 #' @param num.ticks A three-element vector with the suggested number of
 #' ticks to display per axis. Set to NULL to not display ticks. The number
 #' of ticks may be adjusted by the program.
-#' @param color Either a single hex or named color name, or
-#' a vector of color names of length \code{nrow(x)} (see note below).
+#' @param color Either a single hex or named color name, or a vector of
+#' hex or named color names as long as the number of data points to plot.
 #' @param size The plot point radius, either as a single number or a
-#' vector of sizes of length \code{nrow(x)}. The Canvas renderer
-#' supports a vector of sizes but the WebGL renderer only supports one
-#' overall size right now.
+#' vector of sizes of length \code{nrow(x)}. A vector of sizes is only
+#' supported by the \code{canvas} renderer. The \code{webgl} renderers accept
+#' a single point size value.
 #' @param flip.y Reverse the direction of the y-axis (the default value of
 #' TRUE produces plots similar to those rendered by the R
 #' \code{scatterplot3d} package).
@@ -46,15 +46,6 @@
 #' \code{webgl-buffered} renderer can handle up to a million points
 #' or so with reasonable performance on typical desktop graphics cards.
 #'
-#' The three.js color specifications used in this function accept RGB colors
-#' specified by color names or hex color value like \code{"#ff22aa"}. Most
-#' of R's color palette functions return RGBA hex color value strings, and
-#' the extra alpha specification is not compatible with the three.js color
-#' specification used here (by the \code{THREE.Color} javascript function).
-#' When using R color palette hex values, it is necessary to truncate the
-#' last two alpha characters, for example with the \code{substr} function as
-#' illustrated in the example below.
-#'
 #' @references
 #' The three.js project \url{http://threejs.org}.
 #' 
@@ -63,13 +54,13 @@
 #' # A stand-alone example
 #' set.seed(1)
 #' x <- matrix(rnorm(100*3),ncol=3)
-#' scatterplot3js(x, color=substr(heat.colors(100), 1, 7))
+#' scatterplot3js(x, color=heat.colors(100))
 #'
 #' # Example 1 from the scatterplot3d package (cf.)
-#'   z <- seq(-10, 10, 0.01)
-#'   x <- cos(z)
-#'   y <- sin(z)
-#'   scatterplot3js(x,y,z)
+#' z <- seq(-10, 10, 0.01)
+#' x <- cos(z)
+#' y <- sin(z)
+#' scatterplot3js(x,y,z, rainbow(length(z)))
 #'
 #' # A shiny example
 #' library("shiny")
@@ -104,6 +95,17 @@ scatterplot3js <- function(
   } else
   {
     renderer = match.arg(renderer)
+  } 
+
+  # Strip alpha channel from colors
+  i = grep("^#",color)
+  if(length(i)>0)
+  {
+    j = nchar(color[i])>7
+    if(any(j))
+    { 
+      color[i][j] = substr(color[i][j],1,7)
+    }
   }
 
   # create options
@@ -129,7 +131,7 @@ scatterplot3js <- function(
   colnames(x)=c()
   x = toJSON(t(signif(x,4)))
 
-  # R does a nice job of making reasonable ticks. Use R's choices.
+  # Ticks
   if(!is.null(num.ticks))
   {
     if(length(num.ticks)!=3) stop("num.ticks must have length 3")
