@@ -6,7 +6,7 @@
 scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   num.ticks = c(6, 6, 6), color = "steelblue", stroke = "black",
   size = 1, flip.y = TRUE, grid = TRUE, renderer = c("auto", "canvas",
-  "webgl"), pch)
+  "webgl", "webgl-buffered"), pch)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -34,7 +34,7 @@ a vector of color names of length \code{nrow(x)} (see note below).}
 null to omit stroke (only available in the CanvasRenderer).}
 
 \item{size}{The plot point radius, either as a single number or a
-vector of sizes of length \code{nrow(x)}. Note that the Canvas renderer
+vector of sizes of length \code{nrow(x)}. The Canvas renderer
 supports a vector of sizes but the WebGL renderer only supports one
 overall size right now.}
 
@@ -45,21 +45,28 @@ TRUE produces plots similar to those rendered by the R
 \item{grid}{Set FALSE to disable display of a grid.}
 
 \item{renderer}{Select from available plot rendering techniques of
-'auto', 'canvas', or 'webgl'.}
+'auto', 'canvas', 'webgl', or 'webgl-buffered'.}
 
 \item{pch}{An optional data texture image prepared by the \code{texture}
   function used by the WebGL renderer to draw the points (only available
   in the WebGL renderer).}
 }
 \description{
-A 3D scatterplot widget using d3.js and three.js.
+A 3D scatterplot widget using three.js.
 }
 \note{
 Use the \code{renderer} option to manually select from the available
-rendering options. The default value of \code{'auto'} chooses WebGL
-or Canvas rendering automatically based
-on the available output device. The two renderers are slightly different
+rendering options.
+The \code{canvas} renderer is the fallback rendering option when \code{webgl}
+is not available. Select \code{auto} to automatically choose between
+the two. The two renderers are slightly different
 and have different available options (see above).
+The \code{webgl-buffered} renderer is a variation of the \code{webgl}
+renderer that uses a buffered geometry for large numbers of points.
+It is automatically selected if \code{renderer} is not explicitly
+specified and the number of points is greater than 1,000. The
+\code{webgl-buffered} renderer can easily handle up to a million points
+or so.
 
 The three.js color specifications used in this function accept RGB colors
 specified by color names or hex color value like \code{"#ff22aa"}. Most

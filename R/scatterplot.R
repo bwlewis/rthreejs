@@ -1,6 +1,6 @@
 #' scatterplot3js Three.js 3D scatterplot widget.
 #'
-#' A 3D scatterplot widget using d3.js and three.js.
+#' A 3D scatterplot widget using three.js.
 #'
 #' @param x Either a vector of x-coordinate values or a  three-column
 #' data matrix with three columns corresponding to the x,y,z
@@ -34,13 +34,17 @@
 #'
 #' @note
 #' Use the \code{renderer} option to manually select from the available
-#' rendering options. The default value of \code{'auto'} chooses WebGL
-#' or Canvas rendering automatically based
-#' on the available output device. The two renderers are slightly different
+#' rendering options.
+#' The \code{canvas} renderer is the fallback rendering option when \code{webgl}
+#' is not available. Select \code{auto} to automatically choose between
+#' the two. The two renderers are slightly different
 #' and have different available options (see above).
 #' The \code{webgl-buffered} renderer is a variation of the \code{webgl}
-#' renderer that uses a buffered geometry for large numbers of points. It
-#' is automatically selected if the number of points is above 10,000.
+#' renderer that uses a buffered geometry for large numbers of points.
+#' It is automatically selected if \code{renderer} is not explicitly
+#' specified and the number of points is greater than 1,000. The
+#' \code{webgl-buffered} renderer can easily handle up to a million points
+#' or so.
 #'
 #' The three.js color specifications used in this function accept RGB colors
 #' specified by color names or hex color value like \code{"#ff22aa"}. Most
@@ -94,7 +98,13 @@ scatterplot3js <- function(
   if(is.data.frame(x)) x = as.matrix(x)
   if(!is.matrix(x)) stop("x must be a three column matrix")
   if(missing(pch)) pch = texture(system.file("images/disc.png",package="threejs"))
-  renderer = match.arg(renderer)
+  if(missing(renderer) && nrow(x)>1000)
+  {
+    renderer = "webgl-buffered"
+  } else
+  {
+    renderer = match.arg(renderer)
+  }
 
   # create options
   options = as.list(environment())[-1]
@@ -117,15 +127,7 @@ scatterplot3js <- function(
   # them (required by s3d.js)
   if(length(colnames(x))==3) options$labels = colnames(x)
   colnames(x)=c()
-  if(renderer=="webgl-buffered")
-  {
-    x = toJSON(t(signif(x,4)))
-  } else
-  {
-#  x = toJSON(Reduce(c,apply(x,1,list))) # This is much slower than:
-    x = as.list(data.frame(t(signif(x,4)))); names(x)=c()
-    x = toJSON(x)
-  }
+  x = toJSON(t(signif(x,4)))
 
   # R does a nice job of making reasonable ticks. Use R's choices.
   if(!is.null(num.ticks))
