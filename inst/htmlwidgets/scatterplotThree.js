@@ -302,9 +302,10 @@ function scatter(el, x, object)
   el.onmouseup = function(){ down = false; };
   function mousewheel(event)
   {
-    var fovMAX = 160;
-    var fovMIN = 1;
-    camera.fov -= event.wheelDeltaY * 0.02;
+    var fovMAX = 100;
+    var fovMIN = 10;
+    if(GL) camera.fov -= event.wheelDeltaY * 0.02;
+    else camera.fov -= event.wheelDeltaY * 0.0075;
     camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
     camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  object.domElement.width/object.domElement.height, camera.near, camera.far);
     render();
