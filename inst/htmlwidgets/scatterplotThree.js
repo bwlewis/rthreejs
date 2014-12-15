@@ -16,6 +16,8 @@ HTMLWidgets.widget(
 
   resize: function(el, width, height, obj)
   {
+// We rely on three global variables here:
+// renderer, scene, and camera.
     renderer.clear();
     renderer.setSize(parseInt(width), parseInt(height));
     camera.lookAt(scene.position);
@@ -38,6 +40,7 @@ HTMLWidgets.widget(
 function render_init(el, width, height, choice)
 {
   var r;
+  if(choice=="webgl-buffered") choice = "webgl";
   if(Detector.webgl && (choice=="auto" || choice=="webgl"))
   {
     r = new THREE.WebGLRenderer({antialias: true});
@@ -57,9 +60,10 @@ function render_init(el, width, height, choice)
 // x.options list of options including:
 // x.options.labels  3 element list of axis labels
 // x.options.grid true/false draw xz grid (requires xtick.length==ztick.length)
-// x.options.stroke (optional) stroke color
+// x.options.stroke (optional) stroke color (canvas renderer only)
 // x.options.color (optional) either a single color or a vector of colors
 // x.options.size (optional) either a single size or a vector of sizes
+// x.options.renderer, one of "auto" "canvas" "webgl" or "webgl-buffered"
 // x.options 
 //   xtick:[0,0.5,1]
 //   xticklab:["1","2","3"]
@@ -101,35 +105,64 @@ function scatter(el, x, object)
 // add the points
   if(GL)
   {
-    var img = document.createElement("img");
-    img.src = x.pch.img;
-    tex = new THREE.Texture();
-    tex.image = img;
-    tex.needsUpdate = true;
-    var geometry = new THREE.Geometry();
-    var colors = [];
-    var col = new THREE.Color("steelblue");
-    var scale = 0.1;
-    if(x.options.size && !Array.isArray(x.options.size)) scale = 0.1 * x.options.size;
-    for ( var i = 0; i < x.data.length; i++ )
+    if(x.options.renderer=="webgl")
     {
-      if(x.options.color)
+      var img = document.createElement("img");
+      img.src = x.pch.img;
+      tex = new THREE.Texture();
+      tex.image = img;
+      tex.needsUpdate = true;
+      var geometry = new THREE.Geometry();
+      var colors = [];
+      var col = new THREE.Color("steelblue");
+      var scale = 0.1;
+      if(x.options.size && !Array.isArray(x.options.size)) scale = 0.1 * x.options.size;
+      for ( var i = 0; i < x.data.length; i++ )
       {
-        if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
-        else col = new THREE.Color(x.options.color);
+        if(x.options.color)
+        {
+          if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
+          else col = new THREE.Color(x.options.color);
+        }
+        colors[i] = col;
+        var vertex = new THREE.Vector3();
+        vertex.x = x.data[i][0];
+        vertex.y = x.data[i][1];
+        vertex.z = x.data[i][2];
+        geometry.vertices.push( vertex );
       }
-      colors[i] = col;
-      var vertex = new THREE.Vector3();
-      vertex.x = x.data[i][0];
-      vertex.y = x.data[i][1];
-      vertex.z = x.data[i][2];
-      geometry.vertices.push( vertex );
+      geometry.colors = colors;
+      var pcmaterial = new THREE.PointCloudMaterial( {map:tex, size: scale, vertexColors: THREE.VertexColors, transparent: true,  opacity: 0.9} );
+      var particles = new THREE.PointCloud( geometry, pcmaterial );
+      particles.sortParticles = true;
+      group.add(particles);
+    } else
+    {
+      var geometry = new THREE.BufferGeometry();
+      var positions = new Float32Array( x.data.length );
+      var colors = new Float32Array( x.data.length );
+      var col = new THREE.Color("steelblue");
+      var scale = 0.02;
+      if(x.options.size && !Array.isArray(x.options.size)) scale = 0.1 * x.options.size;
+      for ( var i = 0; i < x.data.length; i++ )
+      {
+        positions[i] = x.data[i];
+      }
+      var j;
+      for(var i=0;i<x.data.length/3;i++) // XXX handle colors
+      {
+        j = i*3;
+        colors[j] = col.r;
+        colors[j+1] = col.g;
+        colors[j+2] = col.b;
+      }
+      geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+      geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+      geometry.computeBoundingSphere();
+      var pcmaterial = new THREE.PointCloudMaterial( { size: scale, vertexColors: THREE.VertexColors } );
+      var particleSystem = new THREE.PointCloud( geometry, pcmaterial );
+      group.add( particleSystem );
     }
-    geometry.colors = colors;
-    var pcmaterial = new THREE.PointCloudMaterial( {map:tex, size: scale, vertexColors: THREE.VertexColors, transparent: true,  opacity: 0.9} );
-    var particles = new THREE.PointCloud( geometry, pcmaterial );
-    particles.sortParticles = true;
-    group.add(particles);
   }
   else {
     var col = new THREE.Color("steelblue");

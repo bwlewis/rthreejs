@@ -17,7 +17,7 @@
 #' @param color Either a single hex or named color name, or
 #' a vector of color names of length \code{nrow(x)} (see note below).
 #' @param size The plot point radius, either as a single number or a
-#' vector of sizes of length \code{nrow(x)}. Note that the Canvas renderer
+#' vector of sizes of length \code{nrow(x)}. The Canvas renderer
 #' supports a vector of sizes but the WebGL renderer only supports one
 #' overall size right now.
 #' @param flip.y Reverse the direction of the y-axis (the default value of
@@ -27,7 +27,7 @@
 #' @param stroke A single color stroke value (surrounding each point). Set to
 #' null to omit stroke (only available in the CanvasRenderer).
 #' @param renderer Select from available plot rendering techniques of
-#' 'auto', 'canvas', or 'webgl'.
+#' 'auto', 'canvas', 'webgl', or 'webgl-buffered'.
 #' @param pch An optional data texture image prepared by the \code{texture}
 #'   function used by the WebGL renderer to draw the points (only available
 #'   in the WebGL renderer).
@@ -38,6 +38,9 @@
 #' or Canvas rendering automatically based
 #' on the available output device. The two renderers are slightly different
 #' and have different available options (see above).
+#' The \code{webgl-buffered} renderer is a variation of the \code{webgl}
+#' renderer that uses a buffered geometry for large numbers of points. It
+#' is automatically selected if the number of points is above 10,000.
 #'
 #' The three.js color specifications used in this function accept RGB colors
 #' specified by color names or hex color value like \code{"#ff22aa"}. Most
@@ -82,7 +85,7 @@ scatterplot3js <- function(
   size = 1,
   flip.y = TRUE,
   grid = TRUE,
-  renderer = c("auto","canvas","webgl"),
+  renderer = c("auto","canvas","webgl", "webgl-buffered"),
   pch)
 {
   # validate input
@@ -114,7 +117,15 @@ scatterplot3js <- function(
   # them (required by s3d.js)
   if(length(colnames(x))==3) options$labels = colnames(x)
   colnames(x)=c()
-  x = toJSON(Reduce(c,apply(x,1,list)))
+  if(renderer=="webgl-buffered")
+  {
+    x = toJSON(t(signif(x,4)))
+  } else
+  {
+#  x = toJSON(Reduce(c,apply(x,1,list))) # This is much slower than:
+    x = as.list(data.frame(t(signif(x,4)))); names(x)=c()
+    x = toJSON(x)
+  }
 
   # R does a nice job of making reasonable ticks. Use R's choices.
   if(!is.null(num.ticks))
