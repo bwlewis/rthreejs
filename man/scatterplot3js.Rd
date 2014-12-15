@@ -64,9 +64,9 @@ and have different available options (see above).
 The \code{webgl-buffered} renderer is a variation of the \code{webgl}
 renderer that uses a buffered geometry for large numbers of points.
 It is automatically selected if \code{renderer} is not explicitly
-specified and the number of points is greater than 1,000. The
-\code{webgl-buffered} renderer can easily handle up to a million points
-or so.
+specified and the number of points is greater than 10,000. The
+\code{webgl-buffered} renderer can handle up to a million points
+or so with reasonable performance on typical desktop graphics cards.
 
 The three.js color specifications used in this function accept RGB colors
 specified by color names or hex color value like \code{"#ff22aa"}. Most
