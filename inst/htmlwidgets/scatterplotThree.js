@@ -79,7 +79,7 @@ function render_init(el, width, height, choice)
 
 function scatter(el, x, object)
 {
-  camera = new THREE.PerspectiveCamera(38, object.domElement.width/object.domElement.height, 1, 10000);
+  camera = new THREE.PerspectiveCamera(39, object.domElement.width/object.domElement.height, 1, 10000);
   camera.position.z = 2;
   camera.position.x = 2.55;
   camera.position.y = 1.25;
