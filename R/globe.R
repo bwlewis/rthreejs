@@ -69,7 +69,7 @@
 #' # Plot them on the moon
 #' picture <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
 #' globejs(img=picture, bodycolor="#555555", emissive="#444444",
-#'          lightcolor="#555555", lat=cities$lat, long=cities$long, atmosphere=FALSE
+#'          lightcolor="#555555", lat=cities$lat, long=cities$long, atmosphere=FALSE,
 #'          value=value, color=col)
 #'
 #' @importFrom rjson toJSON
