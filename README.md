@@ -28,8 +28,9 @@ visualizations.
 ## Install
 
 Use the devtools package to install threejs directly from GitHub on any
-R platform (Mac, Windows, Linux, ...).
+R platform (Mac, Windows, Linux, ...). You'll need the 'devtools' package.
 ```r
+if(!require("devtools")) install.packages("devtools",repos="http://cran.rstudio.com/")
 devtools::install_github("bwlewis/rthreejs")
 ```
 
