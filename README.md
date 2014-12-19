@@ -25,6 +25,14 @@ try to maintain basic support for non-WebGL equipped browsers, but the
 performance and rendering quality will generally be inferior to WebGL
 visualizations.
 
+## Install
+
+Use the devtools package to install threejs directly from GitHub on any
+R platform (Mac, Windows, Linux, ...).
+```r
+devtools::install_github("bwlewis/rthreejs")
+```
+
 ## Examples
 
 The following example illustrates the 3D scatterplot widget.
