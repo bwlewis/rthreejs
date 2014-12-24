@@ -3,7 +3,7 @@
 \alias{globejs}
 \title{globejs Three.js globe widget}
 \usage{
-globejs(img, lat, long, color = "#00ffff", value = 40,
+globejs(img, lat = 0, long = 0, color = "#00ffff", value = 40,
   bodycolor = "#0000ff", emissive = "#0000ff", lightcolor = "#9999ff",
   atmosphere = TRUE, height = NULL, width = NULL)
 }
@@ -69,7 +69,7 @@ globejs(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
 # Plot them on the moon
 picture <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
 globejs(img=picture, bodycolor="#555555", emissive="#444444",
-         lightcolor="#555555", lat=cities$lat, long=cities$long, atmosphere=FALSE
+         lightcolor="#555555", lat=cities$lat, long=cities$long, atmosphere=FALSE,
          value=value, color=col)
 }
 \references{
