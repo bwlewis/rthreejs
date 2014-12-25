@@ -35,6 +35,7 @@
 #' \url{http://www.apache.org/licenses/LICENSE-2.0}
 #'
 #' Image reference \url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
+#' Lots more Earth images \url{https://www.evl.uic.edu/pape/data/Earth/}
 #'
 #' Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
 #'
@@ -42,6 +43,9 @@
 #'
 #' Jupiter image: \url{http://maps.jpl.nasa.gov/textures/jup0vtt2.jpg}.
 #' 
+#' An excellent overview of map projections: \url{http://www.progonos.com/furuti/MapProj/Normal/ProjInt/projInt.html}
+#'
+#'
 #' @examples
 #' ## dontrun
 #' # A shiny example:
@@ -55,9 +59,8 @@
 #' cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
 #' value  <- 100 * cities$pop / max(cities$pop)
 #' 
-#' # Set up a color map, noting that THREE.Color only accepts RGB format
-#' # so we need to drop the A value from the colors:
-#' col <- sapply(heat.colors(10), function(x) substr(x,1,7), USE.NAMES=FALSE)
+#' # Set up a color map
+#' col <- heat.colors(10)
 #' col <- col[floor(length(col)*(100-value)/100) + 1]
 #'
 #' # Load the map of the world as a dataURI image using the \code{texture}
