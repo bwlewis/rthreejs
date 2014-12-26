@@ -40,11 +40,13 @@ be rotated and and zoomed.
 \note{
 The \code{img} argument specifies the WebGL texture image to wrap on a
 sphere. If you plan to plot points using \code{lat} and \code{lon}
-the image should be a an equirectangular map projection; see
-\url{https://en.wikipedia.org/wiki/Equirectangular_projection}.
-Equirectangular maps are commonly found for most planetary bodies in the
-solar system, and are also easily generated directly in R (see the references
-and examples below).
+the image should be a plate carrée (aka lat/long) equirectangular
+map projection; see
+\url{https://en.wikipedia.org/wiki/Equirectangular_projection} for
+details..
+Lat/long maps are commonly found for most planetary bodies in the
+solar system, and are also easily generated directly in R
+(see the references and examples below).
 }
 \examples{
 ## dontrun
@@ -120,9 +122,7 @@ Copyright 2011 Data Arts Team, Google Creative Lab
 Licensed under the Apache License, Version 2.0
 \url{http://www.apache.org/licenses/LICENSE-2.0}
 
-Image reference \url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
-
-More Earth images \url{https://www.evl.uic.edu/pape/data/Earth/}
+Modis Earth images \url{visibleearth.nasa.gov}
 
 Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
 
