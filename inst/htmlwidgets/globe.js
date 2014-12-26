@@ -72,6 +72,7 @@ HTMLWidgets.widget(
     if(!x.lightcolor) x.lightcolor = 0x9999ff;
     if(!x.emissive) x.emissive = 0x0000ff;
     if(!x.bodycolor) x.bodycolor = 0x0000ff;
+    if(x.bg) renderer.setClearColor(x.bg);
 
     if(x.dataURI)
     {

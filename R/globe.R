@@ -14,6 +14,7 @@
 #' @param emissive The emissive color of the globe object.
 #' @param lightcolor The color of the ambient light in the scene.
 #' @param atmosphere TRUE enables WebGL atmpsphere effect.
+#' @param bg Plot background color.
 #' @param width The container div width.
 #' @param height The container div height.
 #'
@@ -123,11 +124,14 @@ globejs <- function(
   color="#00ffff", value=40,
   bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff",
   atmosphere=FALSE,
+  bg="black",
   height = NULL,
   width = NULL)
 {
-  options = list(lat=lat, long=long, color=color, value=value, atmosphere=atmosphere,
-                 bodycolor=bodycolor, emissive=emissive, lightcolor=lightcolor)
+  options = list(lat=lat, long=long, color=color,
+                 value=value, atmosphere=atmosphere,
+                 bodycolor=bodycolor, emissive=emissive,
+                 lightcolor=lightcolor, bg=bg)
   if(is.list(img))
   {
     x = c(img, options)
