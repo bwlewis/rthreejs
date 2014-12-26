@@ -1,7 +1,8 @@
 #' Convert a PNG image file to a three.js texture
 #'
 #' Convert file image representations in R into JSON-formatted arrays
-#' suitable for use as three.js textures.
+#' suitable for use as three.js textures. This function is automatically
+#' invoked for images used in the \code{globejs} function.
 #'
 #' @param data  A data matrix representing a grayscale image or 
 #' a file name referring to a PNG image file.
