@@ -18,5 +18,7 @@ Imports:
 Suggests:
     htmltools (>= 0.2.6),
     RCurl,
-    maps
+    maps,
+    sp,
+    rworldmap
 Enhances: knitr, shiny

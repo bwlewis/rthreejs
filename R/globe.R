@@ -4,12 +4,12 @@
 #' be rotated and and zoomed.
 #'
 #' @param img A character string representing an image file path
-#' of an image to plot on the globe, or or a dataURI image prepared by the \code{texture}
-#' function.
-#' @param lat Data point latitudes (negative values indicate south, positive north).
+#' of an image to plot on the globe, or or a dataURI image prepared by
+#; the \code{texture} function.
+#' @param lat Data point latitudes, must be of same length as \code{long} (negative values indicate south, positive north).
 #' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
-#' @param value Either a single value indicating the height of all data points, or a vector of values of length x.lat indicating height of each point.
-#' @param color Either a single color value indicating the color of all data points, or a vector of values of length x.lat indicating color of each point.
+#' @param value Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.
+#' @param color Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.
 #' @param bodycolor The diffuse reflective color of the globe object.
 #' @param emissive The emissive color of the globe object.
 #' @param lightcolor The color of the ambient light in the scene.
@@ -18,8 +18,9 @@
 #' @param height The container div height.
 #'
 #' @note
-#' The \code{img} argument may be a relative file location string pointing to
-#' an image file in shiny applications (see the examples below). For non-shiny
+#' The \code{img} argument specifies the WebGL texture image to wrap on a
+#' sphere. Shiny apps support a relative file location string pointing to
+#' an image file (see the examples below). For non-shiny
 #' use, prepare the image file as a dataURI with the \code{texture} function
 #' (see the examples).
 #'
@@ -35,7 +36,11 @@
 #' \url{http://www.apache.org/licenses/LICENSE-2.0}
 #'
 #' Image reference \url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
+#'
 #' Lots more Earth images \url{https://www.evl.uic.edu/pape/data/Earth/}
+#'
+#' An excellent overview of available map coordinate reference systems (PDF):
+#' \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 #'
 #' Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
 #'
@@ -43,8 +48,6 @@
 #'
 #' Jupiter image: \url{http://maps.jpl.nasa.gov/textures/jup0vtt2.jpg}.
 #' 
-#' An excellent overview of map projections: \url{http://www.progonos.com/furuti/MapProj/Normal/ProjInt/projInt.html}
-#'
 #'
 #' @examples
 #' ## dontrun
@@ -63,17 +66,54 @@
 #' col <- heat.colors(10)
 #' col <- col[floor(length(col)*(100-value)/100) + 1]
 #'
-#' # Load the map of the world as a dataURI image using the \code{texture}
+#' # Load a map of the world as a dataURI image using the \code{texture}
 #' # function. This is required for non-shiny use (shiny apps can just use
 #' # the file name directly).
-#' picture <- texture(system.file("htmlwidgets/lib/globe/world.jpg",package="threejs"))
-#' globejs(img=picture, lat=cities$lat, long=cities$long, value=value, color=col)
+#' earth <- texture(system.file("htmlwidgets/lib/globe/world.jpg",
+#'                  package="threejs"))
+#' globejs(img=earth, lat=cities$lat, long=cities$long, value=value,
+#'         color=col, atmosphere=TRUE)
 #'
-#' # Plot them on the moon
-#' picture <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",package="threejs"))
-#' globejs(img=picture, bodycolor="#555555", emissive="#444444",
-#'          lightcolor="#555555", lat=cities$lat, long=cities$long, atmosphere=FALSE,
+#' # Plot the data on the moon
+#' moon <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",
+#'                 package="threejs"))
+#' globejs(img=moon, bodycolor="#555555", emissive="#444444",
+#'          lightcolor="#555555", lat=cities$lat, long=cities$long,
 #'          value=value, color=col)
+#'
+#' # Using global plots from the maptools, rworldmap, and sp packages.
+#'
+#' # Instead of using ready-made images of the earth, we can employ some
+#' # incredibly capable R spatial imaging packages to produce globe images
+#' # dynamically. With a little extra effort you can build globes with total
+#' # control over how they are plotted.
+#'
+#' #------------------------------
+#' # Using the R maptools package
+#' #------------------------------
+#' library("maptools")
+#' library("threejs")
+#' data(wrld_simpl)
+#' 
+#' bgcolor <- "#000025"
+#' f <- tempfile(fileext=".jpg")
+#'
+#' # Use antialiasing to smooth border boundary lines. But! Set the jpeg
+#' # background color to the globe background color to avoid an aliasing
+#' # effect at the the plot edge.
+#' jpeg(f, width=2048,height=1024,quality=100,bg=bgcolor,antialias="default")
+#' par(mar = c(0,0,0,0),   pin = c(4,2),
+#'     pty = "m",          xaxs = "i",
+#'     xaxt = "n",         xpd = FALSE,
+#'     yaxs = "i",         bty = "n",     yaxt = "n")
+#' plot(wrld_simpl, col="black", bg=bgcolor, border="cyan", ann=FALSE,
+#"      axes=FALSE, xpd=FALSE, xlim=c(-180,180), ylim=c(-90,90),
+#'      setParUsrBB=TRUE, bty="n")
+#' dev.off()
+#' earth <- texture(f)
+#' globejs(earth)
+#'
+#' See http://bwlewis.github.io/rthreejs for additional examples.
 #'
 #' @importFrom rjson toJSON
 #' @import maps
@@ -82,7 +122,7 @@ globejs <- function(
   img, lat=0, long=0,
   color="#00ffff", value=40,
   bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff",
-  atmosphere=TRUE,
+  atmosphere=FALSE,
   height = NULL,
   width = NULL)
 {
