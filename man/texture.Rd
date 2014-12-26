@@ -18,7 +18,8 @@ contains a base64 dataURI encoding of the image.
 }
 \description{
 Convert file image representations in R into JSON-formatted arrays
-suitable for use as three.js textures.
+suitable for use as three.js textures. This function is automatically
+invoked for images used in the \code{globejs} function.
 }
 \note{
 Due to browser

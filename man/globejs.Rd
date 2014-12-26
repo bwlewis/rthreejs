@@ -39,10 +39,12 @@ be rotated and and zoomed.
 }
 \note{
 The \code{img} argument specifies the WebGL texture image to wrap on a
-sphere. Shiny apps support a relative file location string pointing to
-an image file (see the examples below). For non-shiny
-use, prepare the image file as a dataURI with the \code{texture} function
-(see the examples).
+sphere. If you plan to plot points using \code{lat} and \code{lon}
+the image should be a an equirectangular map projection; see
+\url{https://en.wikipedia.org/wiki/Equirectangular_projection}.
+Equirectangular maps are commonly found for most planetary bodies in the
+solar system, and are also easily generated directly in R (see the references
+and examples below).
 }
 \examples{
 ## dontrun
