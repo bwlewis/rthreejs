@@ -128,6 +128,25 @@ globejs <- function(
   height = NULL,
   width = NULL)
 {
+  # Strip alpha channel from colors
+  i = grep("^#",color)
+  if(length(i)>0)
+  {
+    j = nchar(color[i])>7
+    if(any(j))
+    { 
+      color[i][j] = substr(color[i][j],1,7)
+    }
+  }
+  i = grep("^#",bodycolor)
+  if(length(i)>0) bodycolor = substr(bodycolor,1,7)
+  i = grep("^#",emissive)
+  if(length(i)>0) emissive = substr(emissive,1,7)
+  i = grep("^#",lightcolor)
+  if(length(i)>0) lightcolor = substr(lightcolor,1,7)
+  i = grep("^#",bg)
+  if(length(i)>0) bg = substr(bg,1,7)
+
   options = list(lat=lat, long=long, color=color,
                  value=value, atmosphere=atmosphere,
                  bodycolor=bodycolor, emissive=emissive,
