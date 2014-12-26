@@ -3,9 +3,7 @@
 #' Three.js widget for mapping points and an image on a globe. The globe can
 #' be rotated and and zoomed.
 #'
-#' @param img A character string representing an image file path
-#' of an image to plot on the globe, or or a dataURI image prepared by
-#; the \code{texture} function.
+#' @param img A character string representing a file path of an image to plot on the globe surface.
 #' @param lat Data point latitudes, must be of same length as \code{long} (negative values indicate south, positive north).
 #' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
 #' @param value Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.
@@ -26,9 +24,12 @@
 #' (see the examples).
 #'
 #' @references
-#' The threejs project \url{http://threejs.org}.
-#' The corresponding javascript file in
-#' \code{ system.file("htmlwidgets/globejs",package="threejs")}.
+#' The three.js project \url{http://threejs.org}.
+#' (The corresponding three.js javascript file is in
+#' \code{ system.file("htmlwidgets/globejs",package="threejs")}.)
+#'
+#' An excellent overview of available map coordinate reference systems (PDF):
+#' \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 #'
 #' Includes ideas and images from the dat.globe Javascript WebGL Globe Toolkit
 #' \url{http://dataarts.github.com/dat.globe},
@@ -38,17 +39,13 @@
 #'
 #' Image reference \url{http://www.vendian.org/mncharity/dir3/planet_globes/}.
 #'
-#' Lots more Earth images \url{https://www.evl.uic.edu/pape/data/Earth/}
-#'
-#' An excellent overview of available map coordinate reference systems (PDF):
-#' \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
+#' More Earth images \url{https://www.evl.uic.edu/pape/data/Earth/}
 #'
 #' Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
 #'
 #' Mars image: \url{http://pdsmaps.wr.usgs.gov/PDS/public/explorer/html/marsadvc.htm}.
 #'
 #' Jupiter image: \url{http://maps.jpl.nasa.gov/textures/jup0vtt2.jpg}.
-#' 
 #'
 #' @examples
 #' ## dontrun
@@ -67,17 +64,13 @@
 #' col <- heat.colors(10)
 #' col <- col[floor(length(col)*(100-value)/100) + 1]
 #'
-#' # Load a map of the world as a dataURI image using the \code{texture}
-#' # function. This is required for non-shiny use (shiny apps can just use
-#' # the file name directly).
-#' earth <- texture(system.file("htmlwidgets/lib/globe/world.jpg",
-#'                  package="threejs"))
+#' # The name of a jpeg or PNG image file to wrap over the globe:
+#' earth <- system.file("images/earth.jpg",  package="threejs")
 #' globejs(img=earth, lat=cities$lat, long=cities$long, value=value,
 #'         color=col, atmosphere=TRUE)
 #'
-#' # Plot the data on the moon
-#' moon <- texture(system.file("htmlwidgets/lib/globe/moon.jpg",
-#'                 package="threejs"))
+#' # Plot the data on the moon:
+#' moon <- system.file("images/moon.jpg", package="threejs")
 #' globejs(img=moon, bodycolor="#555555", emissive="#444444",
 #'          lightcolor="#555555", lat=cities$lat, long=cities$long,
 #'          value=value, color=col)
@@ -97,21 +90,20 @@
 #' data(wrld_simpl)
 #' 
 #' bgcolor <- "#000025"
-#' f <- tempfile(fileext=".jpg")
+#' earth <- tempfile(fileext=".jpg")
 #'
-#' # Use antialiasing to smooth border boundary lines. But! Set the jpeg
-#' # background color to the globe background color to avoid an aliasing
-#' # effect at the the plot edge.
-#' jpeg(f, width=2048,height=1024,quality=100,bg=bgcolor,antialias="default")
-#' par(mar = c(0,0,0,0),   pin = c(4,2),
-#'     pty = "m",          xaxs = "i",
-#'     xaxt = "n",         xpd = FALSE,
-#'     yaxs = "i",         bty = "n",     yaxt = "n")
+#'
+#' # NOTE: Use antialiasing to smooth border boundary lines. But! Set the jpeg
+#' # background color to the globe background color to avoid a visible aliasing
+#' # effect at the the plot edges.
+#'
+#' jpeg(earth,width=2048,height=1024,quality=100,bg=bgcolor,antialias="default")
+#' par(mar = c(0,0,0,0), pin = c(4,2), pty = "m",  xaxs = "i",
+#'     xaxt = "n",       xpd = FALSE,  yaxs = "i", bty = "n", yaxt = "n")
 #' plot(wrld_simpl, col="black", bg=bgcolor, border="cyan", ann=FALSE,
 #"      axes=FALSE, xpd=FALSE, xlim=c(-180,180), ylim=c(-90,90),
-#'      setParUsrBB=TRUE, bty="n")
+#'      setParUsrBB=TRUE)
 #' dev.off()
-#' earth <- texture(f)
 #' globejs(earth)
 #'
 #' See http://bwlewis.github.io/rthreejs for additional examples.
@@ -151,13 +143,9 @@ globejs <- function(
                  value=value, atmosphere=atmosphere,
                  bodycolor=bodycolor, emissive=emissive,
                  lightcolor=lightcolor, bg=bg)
-  if(is.list(img))
-  {
-    x = c(img, options)
-  } else
-  {
-    x = c(options, img=img)
-  }
+# Convert image files to dataURI using the texture function
+  if(!is.list(img)) img=texture(img)
+  x = c(img, options)
   htmlwidgets::createWidget(
       name = "globe",
       x = x,

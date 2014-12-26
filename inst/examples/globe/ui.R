@@ -9,7 +9,12 @@ shinyUI(fluidPage(
     sidebarPanel(
       sliderInput("N", "Number of cities to plot", value=1000, min = 100, max = 10000, step = 100),
       selectInput("map", label="Surface map", 
-         choices = list("Earth"="earth", "Moon"="moon", "Mars"="mars", "Jupiter"="jupiter"),
+         choices =
+           list("Earth dark"="earth_dark",
+                "Earth light"="earth_light",
+                "Moon"="moon",
+                "Mars"="mars",
+                "Jupiter"="jupiter"),
          selected = 1),
       hr(),
       p("Use the mouse zoom to zoom in/out."),
