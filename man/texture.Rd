@@ -2,13 +2,13 @@
 % Please edit documentation in R/utilities.R
 \name{texture}
 \alias{texture}
-\title{Convert a PNG image file to a three.js texture}
+\title{Convert an image file or uri to a three.js texture}
 \usage{
 texture(data)
 }
 \arguments{
-\item{data}{A data matrix representing a grayscale image or
-a file name referring to a PNG image file.}
+\item{data}{A character string file name referring to an image file,
+or referring to an image uri (see the examples).}
 }
 \value{
 JSON-formatted list with image, width, and height fields
@@ -34,8 +34,13 @@ encoded and inserted into three.js without using files as dataURIs.
 }
 \examples{
 ## dontrun
-img <- system.file("img", "Rlogo.png", package="png")
-texture(img)
+A file:
+img <- system.file("images/disc.png", package="threejs")
+t <- texture(img)
+
+A big image (may take a while to download):
+img <- "http://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg"
+t <- texture(img)
 }
 \references{
 The threejs project \url{http://threejs.org}.

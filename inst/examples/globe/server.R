@@ -6,13 +6,11 @@ data(world.cities, package="maps")
 # We had some rendering problems serving these images directly, it
 # seems to work more reliably if we send them as dataURIs.
 earth_dark   <- system.file("images/world.jpg",package="threejs")
-earth_light   <- system.file("images/earth.jpg",package="threejs")
 moon    <- system.file("images/moon.jpg",package="threejs")
 mars    <- system.file("images/mars.jpg",package="threejs")
 jupiter <- system.file("images/jupiter.jpg",package="threejs")
 col <- list(
     earth_dark=list(img=earth_dark,bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff"),
-    earth_light=list(img=earth_light,bodycolor="#555555", emissive="#444444", lightcolor="#555555"),
     moon=list(img=moon,bodycolor="#555555", emissive="#444444", lightcolor="#555555"),
     mars=list(img=mars,bodycolor="#aaaaaa", emissive="#000000", lightcolor="#aaaaaa"),
     jupiter=list(img=jupiter,bodycolor="#222222", emissive="#000000", lightcolor="#aaaaaa")

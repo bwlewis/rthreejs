@@ -11,7 +11,6 @@ shinyUI(fluidPage(
       selectInput("map", label="Surface map", 
          choices =
            list("Earth"="earth_dark",
-                "Earth (MODIS)"="earth_light",
                 "Moon"="moon",
                 "Mars"="mars",
                 "Jupiter"="jupiter"),

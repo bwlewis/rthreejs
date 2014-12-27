@@ -9,7 +9,7 @@ globejs(img, lat = 0, long = 0, color = "#00ffff", value = 40,
   atmosphere = FALSE, bg = "black", height = NULL, width = NULL)
 }
 \arguments{
-\item{img}{A character string representing a file path of an image to plot on the globe surface.}
+\item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
 
 \item{lat}{Data point latitudes, must be of same length as \code{long} (negative values indicate south, positive north).}
 
@@ -66,7 +66,7 @@ col <- heat.colors(10)
 col <- col[floor(length(col)*(100-value)/100) + 1]
 
 # The name of a jpeg or PNG image file to wrap over the globe:
-earth <- system.file("images/earth.jpg",  package="threejs")
+earth <- system.file("images/world.jpg",  package="threejs")
 globejs(img=earth, lat=cities$lat, long=cities$long, value=value,
         color=col, atmosphere=TRUE)
 
@@ -75,6 +75,10 @@ moon <- system.file("images/moon.jpg", package="threejs")
 globejs(img=moon, bodycolor="#555555", emissive="#444444",
          lightcolor="#555555", lat=cities$lat, long=cities$long,
          value=value, color=col)
+
+# Plot a high-resolution NASA MODIS globe (it can take a while to download
+# the image!)
+globejs("http://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg")
 
 # Using global plots from the maptools, rworldmap, and sp packages.
 
