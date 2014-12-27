@@ -5,7 +5,7 @@
 \title{globejs Three.js globe widget}
 \usage{
 globejs(img, lat = 0, long = 0, color = "#00ffff", value = 40,
-  bodycolor = "#0000ff", emissive = "#0000ff", lightcolor = "#9999ff",
+  bodycolor = "#0000ff", emissive = "#0000ff", lightcolor = "#aa7700",
   atmosphere = FALSE, bg = "black", height = NULL, width = NULL)
 }
 \arguments{
