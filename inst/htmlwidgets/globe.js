@@ -19,16 +19,18 @@ HTMLWidgets.widget(
     r.setSize(parseInt(width), parseInt(height));
     r.setClearColor("black");
     d3.select(el).node().appendChild(r.domElement);
-    return r;
+    var c = new THREE.PerspectiveCamera( 35, r.domElement.width / r.domElement.height, 1, 10000 );
+    var s = new THREE.Scene();
+    return {renderer:r, camera:c, scene: s} ;
   },
 
-  resize: function(el, width, height, renderer)
+  resize: function(el, width, height, stuff)
   {
-    renderer.clear();
-    renderer.setSize( width, height );
-    camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  renderer.domElement.width/renderer.domElement.height, camera.near, camera.far);
-    camera.lookAt(scene.position);
-    renderer.render( scene, camera );
+    stuff.renderer.clear();
+    stuff.renderer.setSize( width, height );
+    stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(stuff.camera.fov,  stuff.renderer.domElement.width/stuff.renderer.domElement.height, stuff.camera.near, stuff.camera.far);
+    stuff.camera.lookAt(stuff.scene.position);
+    stuff.renderer.render( stuff.scene, stuff.camera );
   },
 
 // We expect x to contain the following fields:
@@ -43,7 +45,9 @@ HTMLWidgets.widget(
 // x.value: Either a single height value, or a vector of values
 //          of length x.data.length for each point.
 // x.lightcolor: A color value for the ambient light in the scene
-  renderValue: function(el, x, renderer)
+// stuff is a tuple with a renderer, camera, and scene. Through the JavaScript
+// weirdness of call-by-sharing, we can modify that state.
+  renderValue: function(el, x, stuff)
   {
     var img, geometry, tex, earth;
     var down = false;
@@ -67,12 +71,12 @@ HTMLWidgets.widget(
     'vec3 glow = glowColor * intensity;',
     'gl_FragColor = vec4( glow, 1.0 );}'].join('\n');
 
-    scene = new THREE.Scene();
+    stuff.scene = new THREE.Scene();
     geometry = new THREE.SphereGeometry(200,50,50);
     if(!x.lightcolor) x.lightcolor = 0x9999ff;
     if(!x.emissive) x.emissive = 0x0000ff;
     if(!x.bodycolor) x.bodycolor = 0x0000ff;
-    if(x.bg) renderer.setClearColor(x.bg);
+    if(x.bg) stuff.renderer.setClearColor(x.bg);
 
     if(x.dataURI)
     {
@@ -90,13 +94,13 @@ HTMLWidgets.widget(
 
     earth = new THREE.Mesh( geometry, material );
     earth.position.x = earth.position.y = 0;
-    scene.add( earth );
+    stuff.scene.add( earth );
 
-    camera = new THREE.PerspectiveCamera( 35, renderer.domElement.width / renderer.domElement.height, 1, 10000 );
-    camera.position.x = 800*Math.sin(earth.rotation.x) * Math.cos(earth.rotation.y);
-    camera.position.y = 800*Math.sin(earth.rotation.y);
-    camera.position.z = 800*Math.cos(earth.rotation.x) * Math.cos(earth.rotation.y);
-    camera.lookAt(scene.position);
+    stuff.camera = new THREE.PerspectiveCamera( 35, stuff.renderer.domElement.width / stuff.renderer.domElement.height, 1, 10000 );
+    stuff.camera.position.x = 800*Math.sin(earth.rotation.x) * Math.cos(earth.rotation.y);
+    stuff.camera.position.y = 800*Math.sin(earth.rotation.y);
+    stuff.camera.position.z = 800*Math.cos(earth.rotation.x) * Math.cos(earth.rotation.y);
+    stuff.camera.lookAt(stuff.scene.position);
 
 
     var customMaterial = new THREE.ShaderMaterial( 
@@ -106,7 +110,7 @@ HTMLWidgets.widget(
         "c":   { type: "f", value: 1.3 },
         "p":   { type: "f", value: 9.0 },
         glowColor: { type: "c", value: new THREE.Color(0xeeeeff) },
-        viewVector: { type: "v3", value: camera.position }
+        viewVector: { type: "v3", value: stuff.camera.position }
       },
       vertexShader:   vertexShader,
       fragmentShader: fragmentShader,
@@ -117,10 +121,10 @@ HTMLWidgets.widget(
     var atmo = new THREE.Mesh( geometry.clone(), customMaterial.clone() );
     atmo.position = earth.position;
     atmo.scale.multiplyScalar(1.03);
-    if(GL && x.atmosphere) scene.add(atmo);
+    if(GL && x.atmosphere) stuff.scene.add(atmo);
 
-    scene.add( new THREE.AmbientLight( x.lightcolor ) );
-    scene.add( new THREE.AmbientLight( x.lightcolor ) );
+    stuff.scene.add( new THREE.AmbientLight( x.lightcolor ) );
+    stuff.scene.add( new THREE.AmbientLight( x.lightcolor ) );
 
 // Add the data points
     var phi, theta, lat, lng, colr, size;
@@ -157,7 +161,7 @@ HTMLWidgets.widget(
       THREE.GeometryUtils.merge(group,point);
     }
     var points = new THREE.Mesh(group, bm);
-    scene.add(points);
+    stuff.scene.add(points);
 
     el.onmousedown = function (ev)
     {
@@ -169,10 +173,10 @@ HTMLWidgets.widget(
     {
       var fovMAX = 120;
       var fovMIN = 10;
-      if(GL) camera.fov -= event.wheelDeltaY * 0.02;
-      else camera.fov -= event.wheelDeltaY * 0.0075;
-      camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
-      camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  renderer.domElement.width/renderer.domElement.height, camera.near, camera.far);
+      if(GL) stuff.camera.fov -= event.wheelDeltaY * 0.02;
+      else stuff.camera.fov -= event.wheelDeltaY * 0.0075;
+      stuff.camera.fov = Math.max( Math.min( stuff.camera.fov, fovMAX ), fovMIN );
+      stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(stuff.camera.fov,  stuff.renderer.domElement.width/stuff.renderer.domElement.height, stuff.camera.near, stuff.camera.far);
       render();
     }
     el.onmousewheel = function(ev) {ev.preventDefault();};
@@ -195,11 +199,10 @@ HTMLWidgets.widget(
       }
     };
 
-//  We disabled the usual Three.js animation technique in favor of
-//  simply rendering after mouse updates. This results in a bit of
-//  choppiness for Canvas renderings, but is compatible with more
-//  browsers and with older versions of RStudio because it doesn't
-//  need requestAnimationFrame.
+//  We disabled the usual Three.js animation technique in favor of simply
+//  rendering after mouse updates. This results in a bit of choppiness for
+//  Canvas renderings, but is compatible with more browsers and with older
+//  versions of RStudio because it doesn't need requestAnimationFrame.
 
 //    animate();
 //    function animate() {
@@ -209,9 +212,9 @@ HTMLWidgets.widget(
 //    }
 
     function render() {
-      renderer.clear();
-      camera.lookAt(scene.position);
-      renderer.render( scene, camera );
+      stuff.renderer.clear();
+      stuff.camera.lookAt(stuff.scene.position);
+      stuff.renderer.render( stuff.scene, stuff.camera );
     }
     render();
   }
