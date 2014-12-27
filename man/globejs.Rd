@@ -126,7 +126,7 @@ Copyright 2011 Data Arts Team, Google Creative Lab
 Licensed under the Apache License, Version 2.0
 \url{http://www.apache.org/licenses/LICENSE-2.0}
 
-Modis Earth images \url{visibleearth.nasa.gov}
+NASA Blue Marble/MODIS Earth images \url{visibleearth.nasa.gov}
 
 Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
 
