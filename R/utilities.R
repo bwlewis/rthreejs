@@ -49,6 +49,7 @@ texture = function(data)
     data = tempfile()
     on.exit(unlink(data))
     writeBin(readBin(u,what="raw",n=10e6),data,useBytes=TRUE)
+    close(u)
   }
 # Encode the file as a dataURI
   tf = tempfile()
