@@ -152,12 +152,6 @@ globejs <- function(
       color[i][j] = substr(color[i][j],1,7)
     }
   }
-  i = grep("^#",bodycolor)
-  if(length(i)>0) bodycolor = substr(bodycolor,1,7)
-  i = grep("^#",emissive)
-  if(length(i)>0) emissive = substr(emissive,1,7)
-  i = grep("^#",lightcolor)
-  if(length(i)>0) lightcolor = substr(lightcolor,1,7)
   i = grep("^#",bg)
   if(length(i)>0) bg = substr(bg,1,7)
 
@@ -167,6 +161,23 @@ globejs <- function(
                  lightcolor=lightcolor, bg=bg)
   additional_args = list(...)
   if(length(additional_args)>0) options = c(options, additional_args)
+# Clean up optional color arguments
+  if("bodycolor" %in% names(options))
+  {
+    i = grep("^#",options$bodycolor)
+    if(length(i)>0) options$bodycolor = substr(options$bodycolor,1,7)
+  }
+  if("emissive" %in% names(options))
+  {
+    i = grep("^#",options$emissive)
+    if(length(i)>0) options$emissive = substr(options$emissive,1,7)
+  }
+  if("lightcolor" %in% names(options))
+  {
+    i = grep("^#",options$lightcolor)
+    if(length(i)>0) options$lightcolor = substr(options$lightcolor,1,7)
+  }
+
 # Convert image files to dataURI using the texture function
   if(!is.list(img)) img=texture(img)
   x = c(img, options)
