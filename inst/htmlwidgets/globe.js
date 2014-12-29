@@ -71,7 +71,7 @@ HTMLWidgets.widget(
     'vec3 glow = glowColor * intensity;',
     'gl_FragColor = vec4( glow, 1.0 );}'].join('\n');
 
-    if(!x.lightcolor) x.lightcolor = 0x9999ff;
+    if(!x.lightcolor) x.lightcolor = 0xaa8877;
     if(!x.emissive) x.emissive = 0x0000ff;
     if(!x.bodycolor) x.bodycolor = 0x0000ff;
     if(!x.diameter) x.diameter = 200;

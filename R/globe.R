@@ -6,16 +6,14 @@
 #' @param img A character string representing a file path or URI of an image to plot on the globe surface.
 #' @param lat Data point latitudes, must be of same length as \code{long} (negative values indicate south, positive north).
 #' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
-#' @param value Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.
 #' @param color Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.
-#' @param bodycolor The diffuse reflective color of the globe object.
-#' @param emissive The emissive color of the globe object.
-#' @param lightcolor The color of the ambient light in the scene.
+#' @param value Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.
 #' @param atmosphere TRUE enables WebGL atmpsphere effect.
 #' @param bg Plot background color.
 #' @param width The container div width.
 #' @param height The container div height.
-#' @param ... Additional arguments to pass to the JavaScript rendering function.
+#' @param ... Additional arguments to pass to the three.js renderer (see
+#' below for more information on these options).
 #'
 #' @note
 #' The \code{img} argument specifies the WebGL texture image to wrap on a
@@ -27,6 +25,23 @@
 #' Lat/long maps are commonly found for most planetary bodies in the
 #' solar system, and are also easily generated directly in R
 #' (see the references and examples below).
+#'
+#' @section Available rendering options:
+#' \itemize{
+#'   \item{"bodycolor"}{The diffuse reflective color of the globe.}
+#'   \item{"emissive"}{The emissive color of the globe object.}
+#'   \item{"lightcolor"}{The color of the ambient light in the scene.}
+#'   \item{"fov"}{The initial field of view, default is 35.}
+#'   \item{"rotationlat"}{The initial globe latitudinal rotation in radians, default is 0.}
+#'   \item{"rotationlong"}{The initial globe longitudinal rotation in radians, default is 0.}
+#' }
+#' Specify colors with standard color names or hex color representations.
+#' The default values (well-suited to many earth-like map images) are
+#' \code{lightcolor = "#aa8877"}, \code{emissive = "#0000ff"}, and \code{bodycolor = "#0000ff"}.
+#' Larger \code{fov} values result in a smaller (zoomed out) globe.
+#' The latitude and longitude rotation values are relative to the center of
+#' the map image. Their default values of zero radians result in the front of the
+#' globe corresponding to the center of the flat map image.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -120,8 +135,8 @@
 #' @export
 globejs <- function(
   img, lat=0, long=0,
-  color="#00ffff", value=40,
-  bodycolor="#0000ff",emissive="#0000ff",lightcolor="#aa8877",
+  value=40,
+  color="#00ffff",
   atmosphere=FALSE,
   bg="black",
   height = NULL,

@@ -4,9 +4,8 @@
 \alias{globejs}
 \title{globejs Three.js globe widget}
 \usage{
-globejs(img, lat = 0, long = 0, color = "#00ffff", value = 40,
-  bodycolor = "#0000ff", emissive = "#0000ff", lightcolor = "#aa8877",
-  atmosphere = FALSE, bg = "black", height = NULL, width = NULL)
+globejs(img, lat = 0, long = 0, value = 40, color = "#00ffff",
+  atmosphere = FALSE, bg = "black", height = NULL, width = NULL, ...)
 }
 \arguments{
 \item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
@@ -15,15 +14,9 @@ globejs(img, lat = 0, long = 0, color = "#00ffff", value = 40,
 
 \item{long}{Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).}
 
-\item{color}{Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.}
-
 \item{value}{Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.}
 
-\item{bodycolor}{The diffuse reflective color of the globe object.}
-
-\item{emissive}{The emissive color of the globe object.}
-
-\item{lightcolor}{The color of the ambient light in the scene.}
+\item{color}{Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.}
 
 \item{atmosphere}{TRUE enables WebGL atmpsphere effect.}
 
@@ -32,6 +25,9 @@ globejs(img, lat = 0, long = 0, color = "#00ffff", value = 40,
 \item{height}{The container div height.}
 
 \item{width}{The container div width.}
+
+\item{...}{Additional arguments to pass to the three.js renderer (see
+below for more information on these options).}
 }
 \description{
 Three.js widget for mapping points and an image on a globe. The globe can
@@ -47,6 +43,24 @@ details..
 Lat/long maps are commonly found for most planetary bodies in the
 solar system, and are also easily generated directly in R
 (see the references and examples below).
+}
+\section{Available rendering options}{
+
+\itemize{
+  \item{"bodycolor"}{The diffuse reflective color of the globe.}
+  \item{"emissive"}{The emissive color of the globe object.}
+  \item{"lightcolor"}{The color of the ambient light in the scene.}
+  \item{"fov"}{The initial field of view, default is 35.}
+  \item{"rotationlat"}{The initial globe latitudinal rotation in radians, default is 0.}
+  \item{"rotationlong"}{The initial globe longitudinal rotation in radians, default is 0.}
+}
+Specify colors with standard color names or hex color representations.
+The default values (well-suited to many earth-like map images) are
+\code{lightcolor = "#aa8877"}, \code{emissive = "#0000ff"}, and \code{bodycolor = "#0000ff"}.
+Larger \code{fov} values result in a smaller (zoomed out) globe.
+The latitude and longitude rotation values are relative to the center of
+the map image. Their default values of zero radians result in the front of the
+globe corresponding to the center of the flat map image.
 }
 \examples{
 ## dontrun
