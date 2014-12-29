@@ -156,9 +156,7 @@ globejs <- function(
   if(length(i)>0) bg = substr(bg,1,7)
 
   options = list(lat=lat, long=long, color=color,
-                 value=value, atmosphere=atmosphere,
-                 bodycolor=bodycolor, emissive=emissive,
-                 lightcolor=lightcolor, bg=bg)
+                 value=value, atmosphere=atmosphere, bg=bg)
   additional_args = list(...)
   if(length(additional_args)>0) options = c(options, additional_args)
 # Clean up optional color arguments
