@@ -15,6 +15,7 @@
 #' @param bg Plot background color.
 #' @param width The container div width.
 #' @param height The container div height.
+#' @param ... Additional arguments to pass to the JavaScript rendering function.
 #'
 #' @note
 #' The \code{img} argument specifies the WebGL texture image to wrap on a
@@ -124,7 +125,7 @@ globejs <- function(
   atmosphere=FALSE,
   bg="black",
   height = NULL,
-  width = NULL)
+  width = NULL, ...)
 {
   # Strip alpha channel from colors
   i = grep("^#",color)
@@ -149,6 +150,8 @@ globejs <- function(
                  value=value, atmosphere=atmosphere,
                  bodycolor=bodycolor, emissive=emissive,
                  lightcolor=lightcolor, bg=bg)
+  additional_args = list(...)
+  if(length(additional_args)>0) options = c(options, additional_args)
 # Convert image files to dataURI using the texture function
   if(!is.list(img)) img=texture(img)
   x = c(img, options)

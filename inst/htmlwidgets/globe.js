@@ -71,12 +71,21 @@ HTMLWidgets.widget(
     'vec3 glow = glowColor * intensity;',
     'gl_FragColor = vec4( glow, 1.0 );}'].join('\n');
 
-    stuff.scene = new THREE.Scene();
-    geometry = new THREE.SphereGeometry(200,50,50);
     if(!x.lightcolor) x.lightcolor = 0x9999ff;
     if(!x.emissive) x.emissive = 0x0000ff;
     if(!x.bodycolor) x.bodycolor = 0x0000ff;
+    if(!x.diameter) x.diameter = 200;
+    if(!x.segments) x.segments = 50;
+    if(!x.pointsize) x.pointsize = 1;
+    else x.pointsize = parseInt(x.pointsize);
+    if(!x.fov) x.fov = 35;
+    if(!x.rotationlat) x.rotationlat = 0.0;
+    if(!x.rotationlong) x.rotationlong = 0.0;
+
     if(x.bg) stuff.renderer.setClearColor(x.bg);
+
+    stuff.scene = new THREE.Scene();
+    geometry = new THREE.SphereGeometry(x.diameter, x.segments, x.segments);
 
     if(x.dataURI)
     {
@@ -96,12 +105,11 @@ HTMLWidgets.widget(
     earth.position.x = earth.position.y = 0;
     stuff.scene.add( earth );
 
-    stuff.camera = new THREE.PerspectiveCamera( 35, stuff.renderer.domElement.width / stuff.renderer.domElement.height, 1, 10000 );
+    stuff.camera = new THREE.PerspectiveCamera( x.fov, stuff.renderer.domElement.width / stuff.renderer.domElement.height, 1, 10000 );
     stuff.camera.position.x = 800*Math.sin(earth.rotation.x) * Math.cos(earth.rotation.y);
     stuff.camera.position.y = 800*Math.sin(earth.rotation.y);
     stuff.camera.position.z = 800*Math.cos(earth.rotation.x) * Math.cos(earth.rotation.y);
     stuff.camera.lookAt(stuff.scene.position);
-
 
     var customMaterial = new THREE.ShaderMaterial( 
     {
@@ -148,12 +156,12 @@ HTMLWidgets.widget(
       phi = (90 - lat) * Math.PI / 180;
       theta = - lng * Math.PI / 180;
       var point = new THREE.Mesh(bg, bm);
-      point.position.x = 200 * Math.sin(phi) * Math.cos(theta);
-      point.position.y = 200 * Math.cos(phi);
-      point.position.z = 200 * Math.sin(phi) * Math.sin(theta);
-      point.scale.x = point.scale.y = 1; point.scale.z = size;
+      point.position.x = x.diameter * Math.sin(phi) * Math.cos(theta);
+      point.position.y = x.diameter * Math.cos(phi);
+      point.position.z = x.diameter * Math.sin(phi) * Math.sin(theta);
+      point.scale.x = point.scale.y = x.pointsize;
+      point.scale.z = size;
       point.lookAt(earth.position);
-//      point.updateMatrix();
       var j;
       for (j = 0; j<point.geometry.faces.length; j++) {
         point.geometry.faces[j].color = new THREE.Color(colr);
@@ -162,6 +170,12 @@ HTMLWidgets.widget(
     }
     var points = new THREE.Mesh(group, bm);
     stuff.scene.add(points);
+
+// Set initial rotation
+    earth.rotation.x = x.rotationlat;
+    earth.rotation.y = x.rotationlong;
+    points.rotation.x = x.rotationlat;
+    points.rotation.y = x.rotationlong;
 
     el.onmousedown = function (ev)
     {
@@ -180,8 +194,8 @@ HTMLWidgets.widget(
       render();
     }
     el.onmousewheel = function(ev) {ev.preventDefault();};
-    el.addEventListener('DOMMouseScroll', mousewheel, true);
-    el.addEventListener('mousewheel', mousewheel, true);
+    el.addEventListener("DOMMouseScroll", mousewheel, true);
+    el.addEventListener("mousewheel", mousewheel, true);
 
     el.onmousemove = function(ev)
     {
@@ -191,8 +205,8 @@ HTMLWidgets.widget(
         var dy = ev.clientY - sy;
         earth.rotation.y += dx*0.01;
         earth.rotation.x += 0.01*dy;
-        points.rotation.y += dx*0.01;
-        points.rotation.x += 0.01*dy;
+        points.rotation.y += earth.rotation.y;
+        points.rotation.x += earth.rotation.x;
         sx += dx;
         sy += dy;
         render();
