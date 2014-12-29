@@ -21,7 +21,7 @@ HTMLWidgets.widget(
     d3.select(el).node().appendChild(r.domElement);
     var c = new THREE.PerspectiveCamera( 35, r.domElement.width / r.domElement.height, 1, 10000 );
     var s = new THREE.Scene();
-    return {renderer:r, camera:c, scene: s} ;
+    return {renderer:r, camera:c, scene: s, width: parseInt(width), height: parseInt(height)};
   },
 
   resize: function(el, width, height, stuff)
@@ -70,6 +70,20 @@ HTMLWidgets.widget(
     'void main(){',
     'vec3 glow = glowColor * intensity;',
     'gl_FragColor = vec4( glow, 1.0 );}'].join('\n');
+
+// check for manual override of the detector
+    if(!(x.renderer==null))
+    { 
+      if(x.renderer=="canvas" && GL==true)
+      {
+        stuff.renderer = new THREE.CanvasRenderer();
+        GL=false;
+        stuff.renderer.setSize(stuff.width, stuff.height);
+        stuff.renderer.setClearColor("black");
+        d3.select(el).node().removeChild(d3.select(el).node().children[0]);
+        d3.select(el).node().appendChild(stuff.renderer.domElement);
+      }
+    }
 
     if(!x.lightcolor) x.lightcolor = 0xaa8877;
     if(!x.emissive) x.emissive = 0x0000ff;

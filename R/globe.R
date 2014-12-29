@@ -34,6 +34,11 @@
 #'   \item{"fov"}{ The initial field of view, default is 35.}
 #'   \item{"rotationlat"}{ The initial globe latitudinal rotation in radians, default is 0.}
 #'   \item{"rotationlong"}{ The initial globe longitudinal rotation in radians, default is 0.}
+#'   \item{"pointsize"}{ The size of the points/bars, default is 1.}
+#'   \item{"renderer"}{ Manually set the three.js renderer to one of 'auto' or 'canvas'.
+#'        The canvas renderer works across a greater variety of
+#'        viewers and browsers. The default setting of 'auto' automatically chooses
+#'        WebGL rendering if it's available.}
 #' }
 #' Specify colors with standard color names or hex color representations.
 #' The default values (well-suited to many earth-like map images) are
