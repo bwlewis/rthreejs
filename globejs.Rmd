@@ -65,7 +65,7 @@ The *maptools* package by Roger Bivand and many contributors is a high-level plo
 the *sp* package that greatly simplifies plotting regional and global maps.
 Our examples illustrate making maps
 for display on the globe using the *maptools* package, but with minor modification the examples
-will work with other R packages like Andy South's excellent new *rworldmap* package.
+will work with other R packages like the excellent new *rworldmap* package.
 
 <aside>
 http://cran.r-project.org/web/packages/maptools/
@@ -75,7 +75,7 @@ http://cran.r-project.org/web/packages/maptools/
 
 We start with fun map that approximates one published in the
 Onion's atlas of the planet earth (thanks to Andy South for referencing this in his
-*maptools* package).
+*rworldmap* package).
 
 <aside>
 Scott Dikkers,
