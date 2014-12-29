@@ -205,8 +205,8 @@ HTMLWidgets.widget(
         var dy = ev.clientY - sy;
         earth.rotation.y += dx*0.01;
         earth.rotation.x += 0.01*dy;
-        points.rotation.y += earth.rotation.y;
-        points.rotation.x += earth.rotation.x;
+        points.rotation.y = earth.rotation.y;
+        points.rotation.x = earth.rotation.x;
         sx += dx;
         sy += dy;
         render();
