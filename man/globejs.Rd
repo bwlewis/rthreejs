@@ -47,12 +47,12 @@ solar system, and are also easily generated directly in R
 \section{Available rendering options}{
 
 \itemize{
-  \item{"bodycolor"}{The diffuse reflective color of the globe.}
-  \item{"emissive"}{The emissive color of the globe object.}
-  \item{"lightcolor"}{The color of the ambient light in the scene.}
-  \item{"fov"}{The initial field of view, default is 35.}
-  \item{"rotationlat"}{The initial globe latitudinal rotation in radians, default is 0.}
-  \item{"rotationlong"}{The initial globe longitudinal rotation in radians, default is 0.}
+  \item{"bodycolor"}{ The diffuse reflective color of the globe.}
+  \item{"emissive"}{ The emissive color of the globe object.}
+  \item{"lightcolor"}{ The color of the ambient light in the scene.}
+  \item{"fov"}{ The initial field of view, default is 35.}
+  \item{"rotationlat"}{ The initial globe latitudinal rotation in radians, default is 0.}
+  \item{"rotationlong"}{ The initial globe longitudinal rotation in radians, default is 0.}
 }
 Specify colors with standard color names or hex color representations.
 The default values (well-suited to many earth-like map images) are
