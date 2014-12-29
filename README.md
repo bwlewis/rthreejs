@@ -27,6 +27,10 @@ We try to maintain basic support for non-WebGL equipped browsers, but the
 performance and rendering quality will generally be inferior to WebGL
 visualizations.
 
+The examples run inside RStudio, acting like more or less normal R plots.
+RStudio renders them using Canvas right now, but I expect that an upcoming
+version of RStudio will support WebGL.
+
 ## Install
 
 Use the devtools package to install threejs directly from GitHub on any
