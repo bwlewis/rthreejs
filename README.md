@@ -20,8 +20,10 @@ amazingly cool visualization widgets for R.
 ## NOTE!
 
 These examples generally run best in WebGL-enabled viewers, including at least
-Chrome, Firefox, and recent versions of Internet Explorer web browsers.  We do
-try to maintain basic support for non-WebGL equipped browsers, but the
+Chrome, and recent versions of Internet Explorer web browsers. I have had
+some issues with Firefox on Windows. Safari on Mac OS X seems to fall back
+to Canvas (not WebGL) rendering, but works.
+We try to maintain basic support for non-WebGL equipped browsers, but the
 performance and rendering quality will generally be inferior to WebGL
 visualizations.
 
