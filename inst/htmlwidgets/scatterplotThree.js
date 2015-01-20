@@ -10,29 +10,27 @@ HTMLWidgets.widget(
 
   initialize: function(el, width, height)
   {
-    var r = {width:width, height:height};
-    return r;
+    var r = render_init(el, width, height, false);
+    var c = new THREE.PerspectiveCamera(39, r.domElement.width/r.domElement.height, 1, 10000);
+    var s = new THREE.Scene();
+    return {renderer:r, camera:c, scene: s, width: parseInt(width), height: parseInt(height)};
   },
 
-  resize: function(el, width, height, obj)
+  resize: function(el, width, height, stuff)
   {
-// We rely on three global variables here:
-// renderer, scene, and camera.
-    renderer.clear();
-    renderer.setSize(parseInt(width), parseInt(height));
-    camera.lookAt(scene.position);
-    renderer.render(scene, camera);
+    stuff.renderer.clear();
+    stuff.renderer.setSize(parseInt(width), parseInt(height));
+    stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(stuff.camera.fov,  stuff.renderer.domElement.width/stuff.renderer.domElement.height, stuff.camera.near, stuff.camera.far);
+    stuff.camera.lookAt(stuff.scene.position);
+    stuff.renderer.render(stuff.scene, stuff.camera);
   },
 
-  renderValue: function(el, x, obj)
+  renderValue: function(el, x, stuff)
   {
-// Note that renderer is a global variable. It's accessed by resize above.
-// We need to defer creating the renderer because our choice of rendering
-// method is defined in x.
-    renderer = render_init(el, obj.width, obj.height, x.options.renderer);
+    stuff.renderer = render_init(el, stuff.width, stuff.height, x.options.renderer);
 // parse the JSON string from R
     x.data = JSON.parse(x.data);
-    scatter(el, x, renderer);
+    scatter(el, x, stuff);
   }
 })
 
@@ -77,17 +75,16 @@ function render_init(el, width, height, choice)
 //   interval [0,1]).
 // x.pch.img is an encoded image dataURI used by the WebGL PointCloud renderer only
 
-function scatter(el, x, object)
+function scatter(el, x, obj)
 {
-  camera = new THREE.PerspectiveCamera(39, object.domElement.width/object.domElement.height, 1, 10000);
-  camera.position.z = 2;
-  camera.position.x = 2.55;
-  camera.position.y = 1.25;
+  obj.camera = new THREE.PerspectiveCamera(39, obj.renderer.domElement.width/obj.renderer.domElement.height, 1, 10000);
+  obj.camera.position.z = 2;
+  obj.camera.position.x = 2.55;
+  obj.camera.position.y = 1.25;
 
-  scene = new THREE.Scene();
+  obj.scene = new THREE.Scene();
   var group = new THREE.Object3D();
-  scene.add( group );
-
+  obj.scene.add( group );
 
 // program for drawing a Canvas point
   var program = function ( context )
@@ -304,10 +301,10 @@ function scatter(el, x, object)
   {
     var fovMAX = 100;
     var fovMIN = 10;
-    if(GL) camera.fov -= event.wheelDeltaY * 0.02;
-    else camera.fov -= event.wheelDeltaY * 0.0075;
-    camera.fov = Math.max( Math.min( camera.fov, fovMAX ), fovMIN );
-    camera.projectionMatrix = new THREE.Matrix4().makePerspective(camera.fov,  object.domElement.width/object.domElement.height, camera.near, camera.far);
+    if(GL) obj.camera.fov -= event.wheelDeltaY * 0.02;
+    else obj.camera.fov -= event.wheelDeltaY * 0.0075;
+    obj.camera.fov = Math.max( Math.min( obj.camera.fov, fovMAX ), fovMIN );
+    obj.camera.projectionMatrix = new THREE.Matrix4().makePerspective(obj.camera.fov,  obj.renderer.domElement.width/obj.renderer.domElement.height, obj.camera.near, obj.camera.far);
     render();
   }
   el.onmousewheel = function(ev) {ev.preventDefault();};
@@ -321,7 +318,7 @@ function scatter(el, x, object)
       var dx = ev.clientX - sx;
       var dy = ev.clientY - sy;
       group.rotation.y += dx*0.01;
-      camera.position.y += 0.05*dy;
+      obj.camera.position.y += 0.05*dy;
       sx += dx;
       sy += dy;
       render();
@@ -330,9 +327,9 @@ function scatter(el, x, object)
 
   function render()
   { 
-    object.clear();
-    camera.lookAt(scene.position);
-    object.render(scene, camera);
+    obj.renderer.clear();
+    obj.camera.lookAt(obj.scene.position);
+    obj.renderer.render(obj.scene, obj.camera);
   }
 
   render();

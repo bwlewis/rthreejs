@@ -2,7 +2,7 @@ Package: threejs
 Type: Package
 Title: threejs graphics with R and Shiny
 Description: Tools and examples for creating three.js graphics with R and Shiny
-Version: 0.2
+Version: 0.2.1
 Date: 2014-12-08
 Author: B. W. Lewis <blewis@illposed.net>
 Maintainer: B. W. Lewis <blewis@illposed.net>
