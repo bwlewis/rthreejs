@@ -3,11 +3,16 @@
 Three.js widgets for R and shiny. The package includes
 
 * globejs:  a widget that plots data and images on a 3-d globe
-* scatterplot3js:  a 3-d scatterplot widget.
+* scatterplot3js:  a 3-d scatterplot widget similar to the scatterplot3d function
 
-Both widgets are easy to use and render directly in RStudio or in web browsers.
-The widgets can be invoked directly or from Shiny applications. They produce
+The widgets are easy to use and render directly in RStudio, with R markdown, in
+Shiny applications, and from command-line R via a web browser.  They produce
 high-quality interactive visualizations with just a few lines of R code.
+
+Visualizations optionally use accelerated WebGL graphics, falling back to
+non-accelerated graphics for systems without WebGL. The scatterplot3js function
+produces fluid, interactive pointclouds with hundreds of thousands of points or
+even millions of points using WebGL.
 
 See http://threejs.org for details on three.js.
 
@@ -20,16 +25,15 @@ amazingly cool visualization widgets for R.
 ## NOTE!
 
 These examples generally run best in WebGL-enabled viewers, including at least
-Chrome, and recent versions of Internet Explorer web browsers. I have had
-some issues with Firefox on Windows. Safari on Mac OS X seems to fall back
-to Canvas (not WebGL) rendering, but works.
-We try to maintain basic support for non-WebGL equipped browsers, but the
-performance and rendering quality will generally be inferior to WebGL
-visualizations.
+Chrome, and recent versions of Internet Explorer web browsers. I have had some
+issues with Firefox on Windows. Safari on Mac OS X seems to fall back to Canvas
+(not WebGL) rendering, but works.  We try to maintain basic support for
+non-WebGL equipped browsers, but the performance and rendering quality will
+generally be inferior to WebGL visualizations.
 
-The examples run inside RStudio, acting like more or less normal R plots.
-RStudio renders them using Canvas right now, but I expect that an upcoming
-version of RStudio will support WebGL.
+The examples run inside RStudio, acting similarly to normal R plots.  RStudio
+renders them using Canvas right now, but an upcoming version of
+RStudio will support WebGL.
 
 ## Install
 
