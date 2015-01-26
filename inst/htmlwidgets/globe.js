@@ -45,6 +45,10 @@ HTMLWidgets.widget(
 // x.value: Either a single height value, or a vector of values
 //          of length x.data.length for each point.
 // x.lightcolor: A color value for the ambient light in the scene
+// x.arcs: four-column data frame with columns fromlat fromlong tolat tolong
+// x.arcsColor:
+// x.arcsLwd:
+// x.arcsHeight:
 // stuff is a tuple with a renderer, camera, and scene. Through the JavaScript
 // weirdness of call-by-sharing, we can modify that state.
   renderValue: function(el, x, stuff)
@@ -149,47 +153,110 @@ HTMLWidgets.widget(
     stuff.scene.add( new THREE.AmbientLight( x.lightcolor ) );
 
 // Add the data points
-    var phi, theta, lat, lng, colr, size;
     var group = new THREE.Geometry();
-    var bg = new THREE.BoxGeometry(1,1,1);
-    var bm = new THREE.MeshBasicMaterial({color: 0xffffff, vertexColors: THREE.FaceColors});
-    var point;
-
-    for (var i = 0; i < x.lat.length; ++i)
+    if(x.lat != null)
     {
-      lat = parseFloat(x.lat[i]);
-      lng = parseFloat(x.long[i]);
-      if(Array.isArray(x.color))
-        colr = new THREE.Color(x.color[i]);
-      else
-        colr = new THREE.Color(x.color);
-      if(Array.isArray(x.value))
-        size = parseInt(x.value[i]);
-      else
-        size = parseInt(x.value);
-      phi = (90 - lat) * Math.PI / 180;
-      theta = - lng * Math.PI / 180;
-      var point = new THREE.Mesh(bg, bm);
-      point.position.x = x.diameter * Math.sin(phi) * Math.cos(theta);
-      point.position.y = x.diameter * Math.cos(phi);
-      point.position.z = x.diameter * Math.sin(phi) * Math.sin(theta);
-      point.scale.x = point.scale.y = x.pointsize;
-      point.scale.z = size;
-      point.lookAt(earth.position);
-      var j;
-      for (j = 0; j<point.geometry.faces.length; j++) {
-        point.geometry.faces[j].color = new THREE.Color(colr);
+      var phi, theta, lat, lng, colr, size;
+      var bg = new THREE.BoxGeometry(1,1,1);
+      var bm = new THREE.MeshBasicMaterial({color: 0xffffff, vertexColors: THREE.FaceColors});
+      var point;
+
+      for (var i = 0; i < x.lat.length; ++i)
+      {
+        lat = parseFloat(x.lat[i]);
+        lng = parseFloat(x.long[i]);
+        if(Array.isArray(x.color))
+          colr = new THREE.Color(x.color[i]);
+        else
+          colr = new THREE.Color(x.color);
+        if(Array.isArray(x.value))
+          size = parseInt(x.value[i]);
+        else
+          size = parseInt(x.value);
+        phi = (90 - lat) * Math.PI / 180;
+        theta = - lng * Math.PI / 180;
+        var point = new THREE.Mesh(bg, bm);
+        point.position.x = x.diameter * Math.sin(phi) * Math.cos(theta);
+        point.position.y = x.diameter * Math.cos(phi);
+        point.position.z = x.diameter * Math.sin(phi) * Math.sin(theta);
+        point.scale.x = point.scale.y = x.pointsize;
+        point.scale.z = size;
+        point.lookAt(earth.position);
+        var j;
+        for (j = 0; j<point.geometry.faces.length; j++) {
+          point.geometry.faces[j].color = new THREE.Color(colr);
+        }
+        THREE.GeometryUtils.merge(group,point);
       }
-      THREE.GeometryUtils.merge(group,point);
     }
     var points = new THREE.Mesh(group, bm);
     stuff.scene.add(points);
+
+// Add the arcs
+    var arcs = new THREE.Object3D();
+    if(x.arcs != null)
+    {
+      var phi1, phi2, theta1, theta2, colr, size;
+      for (var i = 0; i < x.arcs.fromlat.length; ++i)
+      {
+        if(Array.isArray(x.arcsColor))
+          colr = new THREE.Color(x.arcsColor[i]);
+        else
+          colr = new THREE.Color(x.arcsColor);
+        if(Array.isArray(x.arcsLwd))
+          size = parseInt(x.arcsLwd[i]);
+        else
+          size = parseInt(x.acrsLwd);
+        phi1 = (90 - x.arcs.fromlat[i]) * Math.PI / 180;
+        theta1 = - x.arcs.fromlong[i] * Math.PI / 180;
+        phi2 = (90 - x.arcs.tolat[i]) * Math.PI / 180;
+        theta2 = - x.arcs.tolong[i] * Math.PI / 180;
+
+        var start = new THREE.Vector3(
+                      x.diameter * Math.sin(phi1) * Math.cos(theta1),
+                      x.diameter * Math.cos(phi1),
+                      x.diameter * Math.sin(phi1) * Math.sin(theta1));
+        var end   = new THREE.Vector3(
+                      x.diameter * Math.sin(phi2) * Math.cos(theta2),
+                      x.diameter * Math.cos(phi2),
+                      x.diameter * Math.sin(phi2) * Math.sin(theta2));
+        var dist = start.clone().sub(end).length();
+        var mid = start.clone().lerp(end,0.5);
+        var midLength = mid.length()
+        mid.normalize();
+        mid.multiplyScalar( midLength + dist * 0.4 );
+        var normal = (new THREE.Vector3()).sub(start,end);
+        normal.normalize();
+
+        var distanceHalf = dist * 0.5;
+        var startAnchor = start;
+        var midStartAnchor = mid.clone().add( normal.clone().multiplyScalar( distanceHalf ) );
+        var midEndAnchor = mid.clone().add( normal.clone().multiplyScalar( -distanceHalf ) );
+        var endAnchor = end;
+        var splineCurveA = new THREE.CubicBezierCurve3( start, startAnchor, midStartAnchor, mid);
+        var splineCurveB = new THREE.CubicBezierCurve3( mid, midEndAnchor, endAnchor, end);
+        var path = new THREE.CurvePath();
+        path.add(splineCurveA);
+        path.add(splineCurveB);
+        var curveMaterial = new THREE.LineBasicMaterial({
+              color: colr,
+              linewidth: size
+         });
+         curve = new THREE.Line(path.createPointsGeometry(20), curveMaterial);
+         arcs.add(curve);
+      }
+    }
+    stuff.scene.add(arcs);
+
+
 
 // Set initial rotation
     earth.rotation.x = x.rotationlat;
     earth.rotation.y = x.rotationlong;
     points.rotation.x = x.rotationlat;
     points.rotation.y = x.rotationlong;
+    arcs.rotation.x = x.rotationlat;
+    arcs.rotation.y = x.rotationlong;
 
     el.onmousedown = function (ev)
     {
@@ -221,6 +288,8 @@ HTMLWidgets.widget(
         earth.rotation.x += 0.01*dy;
         points.rotation.y = earth.rotation.y;
         points.rotation.x = earth.rotation.x;
+        arcs.rotation.y = earth.rotation.y;
+        arcs.rotation.x = earth.rotation.x;
         sx += dx;
         sy += dy;
         render();

@@ -1,13 +1,17 @@
 #' globejs Three.js globe widget
 #'
-#' Three.js widget for mapping points and an image on a globe. The globe can
-#' be rotated and and zoomed.
+#' Three.js widget for mapping points, arcs and an image on a globe. The globe
+#' can be rotated and and zoomed.
 #'
 #' @param img A character string representing a file path or URI of an image to plot on the globe surface.
-#' @param lat Data point latitudes, must be of same length as \code{long} (negative values indicate south, positive north).
-#' @param long Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
+#' @param lat Optional data point decimal latitudes, must be of same length as \code{long} (negative values indicate south, positive north).
+#' @param long Optional data point decimal longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
 #' @param color Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.
 #' @param value Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.
+#' @param arcs Optional four-column data frame specifying arcs to plot. The columns of the data frame, in order, must indicate the starting latitude, starting longitude, ending latitude, and ending longitude.
+#' @param arcsColor Either a single color value indicating the color of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
+#' @param arcsLwd Either a single value indicating the line width of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
+#' @param arcsHeight A single value between 0.2 and 1 controlling the height above the globe of each arc.
 #' @param atmosphere TRUE enables WebGL atmpsphere effect.
 #' @param bg Plot background color.
 #' @param width The container div width.
@@ -18,7 +22,7 @@
 #' @note
 #' The \code{img} argument specifies the WebGL texture image to wrap on a
 #' sphere. If you plan to plot points using \code{lat} and \code{lon}
-#' the image should be a plate carrée (aka lat/long) equirectangular
+#' the image must be a plate carrée (aka lat/long) equirectangular
 #' map projection; see
 #' \url{https://en.wikipedia.org/wiki/Equirectangular_projection} for
 #' details..
@@ -139,14 +143,23 @@
 #' @import maps
 #' @export
 globejs <- function(
-  img, lat=0, long=0,
+  img, lat, long,
   value=40,
   color="#00ffff",
+  arcs,
+  arcsColor="#99aaff",
+  arcsHeight=0.4,
+  arcsLwd=1,
   atmosphere=FALSE,
   bg="black",
   height = NULL,
   width = NULL, ...)
 {
+  if(missing(lat)|| missing(long))
+  {
+    lat = NULL
+    long = NULL
+  }
   # Strip alpha channel from colors
   i = grep("^#",color)
   if(length(i)>0)
@@ -157,11 +170,28 @@ globejs <- function(
       color[i][j] = substr(color[i][j],1,7)
     }
   }
+  i = grep("^#",arcsColor)
+  if(length(i)>0)
+  {
+    j = nchar(arcsColor[i])>7
+    if(any(j))
+    { 
+      arcsColor[i][j] = substr(arcsColor[i][j],1,7)
+    }
+  }
   i = grep("^#",bg)
   if(length(i)>0) bg = substr(bg,1,7)
+  if(missing(arcs))
+    arcs=NULL
+  else
+  {
+    arcs = data.frame(arcs)
+    names(arcs) = c("fromlat","fromlong","tolat","tolong")
+  }
 
   options = list(lat=lat, long=long, color=color,
-                 value=value, atmosphere=atmosphere, bg=bg)
+                 value=value, atmosphere=atmosphere, bg=bg, arcs=arcs,
+                 arcsColor=arcsColor, arcsLwd=arcsLwd, arcsHeight=arcsHeight)
   additional_args = list(...)
   if(length(additional_args)>0) options = c(options, additional_args)
 # Clean up optional color arguments
