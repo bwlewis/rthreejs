@@ -4,19 +4,28 @@
 \alias{globejs}
 \title{globejs Three.js globe widget}
 \usage{
-globejs(img, lat = 0, long = 0, value = 40, color = "#00ffff",
+globejs(img, lat, long, value = 40, color = "#00ffff", arcs,
+  arcsColor = "#99aaff", arcsHeight = 0.4, arcsLwd = 1,
   atmosphere = FALSE, bg = "black", height = NULL, width = NULL, ...)
 }
 \arguments{
 \item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
 
-\item{lat}{Data point latitudes, must be of same length as \code{long} (negative values indicate south, positive north).}
+\item{lat}{Optional data point decimal latitudes, must be of same length as \code{long} (negative values indicate south, positive north).}
 
-\item{long}{Data point longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).}
+\item{long}{Optional data point decimal longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).}
 
 \item{value}{Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.}
 
 \item{color}{Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.}
+
+\item{arcs}{Optional four-column data frame specifying arcs to plot. The columns of the data frame, in order, must indicate the starting latitude, starting longitude, ending latitude, and ending longitude.}
+
+\item{arcsColor}{Either a single color value indicating the color of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.}
+
+\item{arcsHeight}{A single value between 0.2 and 1 controlling the height above the globe of each arc.}
+
+\item{arcsLwd}{Either a single value indicating the line width of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.}
 
 \item{atmosphere}{TRUE enables WebGL atmpsphere effect.}
 
@@ -30,13 +39,13 @@ globejs(img, lat = 0, long = 0, value = 40, color = "#00ffff",
 below for more information on these options).}
 }
 \description{
-Three.js widget for mapping points and an image on a globe. The globe can
-be rotated and and zoomed.
+Three.js widget for mapping points, arcs and an image on a globe. The globe
+can be rotated and and zoomed.
 }
 \note{
 The \code{img} argument specifies the WebGL texture image to wrap on a
 sphere. If you plan to plot points using \code{lat} and \code{lon}
-the image should be a plate carrée (aka lat/long) equirectangular
+the image must be a plate carrée (aka lat/long) equirectangular
 map projection; see
 \url{https://en.wikipedia.org/wiki/Equirectangular_projection} for
 details..
