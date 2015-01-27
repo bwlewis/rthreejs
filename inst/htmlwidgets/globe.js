@@ -224,7 +224,7 @@ HTMLWidgets.widget(
         var mid = start.clone().lerp(end,0.5);
         var midLength = mid.length()
         mid.normalize();
-        mid.multiplyScalar( midLength + dist * 0.4 );
+        mid.multiplyScalar( midLength + dist * x.arcsHeight );
         var normal = (new THREE.Vector3()).sub(start,end);
         normal.normalize();
 

@@ -188,6 +188,7 @@ globejs <- function(
     arcs = data.frame(arcs)
     names(arcs) = c("fromlat","fromlong","tolat","tolong")
   }
+  arcsHeight = max(min(arcsHeight, 1), 0.2)
 
   options = list(lat=lat, long=long, color=color,
                  value=value, atmosphere=atmosphere, bg=bg, arcs=arcs,
