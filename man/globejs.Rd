@@ -6,7 +6,8 @@
 \usage{
 globejs(img, lat, long, value = 40, color = "#00ffff", arcs,
   arcsColor = "#99aaff", arcsHeight = 0.4, arcsLwd = 1,
-  atmosphere = FALSE, bg = "black", height = NULL, width = NULL, ...)
+  arcsOpacity = 0.2, atmosphere = FALSE, bg = "black", height = NULL,
+  width = NULL, ...)
 }
 \arguments{
 \item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
@@ -26,6 +27,8 @@ globejs(img, lat, long, value = 40, color = "#00ffff", arcs,
 \item{arcsHeight}{A single value between 0.2 and 1 controlling the height above the globe of each arc.}
 
 \item{arcsLwd}{Either a single value indicating the line width of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.}
+
+\item{arcsOpacity}{A single value between 0 and 1 indicating the opacity of all arcs.}
 
 \item{atmosphere}{TRUE enables WebGL atmpsphere effect.}
 

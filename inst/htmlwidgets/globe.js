@@ -240,6 +240,8 @@ HTMLWidgets.widget(
         path.add(splineCurveB);
         var curveMaterial = new THREE.LineBasicMaterial({
               color: colr,
+              transparent: true,
+              opacity: x.arcsOpacity,
               linewidth: size
          });
          curve = new THREE.Line(path.createPointsGeometry(20), curveMaterial);

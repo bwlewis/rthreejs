@@ -12,6 +12,7 @@
 #' @param arcsColor Either a single color value indicating the color of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
 #' @param arcsLwd Either a single value indicating the line width of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
 #' @param arcsHeight A single value between 0.2 and 1 controlling the height above the globe of each arc.
+#' @param arcsOpacity A single value between 0 and 1 indicating the opacity of all arcs.
 #' @param atmosphere TRUE enables WebGL atmpsphere effect.
 #' @param bg Plot background color.
 #' @param width The container div width.
@@ -150,6 +151,7 @@ globejs <- function(
   arcsColor="#99aaff",
   arcsHeight=0.4,
   arcsLwd=1,
+  arcsOpacity=0.2,
   atmosphere=FALSE,
   bg="black",
   height = NULL,
@@ -189,8 +191,9 @@ globejs <- function(
     names(arcs) = c("fromlat","fromlong","tolat","tolong")
   }
   arcsHeight = max(min(arcsHeight, 1), 0.2)
+  arcsOpacity = max(min(arcsOpacity,1),0)
 
-  options = list(lat=lat, long=long, color=color,
+  options = list(lat=lat, long=long, color=color, arcsOpacity=arcsOpacity,
                  value=value, atmosphere=atmosphere, bg=bg, arcs=arcs,
                  arcsColor=arcsColor, arcsLwd=arcsLwd, arcsHeight=arcsHeight)
   additional_args = list(...)
