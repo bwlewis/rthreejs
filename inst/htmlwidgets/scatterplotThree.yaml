@@ -11,3 +11,4 @@ dependencies:
       - Detector.js
       - Projector.js
       - CanvasRenderer.js
+      - OrbitControls.js

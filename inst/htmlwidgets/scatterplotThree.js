@@ -82,6 +82,10 @@ function scatter(el, x, obj)
   obj.camera.position.x = 2.55;
   obj.camera.position.y = 1.25;
 
+  obj.ctrls = new THREE.OrbitControls( obj.camera, el );
+  obj.ctrls.damping = 0.2;
+  obj.ctrls.addEventListener( 'change', render );
+
   obj.scene = new THREE.Scene();
   var group = new THREE.Object3D();
   obj.scene.add( group );
@@ -291,44 +295,18 @@ function scatter(el, x, obj)
 
 
   var down = false;
-  var sx = 0, sy = 0;
   el.onmousedown = function (ev)
   {
-    down = true; sx = ev.clientX; sy = ev.clientY;
+    if (ev.which==1) down = true;
   };
-  el.onmouseup = function(){ down = false; };
-  function mousewheel(event)
-  {
-    var fovMAX = 100;
-    var fovMIN = 10;
-    if(GL) obj.camera.fov -= event.wheelDeltaY * 0.02;
-    else obj.camera.fov -= event.wheelDeltaY * 0.0075;
-    obj.camera.fov = Math.max( Math.min( obj.camera.fov, fovMAX ), fovMIN );
-    obj.camera.projectionMatrix = new THREE.Matrix4().makePerspective(obj.camera.fov,  obj.renderer.domElement.width/obj.renderer.domElement.height, obj.camera.near, obj.camera.far);
-    render();
-  }
-  el.onmousewheel = function(ev) {ev.preventDefault();};
-  el.addEventListener('DOMMouseScroll', mousewheel, true);
-  el.addEventListener('mousewheel', mousewheel, true);
 
   el.onmousemove = function(ev)
-  { 
-    ev.preventDefault();
-    if (down) {
-      var dx = ev.clientX - sx;
-      var dy = ev.clientY - sy;
-      group.rotation.y += dx*0.01;
-      obj.camera.position.y += 0.05*dy;
-      sx += dx;
-      sy += dy;
-      render();
-    }
+  {
   };
 
   function render()
-  { 
+  {
     obj.renderer.clear();
-    obj.camera.lookAt(obj.scene.position);
     obj.renderer.render(obj.scene, obj.camera);
   }
 
