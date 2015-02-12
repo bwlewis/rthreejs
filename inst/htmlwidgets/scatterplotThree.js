@@ -11,7 +11,7 @@ HTMLWidgets.widget(
   initialize: function(el, width, height)
   {
     var r = render_init(el, width, height, false);
-    var c = new THREE.PerspectiveCamera(39, r.domElement.width/r.domElement.height, 1, 10000);
+    var c = new THREE.PerspectiveCamera(39, r.domElement.width/r.domElement.height, 1E-5, 10);
     var s = new THREE.Scene();
     return {renderer:r, camera:c, scene: s, width: parseInt(width), height: parseInt(height)};
   },
@@ -77,7 +77,7 @@ function render_init(el, width, height, choice)
 
 function scatter(el, x, obj)
 {
-  obj.camera = new THREE.PerspectiveCamera(39, obj.renderer.domElement.width/obj.renderer.domElement.height, 1, 10000);
+  obj.camera = new THREE.PerspectiveCamera(39, obj.renderer.domElement.width/obj.renderer.domElement.height, 1E-5, 10);
   obj.camera.position.z = 2;
   obj.camera.position.x = 2.55;
   obj.camera.position.y = 1.25;
