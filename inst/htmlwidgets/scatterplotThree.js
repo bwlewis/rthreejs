@@ -56,7 +56,7 @@ function render_init(el, width, height, choice)
 }
 
 // x.options list of options including:
-// x.options.labels  3 element list of axis labels
+// x.options.axisLabels  3 element list of axis labels
 // x.options.grid true/false draw xz grid (requires xtick.length==ztick.length)
 // x.options.stroke (optional) stroke color (canvas renderer only)
 // x.options.color (optional) either a single color or a vector of colors
@@ -244,11 +244,11 @@ function scatter(el, x, obj)
   group.add(xAxis);
   group.add(yAxis);
   group.add(zAxis);
-  if(x.options.labels)
+  if(x.options.axisLabels)
   {
-    addText(group, x.options.labels[0], 0.8, 1.1, 0, 0, "black")
-    addText(group, x.options.labels[1], 0.8, 0, 1.1, 0, "black")
-    addText(group, x.options.labels[2], 0.8, 0, 0, 1.1, "black")
+    addText(group, x.options.axisLabels[0], 0.8, 1.1, 0, 0, "black")
+    addText(group, x.options.axisLabels[1], 0.8, 0, 1.1, 0, "black")
+    addText(group, x.options.axisLabels[2], 0.8, 0, 0, 1.1, "black")
   }
 
 

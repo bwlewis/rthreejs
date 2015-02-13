@@ -127,7 +127,7 @@ scatterplot3js <- function(
   
   # convert matrix to a JSON array required by scatterplotThree.js and strip
   # them (required by s3d.js)
-  if(length(colnames(x))==3) options$labels = colnames(x)
+  if(length(colnames(x))==3) options$axisLabels = colnames(x)
   colnames(x)=c()
   x = toJSON(t(signif(x,4)))
 
