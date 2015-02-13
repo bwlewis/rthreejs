@@ -88,7 +88,11 @@ function scatter(el, x, obj)
 
   obj.scene = new THREE.Scene();
   var group = new THREE.Object3D();
+  group.name = "group";
   obj.scene.add( group );
+
+  obj.raycaster = new THREE.Raycaster();
+  obj.raycaster.params.PointCloud.threshold = 0.005; // FIXME configurable hover threshold
 
 // program for drawing a Canvas point
   var program = function ( context )
@@ -280,6 +284,11 @@ function scatter(el, x, obj)
     if (ev.which==1) down = true;
   };
 
+  el.onmouseup = function (ev)
+  {
+    if (ev.which==1) down = false;
+  }
+
   el.onmousemove = function(ev)
   {
     if ( lastx != ev.clientX || lasty != ev.clientY ) {
@@ -290,12 +299,32 @@ function scatter(el, x, obj)
       mouse.y = -2 * ( ev.pageY - canvasRect.top ) / canvasRect.height + 1;
       lastx = ev.clientX;
       lasty = ev.clientY;
+
+      render();
     }
   };
+
+  function onMouseHover()
+  {
+      if ( !x.hoverLabels ) return; // no labels, skip
+
+      // update the picking ray with the camera and mouse position
+      // console.log( mouse );
+      obj.raycaster.setFromCamera( mouse, obj.camera );
+
+      // calculate objects intersecting the picking ray
+      var particles = obj.scene.getObjectByName('group').getObjectByName('particles');
+      var intersects = obj.raycaster.intersectObjects( [particles] );
+  }
 
   function render()
   {
     obj.renderer.clear();
+ 
+    if ( !down ) {
+      onMouseHover();
+    }
+
     obj.renderer.render(obj.scene, obj.camera);
   }
 
