@@ -273,6 +273,8 @@ function scatter(el, x, obj)
 
 
   var down = false;
+  var lastx = 0, lasty = 0;
+  var mouse = new THREE.Vector2();
   el.onmousedown = function (ev)
   {
     if (ev.which==1) down = true;
@@ -280,6 +282,15 @@ function scatter(el, x, obj)
 
   el.onmousemove = function(ev)
   {
+    if ( lastx != ev.clientX || lasty != ev.clientY ) {
+      // calculate mouse position in normalized device coordinates
+      // (-1 to +1) for both components
+      var canvasRect = this.getBoundingClientRect();
+      mouse.x = 2 * ( ev.pageX - canvasRect.left ) / canvasRect.width - 1;
+      mouse.y = -2 * ( ev.pageY - canvasRect.top ) / canvasRect.height + 1;
+      lastx = ev.clientX;
+      lasty = ev.clientY;
+    }
   };
 
   function render()
