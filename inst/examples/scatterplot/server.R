@@ -16,6 +16,7 @@ shinyServer(function(input, output) {
                     num.ticks=num.ticks,
                     color=color,
                     size=sizes,
+                    label.hover=paste0("Point #<b>", seq_along(color), "</b>" ),
                     renderer=input$renderer,
                     grid=input$grid)
   })

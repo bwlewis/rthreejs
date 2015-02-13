@@ -50,6 +50,7 @@ function render_init(el, width, height, choice)
   }
   r.setSize(parseInt(width), parseInt(height));
   r.setClearColor("white");
+  d3.select(el).node().style.position = "relative";
   d3.select(el).node().innerHTML="";
   d3.select(el).node().appendChild(r.domElement);
   return r;
@@ -73,6 +74,7 @@ function render_init(el, width, height, choice)
 // x.data JSON 3-column data matrix. Data are assumed to be already
 //   scaled in a unit box (that is, all coordinates are assumed to lie in the
 //   interval [0,1]).
+// x.hoverLabels optional vector of labels to be shown while hovering
 // x.pch.img is an encoded image dataURI used by the WebGL PointCloud renderer only
 
 function scatter(el, x, obj)
@@ -203,6 +205,47 @@ function scatter(el, x, obj)
     object.add(sp);
   }
 
+  function Label( obj )
+  {
+    this.world = obj;
+
+    this.init = function() {
+        var el = document.createElement('div');
+        el.style.position = 'absolute';
+        //el.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+        el.style.display = "none"; // start hidden
+        el.style.className = "hoverLabel";
+        this.el = el;
+        this.world.renderer.domElement.parentElement.appendChild(this.el);
+    };
+
+    this.setPosition = function( pos ) {
+        this.position = pos.clone();
+        this.updatePosition();
+    };
+
+    this.setHtml = function( html ) {
+        if ( html != undefined ) {
+          this.el.innerHTML = html;
+          if ( this.el.style.display == "none" ) {
+            this.el.style.display = "";
+          }
+        } else {
+          this.el.style.display = "none";
+          this.el.innerHTML = "";
+        }
+    };
+
+    this.updatePosition = function() {
+      var scr = this.position.clone().project( this.world.camera );
+      var parentRect = this.el.parentElement.getBoundingClientRect();
+      this.el.style.left = ( scr.x + 1 ) * parentRect.width / 2 - this.el.offsetWidth / 2 + 'px';
+      this.el.style.top = ( 1 - scr.y ) * parentRect.height / 2 - this.el.offsetHeight - 2 + 'px';
+    };
+
+    this.init();
+  };
+
 // Set up the axes
   var fontSize = Math.max(Math.round(1/4), 8);
   var fontOffset = Math.min(Math.round(fontSize/4), 8);
@@ -279,6 +322,9 @@ function scatter(el, x, obj)
   var down = false;
   var lastx = 0, lasty = 0;
   var mouse = new THREE.Vector2();
+  var labelsPool = new Array(); // array of hover labels
+  var hoverLabels = {}; // currently shown hover labels
+
   el.onmousedown = function (ev)
   {
     if (ev.which==1) down = true;
@@ -304,6 +350,35 @@ function scatter(el, x, obj)
     }
   };
 
+  // adds hover label for the point
+  function setHoverLabel(ptix, html)
+  {
+    if ( Object.keys(hoverLabels).length >= 10 ) {
+        // too many already shown labels, reject
+        return;
+    }
+    hoverLabels[ptix] = labelsPool.length ? labelsPool.pop() : new Label(obj);
+    hoverLabels[ptix].setHtml( html );
+  }
+
+  // removes hover label from the point
+  function removeHoverLabel(ptix)
+  {
+    var label = hoverLabels[ptix];
+    label.setHtml(undefined);
+    delete hoverLabels[ptix];
+    labelsPool.push(label);
+  }
+
+  function updateHoveredLabels()
+  {
+      var particles = obj.scene.getObjectByName('group').getObjectByName('particles');
+      particles.updateMatrixWorld();
+      for ( var ptix in hoverLabels ) {
+          hoverLabels[ptix].setPosition( particles.geometry.vertices[ptix].clone().applyMatrix4( particles.matrixWorld ) );
+      }
+  }
+
   function onMouseHover()
   {
       if ( !x.hoverLabels ) return; // no labels, skip
@@ -315,14 +390,35 @@ function scatter(el, x, obj)
       // calculate objects intersecting the picking ray
       var particles = obj.scene.getObjectByName('group').getObjectByName('particles');
       var intersects = obj.raycaster.intersectObjects( [particles] );
+      var curPtIndices = {};
+      // add new labels to the points that are being hovered over now
+      if ( (intersects.length) > 0 ) {
+        for ( var ix in intersects ) {
+          var ptix = intersects[ix].index;
+          curPtIndices[ptix] = true;
+          if ( !(ptix in hoverLabels) ) {
+              setHoverLabel( ptix, x.hoverLabels[ptix] );
+          }
+        }
+      }
+      // remove tooltips from points that are no longer hovered
+      for ( var ptix in hoverLabels ) {
+          if ( !(ptix in curPtIndices) ) removeHoverLabel(ptix);
+      }
   }
 
   function render()
   {
     obj.renderer.clear();
  
+    obj.camera.updateMatrixWorld();
     if ( !down ) {
       onMouseHover();
+      updateHoveredLabels();
+    } else {
+      for ( var ptix in hoverLabels ) {
+        removeHoverLabel(ptix);
+      }
     }
 
     obj.renderer.render(obj.scene, obj.camera);

@@ -16,6 +16,7 @@
 #' of ticks may be adjusted by the program.
 #' @param color Either a single hex or named color name, or a vector of
 #' hex or named color names as long as the number of data points to plot.
+#' @param label.hover a character vector of HTML snippets to show when mouse hovers over a point 
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}. A vector of sizes is only
 #' supported by the \code{canvas} renderer. The \code{webgl} renderers accept
@@ -76,6 +77,7 @@ scatterplot3js <- function(
   axis = TRUE,
   num.ticks = c(6,6,6),
   color = "steelblue",
+  label.hover = NULL,
   stroke = "black",
   size = 1,
   flip.y = TRUE,
@@ -155,7 +157,7 @@ scatterplot3js <- function(
   # create widget
   htmlwidgets::createWidget(
       name = "scatterplotThree",
-      x = list(data=x, options=options, pch=pch),
+      x = list(data=x, hoverLabels=label.hover, options=options, pch=pch),
                width = width,
                height = height,
                htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
