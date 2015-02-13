@@ -218,6 +218,10 @@ function scatter(el, x, obj)
   group.add(xAxis);
   group.add(yAxis);
   group.add(zAxis);
+  // put the particles to the world's center
+  var bbox = group.getObjectByName('particles').geometry.boundingBox;
+  group.position.copy( bbox.min.add(bbox.max).multiplyScalar(-0.5) );
+
   if(x.options.axisLabels)
   {
     addText(group, x.options.axisLabels[0], 0.8, 1.1, 0, 0, "black")
