@@ -1,11 +1,11 @@
 dependencies:
   - name: d3
-    version: 3.4.11
-    src: "htmlwidgets/lib/d3-3.4.11"
-    script: d3.v3.min.js
+    version: 3.5.4
+    src: "htmlwidgets/lib/d3-3.5.4"
+    script: d3.min.js
   - name: threejs
-    version: 69
-    src: "htmlwidgets/lib/threejs-69"
+    version: 70
+    src: "htmlwidgets/lib/threejs-70"
     script:
       - three.min.js
       - Detector.js
