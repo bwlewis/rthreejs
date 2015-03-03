@@ -1,4 +1,5 @@
 /* scatterplotThree.js
+ * XXX
  * A set of example Javascript functions that support a threejs-based 3d
  * scatterplot in R, geared for use with the htmlwidgets and shiny packages.
  */
@@ -11,7 +12,7 @@ HTMLWidgets.widget(
   initialize: function(el, width, height)
   {
     var r = render_init(el, width, height, false);
-    var c = new THREE.PerspectiveCamera(39, r.domElement.width/r.domElement.height, 1, 10000);
+    var c = new THREE.PerspectiveCamera(39, r.domElement.width/r.domElement.height, 1E-5, 10);
     var s = new THREE.Scene();
     return {renderer:r, camera:c, scene: s, width: parseInt(width), height: parseInt(height)};
   },
@@ -56,7 +57,7 @@ function render_init(el, width, height, choice)
 }
 
 // x.options list of options including:
-// x.options.labels  3 element list of axis labels
+// x.options.axisLabels  3 element list of axis labels
 // x.options.grid true/false draw xz grid (requires xtick.length==ztick.length)
 // x.options.stroke (optional) stroke color (canvas renderer only)
 // x.options.color (optional) either a single color or a vector of colors
@@ -77,14 +78,20 @@ function render_init(el, width, height, choice)
 
 function scatter(el, x, obj)
 {
-  obj.camera = new THREE.PerspectiveCamera(39, obj.renderer.domElement.width/obj.renderer.domElement.height, 1, 10000);
+  obj.camera = new THREE.PerspectiveCamera(39, obj.renderer.domElement.width/obj.renderer.domElement.height, 1E-5, 10);
   obj.camera.position.z = 2;
   obj.camera.position.x = 2.55;
   obj.camera.position.y = 1.25;
 
   obj.scene = new THREE.Scene();
-  var group = new THREE.Object3D();
+  var group = new THREE.Object3D();      // contains non-point plot elements
+  var pointgroup = new THREE.Object3D(); // contains point elements
+  group.name = "group";
+  pointgroup.name = "pointgroup";
   obj.scene.add( group );
+  obj.scene.add( pointgroup );
+  obj.raycaster = new THREE.Raycaster();
+  obj.raycaster.params.PointCloud.threshold = 0.005; // FIXME configurable hover threshold
 
 // program for drawing a Canvas point
   var program = function ( context )
@@ -103,69 +110,34 @@ function scatter(el, x, obj)
   var j;
   if(GL)
   {
-    if(x.options.renderer=="webgl-buffered")
+    var geometry = new THREE.BufferGeometry();
+    var positions = new Float32Array( x.data.length );
+    var colors = new Float32Array( x.data.length );
+    var col = new THREE.Color("steelblue");
+    var scale = 0.07;
+    if(x.options.size && !Array.isArray(x.options.size)) scale = 0.07 * x.options.size;
+    for ( var i = 0; i < x.data.length; i++ )
     {
-      var geometry = new THREE.BufferGeometry();
-      var positions = new Float32Array( x.data.length );
-      var colors = new Float32Array( x.data.length );
-      var col = new THREE.Color("steelblue");
-      var scale = 0.07;
-      if(x.options.size && !Array.isArray(x.options.size)) scale = 0.07 * x.options.size;
-      for ( var i = 0; i < x.data.length; i++ )
-      {
-        positions[i] = x.data[i];
-      }
-      for(var i=0;i<x.data.length/3;i++)
-      {
-        j = i*3;
-        if(x.options.color)
-        {
-          if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
-          else col = new THREE.Color(x.options.color);
-        }
-        colors[j] = col.r;
-        colors[j+1] = col.g;
-        colors[j+2] = col.b;
-      }
-      geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-      geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
-      geometry.computeBoundingSphere();
-      var pcmaterial = new THREE.PointCloudMaterial( { size: scale, vertexColors: THREE.VertexColors } );
-      var particleSystem = new THREE.PointCloud( geometry, pcmaterial );
-      group.add( particleSystem );
-    } else
-    {
-      var img = document.createElement("img");
-      img.src = x.pch.img;
-      tex = new THREE.Texture();
-      tex.image = img;
-      tex.needsUpdate = true;
-      var geometry = new THREE.Geometry();
-      var colors = [];
-      var col = new THREE.Color("steelblue");
-      var scale = 0.1;
-      if(x.options.size && !Array.isArray(x.options.size)) scale = 0.1 * x.options.size;
-      for ( var i = 0; i < x.data.length/3; i++ )
-      {
-        j = i*3;
-        if(x.options.color)
-        {
-          if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
-          else col = new THREE.Color(x.options.color);
-        }
-        colors[i] = col;
-        var vertex = new THREE.Vector3();
-        vertex.x = x.data[j];
-        vertex.y = x.data[j+1];
-        vertex.z = x.data[j+2];
-        geometry.vertices.push( vertex );
-      }
-      geometry.colors = colors;
-      var pcmaterial = new THREE.PointCloudMaterial( {map:tex, size: scale, vertexColors: THREE.VertexColors, transparent: true,  opacity: 0.9} );
-      var particles = new THREE.PointCloud( geometry, pcmaterial );
-      particles.sortParticles = true;
-      group.add(particles);
+      positions[i] = x.data[i];
     }
+    for(var i=0;i<x.data.length/3;i++)
+    {
+      j = i*3;
+      if(x.options.color)
+      {
+        if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
+        else col = new THREE.Color(x.options.color);
+      }
+      colors[j] = col.r;
+      colors[j+1] = col.g;
+      colors[j+2] = col.b;
+    }
+    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+    geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+    geometry.computeBoundingSphere();
+    var pcmaterial = new THREE.PointCloudMaterial( { size: scale, vertexColors: THREE.VertexColors } );
+    var particleSystem = new THREE.PointCloud( geometry, pcmaterial );
+    pointgroup.add( particleSystem );
   }
   else {
     var col = new THREE.Color("steelblue");
@@ -190,7 +162,8 @@ function scatter(el, x, obj)
       particle.position.y = x.data[j+1];
       particle.position.z = x.data[j+2];
       particle.scale.x = particle.scale.y = scale;
-      group.add( particle );
+particle.name = "HOMER" + j;
+      pointgroup.add( particle );
     }
   }
 
@@ -240,11 +213,11 @@ function scatter(el, x, obj)
   group.add(xAxis);
   group.add(yAxis);
   group.add(zAxis);
-  if(x.options.labels)
+  if(x.options.axisLabels)
   {
-    addText(group, x.options.labels[0], 0.8, 1.1, 0, 0, "black")
-    addText(group, x.options.labels[1], 0.8, 0, 1.1, 0, "black")
-    addText(group, x.options.labels[2], 0.8, 0, 0, 1.1, "black")
+    addText(group, x.options.axisLabels[0], 0.8, 1.1, 0, 0, "black")
+    addText(group, x.options.axisLabels[1], 0.8, 0, 1.1, 0, "black")
+    addText(group, x.options.axisLabels[2], 0.8, 0, 0, 1.1, "black")
   }
 
 
@@ -290,6 +263,7 @@ function scatter(el, x, obj)
   }
 
 
+  var mouse = new THREE.Vector2();
   var down = false;
   var sx = 0, sy = 0;
   el.onmousedown = function (ev)
@@ -314,16 +288,43 @@ function scatter(el, x, obj)
   el.onmousemove = function(ev)
   { 
     ev.preventDefault();
+
+    var canvasRect = this.getBoundingClientRect();
+    mouse.x = 2 * ( ev.pageX - canvasRect.left ) / canvasRect.width - 1;
+    mouse.y = -2 * ( ev.pageY - canvasRect.top ) / canvasRect.height + 1;
+
     if (down) {
       var dx = ev.clientX - sx;
       var dy = ev.clientY - sy;
       group.rotation.y += dx*0.01;
+      pointgroup.rotation.y += dx*0.01;
       obj.camera.position.y += 0.05*dy;
       sx += dx;
       sy += dy;
       render();
     }
+else
+{
+  onMouseHover();
+}
   };
+
+  function onMouseHover()
+  {
+//    if ( !x.hoverLabels ) return; // no labels, skip
+    // update the picking ray with the camera and mouse position
+    // console.log( mouse );
+    obj.raycaster.setFromCamera( mouse, obj.camera );
+    // calculate objects intersecting the picking ray
+    var particles = obj.scene.getObjectByName('pointgroup');
+    var intersects = obj.raycaster.intersectObjects( particles.children );
+    var curPtIndices = {};
+    // add new labels to the points that are being hovered over now
+    if ( (intersects.length) > 0 ) {
+console.log(intersects[0].object.name);
+    }
+    // remove tooltips from points that are no longer hovered
+  }
 
   function render()
   { 
