@@ -19,15 +19,15 @@ See http://threejs.org for details on three.js.
 See http://bwlewis.github.io/rthreejs  for an example.
 
 This project is based on the new htmlwidgets package. See
-https://github.com/ramnathv/htmlwidgets for details and links to several
-amazingly cool visualization widgets for R.
+https://github.com/ramnathv/htmlwidgets for details and links to amazingly cool
+visualization widgets for R.
 
 ## NOTE!
 
 These examples generally run best in WebGL-enabled viewers, including at least
-Chrome, and recent versions of Internet Explorer web browsers. I have had some
-issues with Firefox on Windows. Safari on Mac OS X seems to fall back to Canvas
-(not WebGL) rendering, but works.  We try to maintain basic support for
+Chrome, and recent versions of Internet Explorer web browsers. Users have had
+some issues with Firefox on Windows. Safari on Mac OS X seems to fall back to
+Canvas (not WebGL) rendering, but works.  We try to maintain basic support for
 non-WebGL equipped browsers, but the performance and rendering quality will
 generally be inferior to WebGL visualizations.
 
