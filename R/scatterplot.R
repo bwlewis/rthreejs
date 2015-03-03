@@ -20,6 +20,8 @@
 #' vector of sizes of length \code{nrow(x)}. A vector of sizes is only
 #' supported by the \code{canvas} renderer. The \code{webgl} renderers accept
 #' a single point size value.
+#' @param labels  Either NULL (no labels), or a vector of labels as long as the
+#' number of data points displayed when the mouse hovers over each point.
 #' @param flip.y Reverse the direction of the y-axis (the default value of
 #' TRUE produces plots similar to those rendered by the R
 #' \code{scatterplot3d} package).
@@ -27,7 +29,7 @@
 #' @param stroke A single color stroke value (surrounding each point). Set to
 #' null to omit stroke (only available in the CanvasRenderer).
 #' @param renderer Select from available plot rendering techniques of
-#' 'auto', 'canvas', 'webgl', or 'webgl-buffered'.
+#' 'auto', 'canvas', or 'webgl'.
 #' @param pch An optional data texture image prepared by the \code{texture}
 #'   function used by the WebGL renderer to draw the points (only available
 #'   in the WebGL renderer).
@@ -39,12 +41,6 @@
 #' is not available. Select \code{auto} to automatically choose between
 #' the two. The two renderers are slightly different
 #' and have different available options (see above).
-#' The \code{webgl-buffered} renderer is a variation of the \code{webgl}
-#' renderer that uses a buffered geometry for large numbers of points.
-#' It is automatically selected if \code{renderer} is not explicitly
-#' specified and the number of points is greater than 10,000. The
-#' \code{webgl-buffered} renderer can handle up to a million points
-#' or so with reasonable performance on typical desktop graphics cards.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -76,11 +72,12 @@ scatterplot3js <- function(
   axis = TRUE,
   num.ticks = c(6,6,6),
   color = "steelblue",
-  stroke = "black",
   size = 1,
+  labels = NULL,
+  stroke = "black",
   flip.y = TRUE,
   grid = TRUE,
-  renderer = c("auto","canvas","webgl", "webgl-buffered"),
+  renderer = c("auto","canvas","webgl"),
   pch)
 {
   # validate input
@@ -91,7 +88,7 @@ scatterplot3js <- function(
   if(missing(pch)) pch = texture(system.file("images/disc.png",package="threejs"))
   if(missing(renderer) && nrow(x)>10000)
   {
-    renderer = "webgl-buffered"
+    renderer = "webgl"
   } else
   {
     renderer = match.arg(renderer)

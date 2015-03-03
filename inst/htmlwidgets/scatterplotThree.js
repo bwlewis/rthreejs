@@ -39,7 +39,7 @@ HTMLWidgets.widget(
 function render_init(el, width, height, choice)
 {
   var r;
-  if(choice=="webgl-buffered") choice = "webgl";
+  if(choice=="webgl-buffered") choice = "webgl";  // deprecated. All WebGL is buffered now
   if(Detector.webgl && (choice=="auto" || choice=="webgl"))
   {
     r = new THREE.WebGLRenderer({antialias: true});
@@ -53,6 +53,12 @@ function render_init(el, width, height, choice)
   r.setClearColor("white");
   d3.select(el).node().innerHTML="";
   d3.select(el).node().appendChild(r.domElement);
+  d3.select(el).append("div").text(" ").attr("id","coordinate_label");
+  document.getElementById("coordinate_label").style.zIndex = "100";
+  document.getElementById("coordinate_label").style.position = "absolute";
+  document.getElementById("coordinate_label").style.top = "0";
+  document.getElementById("coordinate_label").style.margin = "10px 10px 10px 10px";
+HOMER=r;
   return r;
 }
 
@@ -63,6 +69,7 @@ function render_init(el, width, height, choice)
 // x.options.color (optional) either a single color or a vector of colors
 // x.options.size (optional) either a single size or a vector of sizes
 // x.options.renderer, one of "auto" "canvas" "webgl" or "webgl-buffered"
+// x.options.labels (optional) vector of point labels
 // x.options 
 //   xtick:[0,0.5,1]
 //   xticklab:["1","2","3"]
@@ -162,7 +169,12 @@ function scatter(el, x, obj)
       particle.position.y = x.data[j+1];
       particle.position.z = x.data[j+2];
       particle.scale.x = particle.scale.y = scale;
-particle.name = "HOMER" + j;
+// Label points.
+      if(x.options.labels)
+      {
+        if(Array.isArray(x.options.labels)) particle.name = x.options.labels[i];
+        else particle.name = x.options.labels;
+      }
       pointgroup.add( particle );
     }
   }
@@ -321,7 +333,7 @@ else
     var curPtIndices = {};
     // add new labels to the points that are being hovered over now
     if ( (intersects.length) > 0 ) {
-console.log(intersects[0].object.name);
+document.getElementById("coordinate_label").innerHTML = intersects[0].object.name;
     }
     // remove tooltips from points that are no longer hovered
   }
