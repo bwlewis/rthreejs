@@ -12,10 +12,13 @@ shinyServer(function(input, output) {
     else num.ticks <- rep(num.ticks,3)
     color <- rep(rainbow(input$colors),length.out=nrow(example_data))
     sizes <- rep(c(0.5, 1, 2)[1:input$sizes], length.out=nrow(example_data))
+    labs <- sprintf("x=%.2f, y=%.2f, z=%.2f", example_data[,1], example_data[,2], example_data[,3])
     scatterplot3js(x=example_data,
                     num.ticks=num.ticks,
                     color=color,
                     size=sizes,
+                    labels=labs,
+                    label.margin="80px 10px 10px 10px",
                     renderer=input$renderer,
                     grid=input$grid)
   })

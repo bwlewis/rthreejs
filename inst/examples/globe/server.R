@@ -1,6 +1,5 @@
 library("shiny")
 library("threejs")
-library("maps")
 data(world.cities, package="maps")
 
 # We had some rendering problems serving these images directly, it

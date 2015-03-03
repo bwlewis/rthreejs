@@ -5,9 +5,9 @@
 \title{scatterplot3js Three.js 3D scatterplot widget.}
 \usage{
 scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
-  num.ticks = c(6, 6, 6), color = "steelblue", stroke = "black",
-  size = 1, flip.y = TRUE, grid = TRUE, renderer = c("auto", "canvas",
-  "webgl", "webgl-buffered"), pch)
+  num.ticks = c(6, 6, 6), color = "steelblue", size = 1, labels = NULL,
+  label.margin = "10px", stroke = "black", flip.y = TRUE, grid = TRUE,
+  renderer = c("auto", "canvas", "webgl"), pch)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -31,13 +31,19 @@ of ticks may be adjusted by the program.}
 \item{color}{Either a single hex or named color name, or a vector of
 hex or named color names as long as the number of data points to plot.}
 
-\item{stroke}{A single color stroke value (surrounding each point). Set to
-null to omit stroke (only available in the CanvasRenderer).}
-
 \item{size}{The plot point radius, either as a single number or a
 vector of sizes of length \code{nrow(x)}. A vector of sizes is only
 supported by the \code{canvas} renderer. The \code{webgl} renderers accept
 a single point size value.}
+
+\item{labels}{Either NULL (no labels), or a vector of labels as long as the
+number of data points displayed when the mouse hovers over each point.}
+
+\item{label.margin}{A CSS-style margin string used to display the point
+labels.}
+
+\item{stroke}{A single color stroke value (surrounding each point). Set to
+null to omit stroke (only available in the CanvasRenderer).}
 
 \item{flip.y}{Reverse the direction of the y-axis (the default value of
 TRUE produces plots similar to those rendered by the R
@@ -46,7 +52,7 @@ TRUE produces plots similar to those rendered by the R
 \item{grid}{Set FALSE to disable display of a grid.}
 
 \item{renderer}{Select from available plot rendering techniques of
-'auto', 'canvas', 'webgl', or 'webgl-buffered'.}
+'auto', 'canvas', or 'webgl'.}
 
 \item{pch}{An optional data texture image prepared by the \code{texture}
   function used by the WebGL renderer to draw the points (only available
@@ -60,14 +66,9 @@ Use the \code{renderer} option to manually select from the available
 rendering options.
 The \code{canvas} renderer is the fallback rendering option when \code{webgl}
 is not available. Select \code{auto} to automatically choose between
-the two. The two renderers are slightly different
-and have different available options (see above).
-The \code{webgl-buffered} renderer is a variation of the \code{webgl}
-renderer that uses a buffered geometry for large numbers of points.
-It is automatically selected if \code{renderer} is not explicitly
-specified and the number of points is greater than 10,000. The
-\code{webgl-buffered} renderer can handle up to a million points
-or so with reasonable performance on typical desktop graphics cards.
+the two. The two renderers produce slightly different-looking output
+and have different available options (see above). Use the \code{webgl}
+renderer for plotting lots of points (if available).
 }
 \examples{
 ## dontrun
@@ -80,7 +81,7 @@ scatterplot3js(x, color=heat.colors(100))
 z <- seq(-10, 10, 0.01)
 x <- cos(z)
 y <- sin(z)
-scatterplot3js(x,y,z, color=rainbow(length(z)))
+scatterplot3js(x,y,z, color=rainbow(length(z)), labels=sprintf("x=\%.2f, y=\%.2f, z=\%.2f", x, y, z))
 
 # A shiny example
 library("shiny")

@@ -41,8 +41,9 @@
 #' rendering options.
 #' The \code{canvas} renderer is the fallback rendering option when \code{webgl}
 #' is not available. Select \code{auto} to automatically choose between
-#' the two. The two renderers are slightly different
-#' and have different available options (see above).
+#' the two. The two renderers produce slightly different-looking output
+#' and have different available options (see above). Use the \code{webgl}
+#' renderer for plotting lots of points (if available).
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -58,7 +59,7 @@
 #' z <- seq(-10, 10, 0.01)
 #' x <- cos(z)
 #' y <- sin(z)
-#' scatterplot3js(x,y,z, color=rainbow(length(z)))
+#' scatterplot3js(x,y,z, color=rainbow(length(z)), labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
 #'
 #' # A shiny example
 #' library("shiny")

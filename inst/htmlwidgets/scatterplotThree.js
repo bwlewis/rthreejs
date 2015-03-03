@@ -331,8 +331,10 @@ function scatter(el, x, obj)
     // add new labels to the points that are being hovered over now
     if ( (intersects.length) > 0 ) {
       document.getElementById("coordinate_label").innerHTML = intersects[0].object.name;
+    } else
+    {
+      document.getElementById("coordinate_label").innerHTML = "";
     }
-    // remove tooltips from points that are no longer hovered
   }
 
   function render()
