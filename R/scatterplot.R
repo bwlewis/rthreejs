@@ -22,6 +22,8 @@
 #' a single point size value.
 #' @param labels  Either NULL (no labels), or a vector of labels as long as the
 #' number of data points displayed when the mouse hovers over each point.
+#' @param label.margin A CSS-style margin string used to display the point
+#' labels.
 #' @param flip.y Reverse the direction of the y-axis (the default value of
 #' TRUE produces plots similar to those rendered by the R
 #' \code{scatterplot3d} package).
@@ -74,6 +76,7 @@ scatterplot3js <- function(
   color = "steelblue",
   size = 1,
   labels = NULL,
+  label.margin = "10px",
   stroke = "black",
   flip.y = TRUE,
   grid = TRUE,

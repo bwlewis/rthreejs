@@ -1,5 +1,4 @@
 /* scatterplotThree.js
- * XXX
  * A set of example Javascript functions that support a threejs-based 3d
  * scatterplot in R, geared for use with the htmlwidgets and shiny packages.
  */
@@ -28,7 +27,7 @@ HTMLWidgets.widget(
 
   renderValue: function(el, x, stuff)
   {
-    stuff.renderer = render_init(el, stuff.width, stuff.height, x.options.renderer);
+    stuff.renderer = render_init(el, stuff.width, stuff.height, x.options.renderer, x.options.labelmargin);
 // parse the JSON string from R
     x.data = JSON.parse(x.data);
     scatter(el, x, stuff);
@@ -36,7 +35,7 @@ HTMLWidgets.widget(
 })
 
 
-function render_init(el, width, height, choice)
+function render_init(el, width, height, choice, labelmargin)
 {
   var r;
   if(choice=="webgl-buffered") choice = "webgl";  // deprecated. All WebGL is buffered now
@@ -57,8 +56,7 @@ function render_init(el, width, height, choice)
   document.getElementById("coordinate_label").style.zIndex = "100";
   document.getElementById("coordinate_label").style.position = "absolute";
   document.getElementById("coordinate_label").style.top = "0";
-  document.getElementById("coordinate_label").style.margin = "10px 10px 10px 10px";
-HOMER=r;
+  document.getElementById("coordinate_label").style.margin = labelmargin;
   return r;
 }
 
@@ -314,26 +312,25 @@ function scatter(el, x, obj)
       sx += dx;
       sy += dy;
       render();
+    } else
+    {
+      onMouseHover();
     }
-else
-{
-  onMouseHover();
-}
   };
 
   function onMouseHover()
   {
-//    if ( !x.hoverLabels ) return; // no labels, skip
     // update the picking ray with the camera and mouse position
-    // console.log( mouse );
     obj.raycaster.setFromCamera( mouse, obj.camera );
     // calculate objects intersecting the picking ray
     var particles = obj.scene.getObjectByName('pointgroup');
+// XXX Can't figure out intersects for BufferGeometry. Tried something like:
+//  obj.raycaster.intersectObject(particles, true), etc.
     var intersects = obj.raycaster.intersectObjects( particles.children );
     var curPtIndices = {};
     // add new labels to the points that are being hovered over now
     if ( (intersects.length) > 0 ) {
-document.getElementById("coordinate_label").innerHTML = intersects[0].object.name;
+      document.getElementById("coordinate_label").innerHTML = intersects[0].object.name;
     }
     // remove tooltips from points that are no longer hovered
   }
