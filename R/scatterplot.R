@@ -59,7 +59,8 @@
 #' z <- seq(-10, 10, 0.01)
 #' x <- cos(z)
 #' y <- sin(z)
-#' scatterplot3js(x,y,z, color=rainbow(length(z)), labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
+#' scatterplot3js(x,y,z, color=rainbow(length(z)),
+#'    labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
 #'
 #' # A shiny example
 #' library("shiny")
