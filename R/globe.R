@@ -1,6 +1,6 @@
 #' globejs Three.js globe widget
 #'
-#' Three.js widget for mapping points, arcs and an image on a globe. The globe
+#' Three.js widget for mapping points, arcs and images on a globe. The globe
 #' can be rotated and and zoomed.
 #'
 #' @param img A character string representing a file path or URI of an image to plot on the globe surface.
@@ -11,7 +11,7 @@
 #' @param arcs Optional four-column data frame specifying arcs to plot. The columns of the data frame, in order, must indicate the starting latitude, starting longitude, ending latitude, and ending longitude.
 #' @param arcsColor Either a single color value indicating the color of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
 #' @param arcsLwd Either a single value indicating the line width of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
-#' @param arcsHeight A single value between 0.2 and 1 controlling the height above the globe of each arc.
+#' @param arcsHeight A single value between 0 and 1 controlling the height above the globe of each arc.
 #' @param arcsOpacity A single value between 0 and 1 indicating the opacity of all arcs.
 #' @param atmosphere TRUE enables WebGL atmpsphere effect.
 #' @param bg Plot background color.
@@ -76,7 +76,13 @@
 #' Jupiter image: \url{http://maps.jpl.nasa.gov/textures/jup0vtt2.jpg}.
 #'
 #' @examples
-#' ## dontrun
+#' # Plot a subset of global flight paths on the globe.
+#' data(flights)
+#' earth <- system.file("images/world.jpg",  package="threejs")
+#' x <- flights[sample(nrow(flights), 1000),]
+#' globejs(img=earth, arcs=x, arcsLwd=2, arcsColor="#ffff00")
+#'
+#' \dontrun{
 #' # A shiny example:
 #' library("shiny")
 #' runApp(system.file("examples/globe",package="threejs"))
@@ -93,7 +99,6 @@
 #' col <- col[floor(length(col)*(100-value)/100) + 1]
 #'
 #' # The name of a jpeg or PNG image file to wrap over the globe:
-#' earth <- system.file("images/world.jpg",  package="threejs")
 #' globejs(img=earth, lat=cities$lat, long=cities$long, value=value,
 #'         color=col, atmosphere=TRUE)
 #'
@@ -137,11 +142,11 @@
 #'      setParUsrBB=TRUE)
 #' dev.off()
 #' globejs(earth)
+#' }
 #'
 #' See http://bwlewis.github.io/rthreejs for additional examples.
 #'
 #' @importFrom rjson toJSON
-#' @import maps
 #' @export
 globejs <- function(
   img, lat, long,

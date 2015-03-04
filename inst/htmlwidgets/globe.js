@@ -46,9 +46,11 @@ HTMLWidgets.widget(
 //          of length x.data.length for each point.
 // x.lightcolor: A color value for the ambient light in the scene
 // x.arcs: four-column data frame with columns fromlat fromlong tolat tolong
-// x.arcsColor:
-// x.arcsLwd:
-// x.arcsHeight:
+// x.arcsColor: Either a single color value, or a vector of color values
+//              of length matching the numer of rows of x.arcs.data.
+// x.arcsLwd: Either a single line width value, or a vector of values
+//              of length matching the numer of rows of x.arcs.data.
+// x.arcsHeight: Height for all arcs above earth between 0 and 1.
 // stuff is a tuple with a renderer, camera, and scene. Through the JavaScript
 // weirdness of call-by-sharing, we can modify that state.
   renderValue: function(el, x, stuff)
@@ -206,7 +208,7 @@ HTMLWidgets.widget(
         if(Array.isArray(x.arcsLwd))
           size = parseInt(x.arcsLwd[i]);
         else
-          size = parseInt(x.acrsLwd);
+          size = parseInt(x.arcsLwd);
         phi1 = (90 - x.arcs.fromlat[i]) * Math.PI / 180;
         theta1 = - x.arcs.fromlong[i] * Math.PI / 180;
         phi2 = (90 - x.arcs.tolat[i]) * Math.PI / 180;
@@ -225,7 +227,7 @@ HTMLWidgets.widget(
         var midLength = mid.length()
         mid.normalize();
         mid.multiplyScalar( midLength + dist * x.arcsHeight );
-        var normal = (new THREE.Vector3()).sub(start,end);
+        var normal = (new THREE.Vector3()).subVectors(start,end);
         normal.normalize();
 
         var distanceHalf = dist * 0.5;
