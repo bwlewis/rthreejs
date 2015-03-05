@@ -2,17 +2,17 @@
 
 Three.js widgets for R and shiny. The package includes
 
-* globejs:  a widget that plots data and images on a 3-d globe
 * scatterplot3js:  a 3-d scatterplot widget similar to the scatterplot3d function
+* globejs:  a widget that plots data and images on a 3-d globe
 
-The widgets are easy to use and render directly in RStudio, with R markdown, in
+The widgets are easy to use and render directly in RStudio, in R markdown, in
 Shiny applications, and from command-line R via a web browser.  They produce
 high-quality interactive visualizations with just a few lines of R code.
 
 Visualizations optionally use accelerated WebGL graphics, falling back to
 non-accelerated graphics for systems without WebGL. The scatterplot3js function
-produces fluid, interactive pointclouds with hundreds of thousands of points or
-even millions of points using WebGL.
+produces fluid, interactive pointclouds with hundreds of thousands of points
+with WebGL.
 
 See http://threejs.org for details on three.js.
 
