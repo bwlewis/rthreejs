@@ -96,7 +96,7 @@ function scatter(el, x, obj)
   obj.scene.add( group );
   obj.scene.add( pointgroup );
   obj.raycaster = new THREE.Raycaster();
-  obj.raycaster.params.PointCloud.threshold = 0.005; // FIXME configurable hover threshold
+  obj.raycaster.params.PointCloud.threshold = 0.05; // XXX Investigate these units...
 
 // program for drawing a Canvas point
   var program = function ( context )
@@ -320,21 +320,30 @@ function scatter(el, x, obj)
 
   function onMouseHover()
   {
+    var label = "";
     // update the picking ray with the camera and mouse position
     obj.raycaster.setFromCamera( mouse, obj.camera );
     // calculate objects intersecting the picking ray
     var particles = obj.scene.getObjectByName('pointgroup');
-// XXX Can't figure out intersects for BufferGeometry. Tried something like:
-//  obj.raycaster.intersectObject(particles, true), etc.
-    var intersects = obj.raycaster.intersectObjects( particles.children );
-    var curPtIndices = {};
-    // add new labels to the points that are being hovered over now
-    if ( (intersects.length) > 0 ) {
-      document.getElementById("coordinate_label").innerHTML = intersects[0].object.name;
+    if(GL)
+    {
+      var intersects = obj.raycaster.intersectObject( particles, true );
+      if(intersects.length > 0) {
+        if(x.options.labels)
+        {
+          if(Array.isArray(x.options.labels)) label = x.options.labels[intersects[0].index];
+          else label = x.options.labels;
+        }
+      }
     } else
     {
-      document.getElementById("coordinate_label").innerHTML = "";
+      var intersects = obj.raycaster.intersectObjects( particles.children );
+      // add new labels to the points that are being hovered over now
+      if ( intersects.length > 0 ) {
+        label = intersects[0].object.name;
+      }
     }
+    document.getElementById("coordinate_label").innerHTML = label;
   }
 
   function render()
