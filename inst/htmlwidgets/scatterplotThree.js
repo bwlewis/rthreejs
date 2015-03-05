@@ -79,7 +79,6 @@ function render_init(el, width, height, choice, labelmargin)
 // x.data JSON 3-column data matrix. Data are assumed to be already
 //   scaled in a unit box (that is, all coordinates are assumed to lie in the
 //   interval [0,1]).
-// x.pch.img is an encoded image dataURI used by the WebGL PointCloud renderer only
 
 function scatter(el, x, obj)
 {

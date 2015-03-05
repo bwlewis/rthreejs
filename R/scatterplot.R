@@ -32,9 +32,7 @@
 #' null to omit stroke (only available in the CanvasRenderer).
 #' @param renderer Select from available plot rendering techniques of
 #' 'auto', 'canvas', or 'webgl'.
-#' @param pch An optional data texture image prepared by the \code{texture}
-#'   function used by the WebGL renderer to draw the points (only available
-#'   in the WebGL renderer).
+#' @param pch Not yet used but one day will support changing the point glyph.
 #'
 #' @note
 #' Use the \code{renderer} option to manually select from the available
@@ -50,13 +48,16 @@
 #' 
 #' @examples
 #' ## dontrun
-#' # A stand-alone example
-#' set.seed(1)
-#' x <- matrix(rnorm(100*3),ncol=3)
-#' scatterplot3js(x, color=heat.colors(100))
+#' # Gumball machine
+#' N <- 100
+#' i <- sample(3, N, replace=TRUE)
+#' x <- matrix(rnorm(N*3),ncol=3)
+#' lab <- c("small", "bigger", "biggest")
+#' scatterplot3js(x, color=rainbow(N), labels=lab[i],
+#'                size=i, renderer="canvas")
 #'
 #' # Example 1 from the scatterplot3d package (cf.)
-#' z <- seq(-10, 10, 0.01)
+#' z <- seq(-10, 10, 0.1)
 #' x <- cos(z)
 #' y <- sin(z)
 #' scatterplot3js(x,y,z, color=rainbow(length(z)),
@@ -90,7 +91,7 @@ scatterplot3js <- function(
   if(ncol(x)!=3) stop("x must be a three column matrix")
   if(is.data.frame(x)) x = as.matrix(x)
   if(!is.matrix(x)) stop("x must be a three column matrix")
-  if(missing(pch)) pch = texture(system.file("images/disc.png",package="threejs"))
+  if(missing(pch)) pch = NULL
   if(missing(renderer) && nrow(x)>10000)
   {
     renderer = "webgl"
