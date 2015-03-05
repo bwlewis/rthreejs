@@ -80,18 +80,30 @@ the map image. Their default values of zero radians result in the front of the
 globe corresponding to the center of the flat map image.
 }
 \examples{
-# Plot a subset of global flight paths on the globe.
-data(flights)
-earth <- system.file("images/world.jpg",  package="threejs")
-x <- flights[sample(nrow(flights), 1000),]
-globejs(img=earth, arcs=x, arcsLwd=2, arcsColor="#ffff00")
-
 \dontrun{
+library("threejs")
+
+# Plot flights to popular destinations from Callum Prentice's global flight data
+data(flights)
+# Represent approximate destination locations as factors
+dest <- factor(sprintf("\%.2f:\%.2f",flights[,3], flights[,4]))
+# Destination frequency, ordered by popular destinations
+freq <- sort(table(dest), decreasing=TRUE)
+# The 100 most popular destinations in these data
+popular_destinations <- names(freq)[1:10]
+# Subset the flight data by popular destinations
+popular_flights <- flights[dest \%in\% popular_destinations, ]
+N <- nrow(popular_flights)
+# Let's plot them
+earth <- system.file("images/world.jpg",  package="threejs")
+globejs(img=earth, arcs=popular_flights, archsHeight=0.3,
+        arcsLwd=2, arcsColor=heat.colors(N))
+
 # A shiny example:
 library("shiny")
 runApp(system.file("examples/globe",package="threejs"))
 
-# A Stand-alone example:
+# Plot populous world cities from the 'maps' package.
 library("threejs")
 library("maps")
 data(world.cities, package="maps")
@@ -102,7 +114,6 @@ value  <- 100 * cities$pop / max(cities$pop)
 col <- heat.colors(10)
 col <- col[floor(length(col)*(100-value)/100) + 1]
 
-# The name of a jpeg or PNG image file to wrap over the globe:
 globejs(img=earth, lat=cities$lat, long=cities$long, value=value,
         color=col, atmosphere=TRUE)
 
