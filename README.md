@@ -22,6 +22,16 @@ This project is based on the new htmlwidgets package. See
 https://github.com/ramnathv/htmlwidgets for details and links to amazingly cool
 visualization widgets for R.
 
+## What's new
+
+I'm trying to get a release for CRAN together. The latest version includes
+mouse-over labels for labeling scatterplot3js points, thanks to contributions
+from  Alexey Stukalov, https://github.com/alyst, thanks Alexey!
+
+We also simplified the globe plots and added powerful new arc-drawing
+capabilities. Look for a version on CRAN soon!
+
+
 ## NOTE!
 
 These examples generally run best in WebGL-enabled viewers, including at least
