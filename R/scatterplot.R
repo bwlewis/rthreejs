@@ -112,7 +112,8 @@ scatterplot3js <- function(
   }
 
   # create options
-  options = as.list(environment())[-1]
+  options = as.list(environment())
+  options = options[!(names(options) %in% c("x","y","z","i","j"))]
   # javascript does not like dots in names
   i = grep("\\.",names(options))
   if(length(i)>0) names(options)[i] = gsub("\\.","",names(options)[i])
@@ -133,6 +134,7 @@ scatterplot3js <- function(
   if(length(colnames(x))==3) options$axisLabels = colnames(x)
   colnames(x)=c()
   x = toJSON(t(signif(x,4)))
+#  x = t(signif(x,4))
 
   # Ticks
   if(!is.null(num.ticks))
