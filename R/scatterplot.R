@@ -63,6 +63,15 @@
 #' scatterplot3js(x,y,z, color=rainbow(length(z)),
 #'    labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
 #'
+#' # Interesting 100,000 point cloud example, should run this with WebGL!
+#' N1 <- 10000
+#' N2 <- 90000
+#' x <- c(rnorm(N1, sd=0.5), rnorm(N2, sd=2))
+#' y <- c(rnorm(N1, sd=0.5), rnorm(N2, sd=2))
+#' z <- c(rnorm(N1, sd=0.5), rpois(N2, lambda=20)-20)
+#' col <- c(rep("#ffff00",N1),rep("#00ffff",N2))
+#' scatterplot3js(x,y,z, color=col, size=0.25)
+#'
 #' # A shiny example
 #' library("shiny")
 #' runApp(system.file("examples/scatterplot",package="threejs"))
