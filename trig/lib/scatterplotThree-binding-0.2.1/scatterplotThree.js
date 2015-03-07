@@ -308,6 +308,8 @@ function scatter(el, x, obj)
       group.rotation.y += dx*0.01;
       pointgroup.rotation.y += dx*0.01;
       obj.camera.position.y += 0.05*dy;
+      if(obj.camera.position.y < -8) obj.camera.position.y = -8;
+      if(obj.camera.position.y > 8) obj.camera.position.y = 8;
       sx += dx;
       sy += dy;
       render();
