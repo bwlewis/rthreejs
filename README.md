@@ -10,9 +10,9 @@ Shiny applications, and from command-line R via a web browser.  They produce
 high-quality interactive visualizations with just a few lines of R code.
 
 Visualizations optionally use accelerated WebGL graphics, falling back to
-non-accelerated graphics for systems without WebGL. The scatterplot3js function
-produces fluid, interactive pointclouds with hundreds of thousands of points
-with WebGL.
+non-accelerated graphics for systems without WebGL. When WebGL is available,
+the scatterplot3js function can produce fluid, interactive pointclouds with
+hundreds of thousands of points.
 
 See http://threejs.org for details on three.js.
 

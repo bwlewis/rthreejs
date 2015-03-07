@@ -69,7 +69,7 @@
 #' x <- c(rnorm(N1, sd=0.5), rnorm(N2, sd=2))
 #' y <- c(rnorm(N1, sd=0.5), rnorm(N2, sd=2))
 #' z <- c(rnorm(N1, sd=0.5), rpois(N2, lambda=20)-20)
-#' col <- c(rep("#ffff00",N1),rep("#00ffff",N2))
+#' col <- c(rep("#ffff00",N1),rep("#0000ff",N2))
 #' scatterplot3js(x,y,z, color=col, size=0.25)
 #'
 #' # A shiny example

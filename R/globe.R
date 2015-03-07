@@ -78,47 +78,28 @@
 #' @examples
 #' \dontrun{
 #' library("threejs")
-#' 
+#"
 #' # Plot flights to frequent destinations from
 #' # Callum Prentice's global flight data set,
 #' # http://callumprentice.github.io/apps/flight_stream/index.html
-#' 
 #' data(flights)
-#' 
 #' # Approximate locations as factors
-#' flights$dest   <- factor(sprintf("%.2f:%.2f",flights[,3], flights[,4]))
-#' flights$origin <- factor(sprintf("%.2f:%.2f",flights[,1], flights[,2]))
-#' 
+#' dest   <- factor(sprintf("%.2f:%.2f",flights[,3], flights[,4]))
 #' # A table of destination frequencies
-#' freq <- sort(table(flights$dest), decreasing=TRUE)
-#' 
+#' freq <- sort(table(dest), decreasing=TRUE)
 #' # The most frequent destinations in these data, possibly hub airports?
 #' frequent_destinations <- names(freq)[1:10]
-#' 
 #' # Subset the flight data by destination frequency
-#' idx <- flights$dest %in% frequent_destinations
+#' idx <- dest %in% frequent_destinations
 #' frequent_flights <- flights[idx, ]
-#' 
-#' # Aggregate frequencies by destination and origin, somewhat clumsily
-#' a <- aggregate(frequent_flights[,1:4], 
-#'        by=list(origin=frequent_flights$origin, dest=frequent_flights$dest),
-#'        FUN=function(x)c(x[1],length(x)))
-#' frequent_flights <- as.data.frame(lapply(a[,-(1:2)], function(x)x[,1]))
-#' frequencies <- a[,3][,2]
-#' 
 #' # Lat/long of frequent destinations
 #' latlong <- unique(frequent_flights[,3:4])
-#' clrs <- heat.colors(max(frequencies))[frequencies]
-#' 
 #' # Plot frequent destinations as bars, and the flights to and from
 #' # them as arcs. Adjust arc width and color by frequency.
 #' earth <- system.file("images/world.jpg",  package="threejs")
-#' globejs(img=earth, lat=latlong[,1], long=latlong[,2],
-#'         value=freq[frequent_destinations]/5, arcs=frequent_flights,
-#'         arcsHeight=0.3, arcsLwd=frequencies/2, arcsColor=clrs[frequencies],
+#' globejs(img=earth, lat=latlong[,1], long=latlong[,2], arcs=frequent_flights,
+#'         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
 #'         atmosphere=TRUE)
-#' 
-#' 
 #'
 #' # A shiny example:
 #'

@@ -37,8 +37,7 @@
 #' img <- "http://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg"
 #' t <- texture(img)
 #' 
-#' @importFrom rjson toJSON
-#' @importFrom base64 encode
+#' @importFrom base64enc dataURI
 #' @export
 texture = function(data)
 { 
@@ -52,11 +51,7 @@ texture = function(data)
     close(u)
   }
 # Encode the file as a dataURI
-  tf = tempfile()
-  on.exit(unlink(tf), add=TRUE)
-  encode(data, tf)
   if(nchar(ext)<1) ext="png"
-  img =  sprintf("data:image/%s;base64,\n%s", ext,
-           paste(readLines(tf), collapse = "\n"))
+  img = dataURI(file=data,mime=sprintf("image/%s",ext))
   list(img=img, dataURI=TRUE)
 }

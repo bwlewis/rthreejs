@@ -14,11 +14,10 @@ Imports:
     htmlwidgets (>= 0.2.2),
     plyr,
     rjson,
-    base64
+    base64enc
 Suggests:
     htmltools (>= 0.2.6),
     RCurl,
     maps,
-    sp,
-    rworldmap
+    sp
 Enhances: knitr, shiny
