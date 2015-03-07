@@ -10,6 +10,7 @@ HTMLWidgets.widget(
 
   initialize: function(el, width, height)
   {
+
     var r = render_init(el, width, height, false);
     var c = new THREE.PerspectiveCamera(39, r.domElement.width/r.domElement.height, 1E-5, 10);
     var s = new THREE.Scene();
@@ -282,6 +283,7 @@ function scatter(el, x, obj)
   el.onmouseup = function(){ down = false; };
   function mousewheel(event)
   {
+    event.wheelDeltaY = event.wheelDeltaY || -10*event.detail;
     var fovMAX = 100;
     var fovMIN = 10;
     if(GL) obj.camera.fov -= event.wheelDeltaY * 0.02;
