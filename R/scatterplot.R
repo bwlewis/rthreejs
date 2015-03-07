@@ -32,6 +32,9 @@
 #' null to omit stroke (only available in the CanvasRenderer).
 #' @param renderer Select from available plot rendering techniques of
 #' 'auto', 'canvas', or 'webgl'.
+#' @param signif Number of significant digits used to represent point
+#' coordinates. Larger numbers increase accuracy but slow plot generation
+#' down.
 #' @param pch Not yet used but one day will support changing the point glyph.
 #'
 #' @note
@@ -93,6 +96,7 @@ scatterplot3js <- function(
   flip.y = TRUE,
   grid = TRUE,
   renderer = c("auto","canvas","webgl"),
+  signif = 8,
   pch)
 {
   # validate input
@@ -142,8 +146,7 @@ scatterplot3js <- function(
   # them (required by s3d.js)
   if(length(colnames(x))==3) options$axisLabels = colnames(x)
   colnames(x)=c()
-  x = toJSON(t(signif(x,4)))
-#  x = t(signif(x,4))
+  x = toJSON(t(signif(x,signif)))
 
   # Ticks
   if(!is.null(num.ticks))
