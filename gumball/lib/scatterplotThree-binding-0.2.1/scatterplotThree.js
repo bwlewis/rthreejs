@@ -283,9 +283,9 @@ function scatter(el, x, obj)
   el.onmouseup = function(){ down = false; };
   function mousewheel(event)
   {
-    event.wheelDeltaY = event.wheelDeltaY || -10*event.detail;
     var fovMAX = 100;
     var fovMIN = 10;
+    event.wheelDeltaY = event.wheelDeltaY || -10*event.detail || event.wheelDelta;
     if(GL) obj.camera.fov -= event.wheelDeltaY * 0.02;
     else obj.camera.fov -= event.wheelDeltaY * 0.0075;
     obj.camera.fov = Math.max( Math.min( obj.camera.fov, fovMAX ), fovMIN );
