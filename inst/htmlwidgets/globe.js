@@ -272,6 +272,7 @@ HTMLWidgets.widget(
     {
       var fovMAX = 120;
       var fovMIN = 10;
+      event.wheelDeltaY = event.wheelDeltaY || -10*event.detail || event.wheelDelta;
       if(GL) stuff.camera.fov -= event.wheelDeltaY * 0.02;
       else stuff.camera.fov -= event.wheelDeltaY * 0.0075;
       stuff.camera.fov = Math.max( Math.min( stuff.camera.fov, fovMAX ), fovMIN );
