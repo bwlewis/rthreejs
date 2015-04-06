@@ -1,9 +1,10 @@
 #' scatterplot3js Three.js 3D scatterplot widget.
 #'
-#' A 3D scatterplot widget using three.js.
+#' A 3D scatterplot widget using three.js. Many options
+#' follow the \code{scatterplot3d} function from the eponymous package.
 #'
 #' @param x Either a vector of x-coordinate values or a  three-column
-#' data matrix with three columns corresponding to the x,y,z
+#' data matrix with columns corresponding to the x,y,z
 #' coordinate axes. Column labels, if present, are used as axis labels.
 #' @param y (Optional) vector of y-coordinate values, not required if
 #' \code{x} is a matrix.
@@ -11,15 +12,18 @@
 #' \code{x} is a matrix.
 #' @param width The container div width.
 #' @param height The container div height.
+#' @param axis A logical value that when \code{TRUE} indicates that the
+#' axes will be displayed.
 #' @param num.ticks A three-element vector with the suggested number of
 #' ticks to display per axis. Set to NULL to not display ticks. The number
 #' of ticks may be adjusted by the program.
-#' @param color Either a single hex or named color name, or a vector of
-#' hex or named color names as long as the number of data points to plot.
+#' @param color Either a single hex or named color name (all points same color),
+#' or a vector of #' hex or named color names as long as the number of data
+#' points to plot.
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}. A vector of sizes is only
-#' supported by the \code{canvas} renderer. The \code{webgl} renderers accept
-#' a single point size value.
+#' supported by the \code{canvas} renderer. The \code{webgl} renderer accepts
+#' a single size value for all points.
 #' @param labels  Either NULL (no labels), or a vector of labels as long as the
 #' number of data points displayed when the mouse hovers over each point.
 #' @param label.margin A CSS-style margin string used to display the point
@@ -29,7 +33,7 @@
 #' \code{scatterplot3d} package).
 #' @param grid Set FALSE to disable display of a grid.
 #' @param stroke A single color stroke value (surrounding each point). Set to
-#' null to omit stroke (only available in the CanvasRenderer).
+#' null to omit stroke (only available in the canvas renderer).
 #' @param renderer Select from available plot rendering techniques of
 #' 'auto', 'canvas', or 'webgl'.
 #' @param signif Number of significant digits used to represent point
@@ -45,13 +49,15 @@
 #' is not available. Select \code{auto} to automatically choose between
 #' the two. The two renderers produce slightly different-looking output
 #' and have different available options (see above). Use the \code{webgl}
-#' renderer for plotting lots of points (if available).
+#' renderer for plotting large numbers of points (if available). Use the
+#' \code{canvas} renderer to excercise finer control of plotting of smaller
+#' numbers of points. See the examples.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
 #' 
 #' @examples
-#' ## dontrun
+#' \dontrun{
 #' # Gumball machine
 #' N <- 100
 #' i <- sample(3, N, replace=TRUE)
@@ -79,6 +85,7 @@
 #' # A shiny example
 #' library("shiny")
 #' runApp(system.file("examples/scatterplot",package="threejs"))
+#' }
 #' 
 #' @seealso scatterplot3d, rgl
 #' @importFrom rjson toJSON

@@ -12,7 +12,7 @@ scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
-data matrix with three columns corresponding to the x,y,z
+data matrix with columns corresponding to the x,y,z
 coordinate axes. Column labels, if present, are used as axis labels.}
 
 \item{y}{(Optional) vector of y-coordinate values, not required if
@@ -25,17 +25,21 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 
 \item{width}{The container div width.}
 
+\item{axis}{A logical value that when \code{TRUE} indicates that the
+axes will be displayed.}
+
 \item{num.ticks}{A three-element vector with the suggested number of
 ticks to display per axis. Set to NULL to not display ticks. The number
 of ticks may be adjusted by the program.}
 
-\item{color}{Either a single hex or named color name, or a vector of
-hex or named color names as long as the number of data points to plot.}
+\item{color}{Either a single hex or named color name (all points same color),
+or a vector of #' hex or named color names as long as the number of data
+points to plot.}
 
 \item{size}{The plot point radius, either as a single number or a
 vector of sizes of length \code{nrow(x)}. A vector of sizes is only
-supported by the \code{canvas} renderer. The \code{webgl} renderers accept
-a single point size value.}
+supported by the \code{canvas} renderer. The \code{webgl} renderer accepts
+a single size value for all points.}
 
 \item{labels}{Either NULL (no labels), or a vector of labels as long as the
 number of data points displayed when the mouse hovers over each point.}
@@ -44,7 +48,7 @@ number of data points displayed when the mouse hovers over each point.}
 labels.}
 
 \item{stroke}{A single color stroke value (surrounding each point). Set to
-null to omit stroke (only available in the CanvasRenderer).}
+null to omit stroke (only available in the canvas renderer).}
 
 \item{flip.y}{Reverse the direction of the y-axis (the default value of
 TRUE produces plots similar to those rendered by the R
@@ -64,7 +68,8 @@ down.}
 \item{pch}{Not yet used but one day will support changing the point glyph.}
 }
 \description{
-A 3D scatterplot widget using three.js.
+A 3D scatterplot widget using three.js. Many options
+follow the \code{scatterplot3d} function from the eponymous package.
 }
 \note{
 Use the \code{renderer} option to manually select from the available
@@ -73,10 +78,12 @@ The \code{canvas} renderer is the fallback rendering option when \code{webgl}
 is not available. Select \code{auto} to automatically choose between
 the two. The two renderers produce slightly different-looking output
 and have different available options (see above). Use the \code{webgl}
-renderer for plotting lots of points (if available).
+renderer for plotting large numbers of points (if available). Use the
+\code{canvas} renderer to excercise finer control of plotting of smaller
+numbers of points. See the examples.
 }
 \examples{
-## dontrun
+\dontrun{
 # Gumball machine
 N <- 100
 i <- sample(3, N, replace=TRUE)
@@ -104,6 +111,7 @@ scatterplot3js(x,y,z, color=col, size=0.25)
 # A shiny example
 library("shiny")
 runApp(system.file("examples/scatterplot",package="threejs"))
+}
 }
 \references{
 The three.js project \url{http://threejs.org}.

@@ -48,7 +48,7 @@ can be rotated and and zoomed.
 \note{
 The \code{img} argument specifies the WebGL texture image to wrap on a
 sphere. If you plan to plot points using \code{lat} and \code{lon}
-the image must be a plate carrée (aka lat/long) equirectangular
+the image must be a plate carree (aka lat/long) equirectangular
 map projection; see
 \url{https://en.wikipedia.org/wiki/Equirectangular_projection} for
 details..
@@ -162,9 +162,8 @@ plot(wrld_simpl, col="black", bg=bgcolor, border="cyan", ann=FALSE,
      setParUsrBB=TRUE)
 dev.off()
 globejs(earth)
-}
-
 See http://bwlewis.github.io/rthreejs for additional examples.
+}
 }
 \references{
 The three.js project \url{http://threejs.org}.

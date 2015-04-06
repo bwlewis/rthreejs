@@ -23,7 +23,7 @@
 #' @note
 #' The \code{img} argument specifies the WebGL texture image to wrap on a
 #' sphere. If you plan to plot points using \code{lat} and \code{lon}
-#' the image must be a plate carrée (aka lat/long) equirectangular
+#' the image must be a plate carree (aka lat/long) equirectangular
 #' map projection; see
 #' \url{https://en.wikipedia.org/wiki/Equirectangular_projection} for
 #' details..
@@ -160,9 +160,8 @@
 #'      setParUsrBB=TRUE)
 #' dev.off()
 #' globejs(earth)
-#' }
-#'
 #' See http://bwlewis.github.io/rthreejs for additional examples.
+#' }
 #'
 #' @importFrom rjson toJSON
 #' @export
