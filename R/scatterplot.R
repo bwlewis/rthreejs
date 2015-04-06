@@ -35,6 +35,7 @@
 #' @param signif Number of significant digits used to represent point
 #' coordinates. Larger numbers increase accuracy but slow plot generation
 #' down.
+#' @param bg  The color to be used for the background of the device region.
 #' @param pch Not yet used but one day will support changing the point glyph.
 #'
 #' @note
@@ -97,6 +98,7 @@ scatterplot3js <- function(
   grid = TRUE,
   renderer = c("auto","canvas","webgl"),
   signif = 8,
+  bg = "#ffffff",
   pch)
 {
   # validate input
@@ -172,7 +174,7 @@ scatterplot3js <- function(
   # create widget
   htmlwidgets::createWidget(
       name = "scatterplotThree",
-      x = list(data=x, options=options, pch=pch),
+      x = list(data=x, options=options, pch=pch, bg=bg),
                width = width,
                height = height,
                htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),

@@ -7,7 +7,8 @@
 scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   num.ticks = c(6, 6, 6), color = "steelblue", size = 1, labels = NULL,
   label.margin = "10px", stroke = "black", flip.y = TRUE, grid = TRUE,
-  renderer = c("auto", "canvas", "webgl"), signif = 8, pch)
+  renderer = c("auto", "canvas", "webgl"), signif = 8, bg = "#ffffff",
+  pch)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -57,6 +58,8 @@ TRUE produces plots similar to those rendered by the R
 \item{signif}{Number of significant digits used to represent point
 coordinates. Larger numbers increase accuracy but slow plot generation
 down.}
+
+\item{bg}{The color to be used for the background of the device region.}
 
 \item{pch}{Not yet used but one day will support changing the point glyph.}
 }

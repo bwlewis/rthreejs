@@ -28,6 +28,7 @@ HTMLWidgets.widget(
   renderValue: function(el, x, stuff)
   {
     stuff.renderer = render_init(el, stuff.width, stuff.height, x.options.renderer, x.options.labelmargin);
+    if(x.bg) stuff.renderer.setClearColor(x.bg);
 // parse the JSON string from R
     x.data = JSON.parse(x.data);
     scatter(el, x, stuff);
@@ -96,6 +97,7 @@ function scatter(el, x, obj)
   obj.scene.add( pointgroup );
   obj.raycaster = new THREE.Raycaster();
   obj.raycaster.params.PointCloud.threshold = 0.05; // XXX Investigate these units...
+
 
 // program for drawing a Canvas point
   var program = function ( context )
