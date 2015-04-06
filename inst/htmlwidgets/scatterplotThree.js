@@ -28,7 +28,7 @@ HTMLWidgets.widget(
   renderValue: function(el, x, stuff)
   {
     stuff.renderer = render_init(el, stuff.width, stuff.height, x.options.renderer, x.options.labelmargin);
-    if(x.bg) stuff.renderer.setClearColor(x.bg);
+    if(x.bg) stuff.renderer.setClearColor(new THREE.Color(x.bg));
 // parse the JSON string from R
     x.data = JSON.parse(x.data);
     scatter(el, x, stuff);
@@ -186,7 +186,7 @@ function scatter(el, x, obj)
     canvas.width = size;
     canvas.height = size;
     var context = canvas.getContext('2d');
-    context.fillStyle = color;
+    context.fillStyle = "#" + color.getHexString();
     context.textAlign = 'center';
     context.font = '24px Arial';
     context.fillText(string, size / 2, size / 2);
@@ -206,6 +206,15 @@ function scatter(el, x, obj)
   }
 
 // Set up the axes
+  var axisColor = new THREE.Color("#000000");
+  if(x.bg)
+  {
+    var bgcolor = new THREE.Color(x.bg);
+    axisColor.r = 1 - bgcolor.r;
+    axisColor.g = 1 - bgcolor.g;
+    axisColor.b = 1 - bgcolor.b;
+  }
+
   var fontSize = Math.max(Math.round(1/4), 8);
   var fontOffset = Math.min(Math.round(fontSize/4), 8);
   var xAxisGeo = new THREE.Geometry();
@@ -215,9 +224,9 @@ function scatter(el, x, obj)
   xAxisGeo.vertices.push(v(0, 0, 0), v(1, 0, 0));
   yAxisGeo.vertices.push(v(0, 0, 0), v(0, 1, 0));
   zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, 1));
-  var xAxis = new THREE.Line(xAxisGeo, new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1}));
-  var yAxis = new THREE.Line(yAxisGeo, new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1}));
-  var zAxis = new THREE.Line(zAxisGeo, new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1}));
+  var xAxis = new THREE.Line(xAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
+  var yAxis = new THREE.Line(yAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
+  var zAxis = new THREE.Line(zAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
   xAxis.type = THREE.Lines;
   yAxis.type = THREE.Lines;
   zAxis.type = THREE.Lines;
@@ -226,13 +235,17 @@ function scatter(el, x, obj)
   group.add(zAxis);
   if(x.options.axisLabels)
   {
-    addText(group, x.options.axisLabels[0], 0.8, 1.1, 0, 0, "black")
-    addText(group, x.options.axisLabels[1], 0.8, 0, 1.1, 0, "black")
-    addText(group, x.options.axisLabels[2], 0.8, 0, 0, 1.1, "black")
+    addText(group, x.options.axisLabels[0], 0.8, 1.1, 0, 0, axisColor)
+    addText(group, x.options.axisLabels[1], 0.8, 0, 1.1, 0, axisColor)
+    addText(group, x.options.axisLabels[2], 0.8, 0, 0, 1.1, axisColor)
   }
 
 
 // Ticks and tick labels
+  var tickColor = axisColor;
+  tickColor.r = Math.min(tickColor.r + 0.2, 1);
+  tickColor.g = Math.min(tickColor.g + 0.2, 1);
+  tickColor.b = Math.min(tickColor.b + 0.2, 1);
   function tick(length, thickness, axis, ticks, ticklabels)
   {
     for(var j=0; j<ticks.length; j++)
@@ -245,8 +258,8 @@ function scatter(el, x, obj)
       else if(axis==2){a1=0; b1=length; c1=ticks[j];a2=0;b2=-length;c2=ticks[j]; a3=-0.08; b3=-0.05; c3=ticks[j];}
       tick.vertices.push(v(a1,b1,c1),v(a2,b2,c2));
       if(ticklabels)
-        addText(group, parseFloat(ticklabels[j]).toFixed(1), 0.5, a3, b3, c3, "#555");
-      var tl = new THREE.Line(tick, new THREE.LineBasicMaterial({color: 0x000000, linewidth: thickness}));
+        addText(group, parseFloat(ticklabels[j]).toFixed(1), 0.5, a3, b3, c3, tickColor);
+      var tl = new THREE.Line(tick, new THREE.LineBasicMaterial({color: tickColor, linewidth: thickness}));
       tl.type=THREE.Lines;
       group.add(tl);
     }
@@ -262,12 +275,12 @@ function scatter(el, x, obj)
     {
       var gridline = new THREE.Geometry();
       gridline.vertices.push(v(x.options.xtick[j],0,0),v(x.options.xtick[j],0,1));
-      var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: 0x555555, linewidth: 1}));
+      var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
       gl.type=THREE.Lines;
       group.add(gl);
       gridline = new THREE.Geometry();
       gridline.vertices.push(v(0,0,x.options.ztick[j]),v(1,0,x.options.ztick[j]));
-      gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: 0x555555, linewidth: 1}));
+      gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
       gl.type=THREE.Lines;
       group.add(gl);
     }

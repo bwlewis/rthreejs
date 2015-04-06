@@ -125,6 +125,14 @@ scatterplot3js <- function(
       color[i][j] = substr(color[i][j],1,7)
     }
   }
+  i = grep("^#",bg)
+  if(length(i)>0)
+  {
+    if(nchar(bg)>7)
+    { 
+      bg = substr(bg,1,7)
+    }
+  }
 
   # create options
   options = as.list(environment())
