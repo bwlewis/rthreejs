@@ -29,8 +29,6 @@ HTMLWidgets.widget(
   {
     stuff.renderer = render_init(el, stuff.width, stuff.height, x.options.renderer, x.options.labelmargin);
     if(x.bg) stuff.renderer.setClearColor(new THREE.Color(x.bg));
-// parse the JSON string from R
-    x.data = JSON.parse(x.data);
     scatter(el, x, stuff);
   }
 })
