@@ -88,7 +88,7 @@
 #' }
 #' 
 #' @seealso scatterplot3d, rgl
-#' @importFrom rjson toJSON
+#' @importFrom jsonlite toJSON
 #' @export
 scatterplot3js <- function(
   x, y, z,
@@ -163,7 +163,8 @@ scatterplot3js <- function(
   # them (required by s3d.js)
   if(length(colnames(x))==3) options$axisLabels = colnames(x)
   colnames(x)=c()
-  x = toJSON(t(signif(x,signif)))
+#  x = toJSON(t(signif(x,signif))) # rjson package
+  x = toJSON(as.vector(t(signif(x,signif)))) # jsonlite package
 
   # Ticks
   if(!is.null(num.ticks))

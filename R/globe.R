@@ -163,7 +163,7 @@
 #' See http://bwlewis.github.io/rthreejs for additional examples.
 #' }
 #'
-#' @importFrom rjson toJSON
+#' @importFrom jsonlite toJSON
 #' @export
 globejs <- function(
   img, lat, long,
