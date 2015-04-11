@@ -1,7 +1,7 @@
 Package: threejs
 Type: Package
-Title: 3D Htmlwidget Graphics
-Description: Interactive 3D graphics including pointclouds and globes using three.js and htmlwidgets.
+Title: 3D Graphics using Three.js and Htmlwidgets
+Description: Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
 Version: 0.2.1
 Date: 2014-12-08
 Author: B. W. Lewis <blewis@illposed.net>

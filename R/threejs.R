@@ -1,7 +1,7 @@
 
-#' Tools for creating threejs and d3.js graphics from R
+#' Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
 #'
-#' Tools for creating threejs and d3.js graphics from R
+#' Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
 #'
 #' @name threejs-package
 #' @references
