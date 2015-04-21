@@ -9,7 +9,7 @@ moon    <- system.file("images/moon.jpg",package="threejs")
 mars    <- system.file("images/mars.jpg",package="threejs")
 jupiter <- system.file("images/jupiter.jpg",package="threejs")
 col <- list(
-    earth_dark=list(img=earth_dark,bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff"),
+    earth_dark=list(img=earth_dark,bodycolor="#0011ff",emissive="#0011ff",lightcolor="#99ddff"),
     moon=list(img=moon,bodycolor="#555555", emissive="#444444", lightcolor="#555555"),
     mars=list(img=mars,bodycolor="#aaaaaa", emissive="#000000", lightcolor="#aaaaaa"),
     jupiter=list(img=jupiter,bodycolor="#222222", emissive="#000000", lightcolor="#aaaaaa")
@@ -26,8 +26,7 @@ shinyServer(function(input, output) {
   values <- reactive({
     cities <- cull()
     value <- h * cities$pop / max(cities$pop)
-    # THREE.Color only accepts RGB form, drop the A value:
-    col <- sapply(heat.colors(10), function(x) substr(x,1,7))
+    col <- rainbow(10,start=2.8/6,end=3.4/6)
     names(col) <- c()
     # Extend palette to data values
     col <- col[floor(length(col)*(h-value)/h) + 1]

@@ -47,7 +47,7 @@
 #' }
 #' Specify colors with standard color names or hex color representations.
 #' The default values (well-suited to many earth-like map images) are
-#' \code{lightcolor = "#aa8877"}, \code{emissive = "#0000ff"}, and \code{bodycolor = "#0000ff"}.
+#' \code{lightcolor = "#aaeeff"}, \code{emissive = "#0000ff"}, and \code{bodycolor = "#0000ff"}.
 #' Larger \code{fov} values result in a smaller (zoomed out) globe.
 #' The latitude and longitude rotation values are relative to the center of
 #' the map image. Their default values of zero radians result in the front of the
@@ -96,15 +96,13 @@
 #' latlong <- unique(frequent_flights[,3:4])
 #' # Plot frequent destinations as bars, and the flights to and from
 #' # them as arcs. Adjust arc width and color by frequency.
-#' earth <- system.file("images/world.jpg",  package="threejs")
-#' globejs(img=earth, lat=latlong[,1], long=latlong[,2], arcs=frequent_flights,
+#' globejs(lat=latlong[,1], long=latlong[,2], arcs=frequent_flights,
 #'         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
 #'         atmosphere=TRUE)
 #'
 #' # A shiny example:
 #'
-#' library("shiny")
-#' runApp(system.file("examples/globe",package="threejs"))
+#' shiny::runApp(system.file("examples/globe",package="threejs"))
 #' 
 #' # Plot populous world cities from the 'maps' package.
 #' library("threejs")
@@ -113,12 +111,10 @@
 #' cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
 #' value  <- 100 * cities$pop / max(cities$pop)
 #' 
-#' # Set up a color map
-#' col <- heat.colors(10)
+#' # Set up a data color map and plot
+#' col <- rainbow(10,start=2.8/6,end=3.4/6)
 #' col <- col[floor(length(col)*(100-value)/100) + 1]
-#'
-#' globejs(img=earth, lat=cities$lat, long=cities$long, value=value,
-#'         color=col, atmosphere=TRUE)
+#' globejs(lat=cities$lat, long=cities$long, value=value, color=col, atmosphere=TRUE)
 #'
 #' # Plot the data on the moon:
 #' moon <- system.file("images/moon.jpg", package="threejs")
@@ -130,16 +126,13 @@
 #' # the image!)
 #' globejs("http://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg")
 #'
-#' # Using global plots from the maptools, rworldmap, and sp packages.
+#' # Using global plots from the maptools, rworldmap, or sp packages.
 #'
 #' # Instead of using ready-made images of the earth, we can employ some
 #' # incredibly capable R spatial imaging packages to produce globe images
 #' # dynamically. With a little extra effort you can build globes with total
 #' # control over how they are plotted.
 #'
-#' #------------------------------
-#' # Using the R maptools package
-#' #------------------------------
 #' library("maptools")
 #' library("threejs")
 #' data(wrld_simpl)
@@ -165,7 +158,8 @@
 #'
 #' @export
 globejs <- function(
-  img, lat, long,
+  img=system.file("images/world.jpg",  package="threejs"),
+  lat, long,
   value=40,
   color="#00ffff",
   arcs,

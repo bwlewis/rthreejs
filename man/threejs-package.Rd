@@ -4,9 +4,9 @@
 \name{threejs-package}
 \alias{threejs}
 \alias{threejs-package}
-\title{Tools for creating threejs and d3.js graphics from R}
+\title{Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.}
 \description{
-Tools for creating threejs and d3.js graphics from R
+Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
 }
 \examples{
 ## dontrun

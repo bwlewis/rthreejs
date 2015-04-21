@@ -91,8 +91,8 @@ HTMLWidgets.widget(
       }
     }
 
-    if(!x.lightcolor) x.lightcolor = 0xaa8877;
-    if(!x.emissive) x.emissive = 0x0000ff;
+    if(!x.lightcolor) x.lightcolor = 0xaaeeff;
+    if(!x.emissive) x.emissive = 0x0011ff;
     if(!x.bodycolor) x.bodycolor = 0x0000ff;
     if(!x.diameter) x.diameter = 200;
     if(!x.segments) x.segments = 50;
@@ -148,7 +148,7 @@ HTMLWidgets.widget(
     }   );
     var atmo = new THREE.Mesh( geometry.clone(), customMaterial.clone() );
     atmo.position = earth.position;
-    atmo.scale.multiplyScalar(1.03);
+    atmo.scale.multiplyScalar(1.01);
     if(GL && x.atmosphere) stuff.scene.add(atmo);
 
     stuff.scene.add( new THREE.AmbientLight( x.lightcolor ) );

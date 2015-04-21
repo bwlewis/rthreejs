@@ -109,8 +109,7 @@ col <- c(rep("#ffff00",N1),rep("#0000ff",N2))
 scatterplot3js(x,y,z, color=col, size=0.25)
 
 # A shiny example
-library("shiny")
-runApp(system.file("examples/scatterplot",package="threejs"))
+shiny::runApp(system.file("examples/scatterplot",package="threejs"))
 }
 }
 \references{

@@ -83,8 +83,7 @@
 #' scatterplot3js(x,y,z, color=col, size=0.25)
 #'
 #' # A shiny example
-#' library("shiny")
-#' runApp(system.file("examples/scatterplot",package="threejs"))
+#' shiny::runApp(system.file("examples/scatterplot",package="threejs"))
 #' }
 #' 
 #' @seealso scatterplot3d, rgl
