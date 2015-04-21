@@ -97,7 +97,7 @@ HTMLWidgets.widget(
     if(!x.diameter) x.diameter = 200;
     if(!x.segments) x.segments = 50;
     if(!x.pointsize) x.pointsize = 1;
-    else x.pointsize = parseInt(x.pointsize);
+    else x.pointsize = parseFloat(x.pointsize);
     if(!x.fov) x.fov = 35;
     if(!x.rotationlat) x.rotationlat = 0.0;
     if(!x.rotationlong) x.rotationlong = 0.0;
