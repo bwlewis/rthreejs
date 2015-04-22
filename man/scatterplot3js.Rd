@@ -5,7 +5,8 @@
 \title{scatterplot3js Three.js 3D scatterplot widget.}
 \usage{
 scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
-  num.ticks = c(6, 6, 6), color = "steelblue", size = 1, labels = NULL,
+  num.ticks = c(6, 6, 6), x.ticklabs = NULL, y.ticklabs = NULL,
+  z.ticklabs = NULL, color = "steelblue", size = 1, labels = NULL,
   label.margin = "10px", stroke = "black", flip.y = TRUE, grid = TRUE,
   renderer = c("auto", "canvas", "webgl"), signif = 8, bg = "#ffffff",
   pch)
@@ -31,6 +32,15 @@ axes will be displayed.}
 \item{num.ticks}{A three-element vector with the suggested number of
 ticks to display per axis. Set to NULL to not display ticks. The number
 of ticks may be adjusted by the program.}
+
+\item{x.ticklabs}{A vector of tick labels of length \code{num.ticks[1]}, or
+\code{NULL} to show numeric labels.}
+
+\item{y.ticklabs}{A vector of tick labels of length \code{num.ticks[2]}, or
+\code{NULL} to show numeric labels.}
+
+\item{z.ticklabs}{A vector of tick labels of length \code{num.ticks[3]}, or
+\code{NULL} to show numeric labels.}
 
 \item{color}{Either a single hex or named color name (all points same color),
 or a vector of #' hex or named color names as long as the number of data

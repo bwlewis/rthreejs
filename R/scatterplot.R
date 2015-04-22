@@ -17,6 +17,12 @@
 #' @param num.ticks A three-element vector with the suggested number of
 #' ticks to display per axis. Set to NULL to not display ticks. The number
 #' of ticks may be adjusted by the program.
+#' @param x.ticklabs A vector of tick labels of length \code{num.ticks[1]}, or
+#' \code{NULL} to show numeric labels.
+#' @param y.ticklabs A vector of tick labels of length \code{num.ticks[2]}, or
+#' \code{NULL} to show numeric labels.
+#' @param z.ticklabs A vector of tick labels of length \code{num.ticks[3]}, or
+#' \code{NULL} to show numeric labels.
 #' @param color Either a single hex or named color name (all points same color),
 #' or a vector of #' hex or named color names as long as the number of data
 #' points to plot.
@@ -94,6 +100,9 @@ scatterplot3js <- function(
   width = NULL,
   axis = TRUE,
   num.ticks = c(6,6,6),
+  x.ticklabs = NULL,
+  y.ticklabs = NULL,
+  z.ticklabs = NULL,
   color = "steelblue",
   size = 1,
   labels = NULL,
@@ -170,15 +179,29 @@ scatterplot3js <- function(
 
     t1 = seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
     p1 = (t1 - mn[1])/(mx[1] - mn[1])
-    t2 = axisTicks(c(mn[2],mx[2]),FALSE,nint=num.ticks[2])
+    t2 = seq(from=mn[2], to=mx[2], length.out=num.ticks[2])
     p2 = (t2 - mn[2])/(mx[2] - mn[2])
     t3 = seq(from=mn[3], to=mx[3], length.out=num.ticks[3])
     p3 = (t3 - mn[3])/(mx[3] - mn[3])
     if(flip.y) t3 = t3[length(t3):1]
 
-    options$xticklab = sprintf("%.2f",t1)
-    options$yticklab = sprintf("%.2f",t2)
-    options$zticklab = sprintf("%.2f",t3)
+    pfmt = function(x,d=2)
+    {
+      ans = sprintf("%.2f",x)
+      i = (abs(x) < 0.01 && x!=0)
+      if(any(i))
+      {
+        ans[i] = sprintf("%.2e",x)
+      }
+      ans
+    }
+
+    options$xticklab = pfmt(t1)
+    options$yticklab = pfmt(t2)
+    options$zticklab = pfmt(t3)
+    if(!is.null(x.ticklabs)) options$xticklab = x.ticklabs
+    if(!is.null(y.ticklabs)) options$yticklab = y.ticklabs
+    if(!is.null(z.ticklabs)) options$zticklab = z.ticklabs
     options$xtick = p1
     options$ytick = p2
     options$ztick = p3
