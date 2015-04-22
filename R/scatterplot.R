@@ -176,6 +176,7 @@ scatterplot3js <- function(
   if(!is.null(num.ticks))
   {
     if(length(num.ticks)!=3) stop("num.ticks must have length 3")
+    num.ticks = num.ticks[c(1,3,2)]
 
     t1 = seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
     p1 = (t1 - mn[1])/(mx[1] - mn[1])
@@ -200,8 +201,8 @@ scatterplot3js <- function(
     options$yticklab = pfmt(t2)
     options$zticklab = pfmt(t3)
     if(!is.null(x.ticklabs)) options$xticklab = x.ticklabs
-    if(!is.null(y.ticklabs)) options$yticklab = y.ticklabs
-    if(!is.null(z.ticklabs)) options$zticklab = z.ticklabs
+    if(!is.null(y.ticklabs)) options$zticklab = y.ticklabs
+    if(!is.null(z.ticklabs)) options$yticklab = z.ticklabs
     options$xtick = p1
     options$ytick = p2
     options$ztick = p3
