@@ -28,14 +28,13 @@
 #' \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
 #' 
 #' @examples
-#' ## dontrun
-#' A file:
-#' img <- system.file("images/disc.png", package="threejs")
+#' \dontrun{
+#' # A big image (may take a while to download):
+#' img <- paste("http://eoimages.gsfc.nasa.gov/",
+#'              "images/imagerecords/73000/73909/",
+#'              "world.topo.bathy.200412.3x5400x2700.jpg", sep="")
 #' t <- texture(img)
-#'
-#' A big image (may take a while to download):
-#' img <- "http://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg"
-#' t <- texture(img)
+#' }
 #' 
 #' @importFrom base64enc dataURI
 #' @export

@@ -62,7 +62,6 @@
 #' \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 #'
 #' Includes ideas and images from the dat.globe Javascript WebGL Globe Toolkit
-#' \url{http://dataarts.github.com/dat.globe},
 #' Copyright 2011 Data Arts Team, Google Creative Lab
 #' Licensed under the Apache License, Version 2.0
 #' \url{http://www.apache.org/licenses/LICENSE-2.0}
@@ -124,7 +123,9 @@
 #'
 #' # Plot a high-resolution NASA MODIS globe (it can take a while to download
 #' # the image!)
-#' globejs("http://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg")
+#' globejs(paste("http://eoimages.gsfc.nasa.gov/",
+#'               "images/imagerecords/73000/73909/",
+#'               "world.topo.bathy.200412.3x5400x2700.jpg",sep="")
 #'
 #' # Using global plots from the maptools, rworldmap, or sp packages.
 #'

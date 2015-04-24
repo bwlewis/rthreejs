@@ -24,12 +24,12 @@ visualization widgets for R.
 
 ## What's new
 
-I'm trying to get a release for CRAN together. The latest version includes
-mouse-over labels for labeling scatterplot3js points, thanks to contributions
-from  Alexey Stukalov, https://github.com/alyst, thanks Alexey!
+The latest version includes mouse-over labels for labeling scatterplot3js
+points, thanks to contributions from  Alexey Stukalov,
+https://github.com/alyst, thanks Alexey!
 
 We also simplified the globe plots and added powerful new arc-drawing
-capabilities. Look for a version on CRAN soon!
+capabilities.
 
 
 ## NOTE!

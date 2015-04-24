@@ -9,12 +9,13 @@
 #' \url{http://www.html5rocks.com/en/tutorials/three/intro/}
 #' @aliases threejs
 #' @examples
-#' ## dontrun
+#' \dontrun{
 #' library("shiny")
 #' runApp(system.file("examples/globe",package="threejs"))
 #' runApp(system.file("examples/scatterplot",package="threejs"))
 #'
 #' # See also help for globe.js and scatterplot3.js
+#' }
 #' 
 #' @docType package
 NULL
