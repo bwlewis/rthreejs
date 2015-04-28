@@ -91,13 +91,13 @@
 #' # Subset the flight data by destination frequency
 #' idx <- dest %in% frequent_destinations
 #' frequent_flights <- flights[idx, ]
-#' # Lat/long of frequent destinations
-#' latlong <- unique(frequent_flights[,3:4])
+#' # Lat/long and counts of frequent flights
+#' ll <- unique(frequent_flights[,3:4])
 #' # Plot frequent destinations as bars, and the flights to and from
 #' # them as arcs. Adjust arc width and color by frequency.
-#' globejs(lat=latlong[,1], long=latlong[,2], arcs=frequent_flights,
+#' globejs(lat=ll[,1], long=ll[,2], arcs=frequent_flights,
 #'         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
-#'         atmosphere=TRUE)
+#'         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
 #'
 #' # A shiny example:
 #'
