@@ -46,6 +46,9 @@
 #' coordinates. Larger numbers increase accuracy but slow plot generation
 #' down.
 #' @param bg  The color to be used for the background of the device region.
+#' @param xlim Optional two-element vector of x-axis limits. Default auto-scales to data.
+#' @param ylim Optional two-element vector of y-axis limits. Default auto-scales to data.
+#' @param zlim Optional two-element vector of z-axis limits. Default auto-scales to data.
 #' @param pch Not yet used but one day will support changing the point glyph.
 #'
 #' @note
@@ -113,7 +116,7 @@ scatterplot3js <- function(
   renderer = c("auto","canvas","webgl"),
   signif = 8,
   bg = "#ffffff",
-  pch)
+  xlim, ylim, zlim, pch)
 {
   # validate input
   if(!missing(y) && !missing(z)) x = cbind(x=x,y=y,z=z)
@@ -163,6 +166,21 @@ scatterplot3js <- function(
   n = nrow(x)
   mn = apply(x,2,min)
   mx = apply(x,2,max)
+  if(!missing(xlim) && length(xlim)==2)
+  {
+    mn[1] = xlim[1]
+    mx[1] = xlim[2]
+  }
+  if(!missing(ylim) && length(ylim)==2)
+  {
+    mn[3] = ylim[1]
+    mx[3] = ylim[2]
+  }
+  if(!missing(zlim) && length(zlim)==2)
+  {
+    mn[2] = zlim[1]
+    mx[2] = zlim[2]
+  }
   x = (x - rep(mn, each=n))/(rep(mx - mn, each=n))
   if(flip.y) x[,3] = 1-x[,3]
   

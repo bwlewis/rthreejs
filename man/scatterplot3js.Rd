@@ -9,7 +9,7 @@ scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   z.ticklabs = NULL, color = "steelblue", size = 1, labels = NULL,
   label.margin = "10px", stroke = "black", flip.y = TRUE, grid = TRUE,
   renderer = c("auto", "canvas", "webgl"), signif = 8, bg = "#ffffff",
-  pch)
+  xlim, ylim, zlim, pch)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -74,6 +74,12 @@ coordinates. Larger numbers increase accuracy but slow plot generation
 down.}
 
 \item{bg}{The color to be used for the background of the device region.}
+
+\item{xlim}{Optional two-element vector of x-axis limits. Default auto-scales to data.}
+
+\item{ylim}{Optional two-element vector of y-axis limits. Default auto-scales to data.}
+
+\item{zlim}{Optional two-element vector of z-axis limits. Default auto-scales to data.}
 
 \item{pch}{Not yet used but one day will support changing the point glyph.}
 }
