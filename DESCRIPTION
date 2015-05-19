@@ -1,7 +1,7 @@
 Package: threejs
 Type: Package
-Title: 3D Graphics using Three.js and Htmlwidgets
-Description: Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
+Title: Interactive 3D Scatter Plots and Globes
+Description: Create interactive 3D scatter plots and globes using the 'three.js' (http://threejs.org) visualization library.
 Version: 0.2.1
 Date: 2015-04-24
 Author: B. W. Lewis <blewis@illposed.net>
