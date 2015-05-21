@@ -6,11 +6,13 @@ Version: 0.2.2
 Date: 2015-04-24
 Authors@R: c(
     person("B. W.", "Lewis", role=c("aut","cre"), email="blewis@illposed.net"),
-    person(family="Three.js authors", rol="cph"),
+    person(family="Three.js authors", role="cph", comment="three.js JavaScript library"),
     person("Alexey", "Stukalov", role=("ctb"), email="astukalov@gmail.com"),
     person("Yihui","Xie", role=("ctb"), email="xie@yihui.name"),
-    person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de"))
+    person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de")
+    )
 URL: http://bwlewis.github.io/rthreejs
+BugReports: https://github.com/bwlewis/rthreejs/issues
 License: MIT + file LICENSE
 Depends:
     R (>= 3.0.0)
