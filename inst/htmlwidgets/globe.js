@@ -18,7 +18,7 @@ HTMLWidgets.widget(
     }
     r.setSize(parseInt(width), parseInt(height));
     r.setClearColor("black");
-    d3.select(el).node().appendChild(r.domElement);
+    el.appendChild(r.domElement);
     var c = new THREE.PerspectiveCamera( 35, r.domElement.width / r.domElement.height, 1, 10000 );
     var s = new THREE.Scene();
     return {renderer:r, camera:c, scene: s, width: parseInt(width), height: parseInt(height)};
@@ -86,8 +86,8 @@ HTMLWidgets.widget(
         GL=false;
         stuff.renderer.setSize(stuff.width, stuff.height);
         stuff.renderer.setClearColor("black");
-        d3.select(el).node().removeChild(d3.select(el).node().children[0]);
-        d3.select(el).node().appendChild(stuff.renderer.domElement);
+        el.removeChild(el.children[0]);
+        el.appendChild(stuff.renderer.domElement);
       }
     }
 
