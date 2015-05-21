@@ -77,3 +77,25 @@ For detailed help on the widgets and additional examples, see
 ?globejs
 ```
 
+
+# Changes to the three.min.js JavaScript library
+
+The package now includes a check for a manual (but simple) change required of the
+three.min.js JavaScript library, discovered by Joe Cheng at RStudio. For details
+see https://github.com/bwlewis/rthreejs/issues/15.
+
+The required change is near the ver beginning of the three.min.js file. Whenever
+we update this library we need to change:
+
+```html
+// threejs.org/license
+'use strict';var THREE={REVISION:
+```
+
+to
+```html
+// threejs.org/license
+'use strict';var THREE=window.THREE={REVISION:
+```
+
+That enables the library to work correctly with the shiny `renderUI` functions.
