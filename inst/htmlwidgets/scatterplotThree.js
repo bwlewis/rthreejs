@@ -49,13 +49,25 @@ function render_init(el, width, height, choice, labelmargin)
   }
   r.setSize(parseInt(width), parseInt(height));
   r.setClearColor("white");
-  d3.select(el).node().innerHTML="";
-  d3.select(el).node().appendChild(r.domElement);
-  d3.select(el).append("div").text(" ").attr("id","coordinate_label");
-  document.getElementById("coordinate_label").style.zIndex = "100";
-  document.getElementById("coordinate_label").style.position = "absolute";
-  document.getElementById("coordinate_label").style.top = "0";
-  document.getElementById("coordinate_label").style.margin = labelmargin;
+    el.innerHTML = "";
+  el.appendChild(r.domElement);
+  var coordLabel = document.createElement("div");
+  coordLabel.setAttribute("id","coordinate_label");
+  coordLabel.style.zIndex = "100";
+  coordLabel.style.position = "absolute";
+  coordLabel.style.top = "0";
+  coordLabel.style.margin = labelmargin;
+  el.appendChild(coordLabel);
+
+//   d3.select(el).node().innerHTML="";
+//   d3.select(el).node().appendChild(r.domElement);
+//   d3.select(el).append("div").text(" ").attr("id","coordinate_label");
+//   document.getElementById("coordinate_label").style.zIndex = "100";
+//   document.getElementById("coordinate_label").style.position = "absolute";
+//   document.getElementById("coordinate_label").style.top = "0";
+//   document.getElementById("coordinate_label").style.margin = labelmargin;
+
+
   return r;
 }
 
