@@ -62,6 +62,8 @@
 #' \code{canvas} renderer to excercise finer control of plotting of smaller
 #' numbers of points. See the examples.
 #'
+#' Points with missing values are omitted.
+#'
 #' @references
 #' The three.js project \url{http://threejs.org}.
 #' 
@@ -119,10 +121,15 @@ scatterplot3js <- function(
   xlim, ylim, zlim, pch)
 {
   # validate input
-  if(!missing(y) && !missing(z)) x = cbind(x=x,y=y,z=z)
+  if(!missing(y) && !missing(z))
+  {
+    if(is.matrix(x)) stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
+    x = cbind(x=x,y=y,z=z)
+  }
   if(ncol(x)!=3) stop("x must be a three column matrix")
   if(is.data.frame(x)) x = as.matrix(x)
   if(!is.matrix(x)) stop("x must be a three column matrix")
+  x = na.omit(x)
   if(missing(pch)) pch = NULL
   if(missing(renderer) && nrow(x)>10000)
   {
