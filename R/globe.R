@@ -20,6 +20,9 @@
 #' @param ... Additional arguments to pass to the three.js renderer (see
 #' below for more information on these options).
 #'
+#' @return
+#' An htmlwidget object (displayed using the object's show or print method).
+#'
 #' @note
 #' The \code{img} argument specifies the WebGL texture image to wrap on a
 #' sphere. If you plan to plot points using \code{lat} and \code{lon}

@@ -52,8 +52,7 @@
 #' @param pch Not yet used but one day will support changing the point glyph.
 #'
 #' @return
-#' A reference class that includes a \code{points3d} method function that can add
-#' points is returned.
+#' An htmlwidget object (displayed using the object's show or print method).
 #'
 #' @note
 #' Use the \code{renderer} option to manually select from the available
