@@ -51,6 +51,10 @@
 #' @param zlim Optional two-element vector of z-axis limits. Default auto-scales to data.
 #' @param pch Not yet used but one day will support changing the point glyph.
 #'
+#' @return
+#' A reference class that includes a \code{points3d} method function that can add
+#' points is returned.
+#'
 #' @note
 #' Use the \code{renderer} option to manually select from the available
 #' rendering options.
@@ -166,7 +170,7 @@ scatterplot3js <- function(
   if(length(i)>0) names(options)[i] = gsub("\\.","",names(options)[i])
 
   # re-order so z points up as expected.
-  x = x[,c(1,3,2)]
+  x = matrix(x[,c(1,3,2)], ncol=3)
 
   # Our s3d.js Javascript code assumes a coordinate system in the unit box.
   # Scale x to fit in there.
@@ -188,9 +192,13 @@ scatterplot3js <- function(
     mn[2] = zlim[1]
     mx[2] = zlim[2]
   }
+  options$mn = mn
+  options$mx = mx
   x = (x - rep(mn, each=n))/(rep(mx - mn, each=n))
   if(flip.y) x[,3] = 1-x[,3]
   
+  mdata = x # stash for return result
+
   # convert matrix to a JSON array required by scatterplotThree.js and strip
   # them (required by s3d.js)
   if(length(colnames(x))==3) options$axisLabels = colnames(x)
@@ -234,13 +242,16 @@ scatterplot3js <- function(
   }
 
   # create widget
-  htmlwidgets::createWidget(
-      name = "scatterplotThree",
-      x = list(data=x, options=options, pch=pch, bg=bg),
-               width = width,
-               height = height,
-               htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
-               package = "threejs")
+  ans = createWidget(
+          name = "scatterplotThree",
+          x = list(data=x, options=options, pch=pch, bg=bg),
+          width = width,
+          height = height,
+          htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+          package = "threejs")
+  # Add a reference to this call to support adding points
+  ans$points3d = points3d_generator(data=mdata, options=options, bg=bg, width=width, height=height)
+  ans
 }
 
 #' @rdname threejs-shiny
@@ -255,4 +266,59 @@ scatterplotThreeOutput <- function(outputId, width = "100%", height = "500px") {
 renderScatterplotThree <- function(expr, env = parent.frame(), quoted = FALSE) {
     if (!quoted) { expr <- substitute(expr) } # force quoted
     shinyRenderWidget(expr, scatterplotThreeOutput, env, quoted = TRUE)
+}
+
+
+
+
+
+
+# A mutabe closure that supports adding points to a plot
+points3d_generator = function(data=mdata, options=options, bg=bg, width=width, height=height)
+{
+  function(x,y,z,color="steelblue",size=1,labels=NULL,...)
+    {
+  if(!missing(y) && !missing(z))
+  {
+    if(is.matrix(x)) stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
+    x = cbind(x=x,y=y,z=z)
+  }
+  if(ncol(x)!=3) stop("x must be a three column matrix")
+  if(is.data.frame(x)) x = as.matrix(x)
+  if(!is.matrix(x)) stop("x must be a three column matrix")
+  x = na.omit(x)
+  # Strip alpha channel from colors
+  i = grep("^#",color)
+  if(length(i)>0)
+  {
+    j = nchar(color[i])>7
+    if(any(j))
+    { 
+      color[i][j] = substr(color[i][j],1,7)
+    }
+  }
+  # re-order so z points up as expected.
+  x = matrix(x[,c(1,3,2)], ncol=3)
+  n = nrow(x)
+  x = (x - rep(options$mn, each=n))/(rep(options$mx - options$mn, each=n))
+  if(options$flipy) x[,3] = 1-x[,3]
+
+# Combine new data with old data
+  data <<- rbind(data, x)
+  local_options = options
+  local_options$color = c(options$color, color)
+## size
+## labels
+  options <<- local_options
+  # create widget
+  ans = htmlwidgets::createWidget(
+      name = "scatterplotThree",
+      x = list(data=data, options=options, bg=bg),
+      width = width,
+      height = height,
+      htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+      package = "threejs")
+  ans$points3d = points3d_generator(data=mdata, options=options, bg=bg, width=width, height=height)
+  ans
+    }
 }
