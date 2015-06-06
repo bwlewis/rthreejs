@@ -241,7 +241,7 @@ scatterplot3js <- function(
   }
 
   # create widget
-  ans = createWidget(
+  ans = htmlwidgets::createWidget(
           name = "scatterplotThree",
           x = list(data=x, options=options, pch=pch, bg=bg),
           width = width,
@@ -249,7 +249,7 @@ scatterplot3js <- function(
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           package = "threejs")
   # Add a reference to this call to support adding points
-  ans$points3d = points3d_generator(data=mdata, options=options, bg=bg, width=width, height=height)
+  ans$points3d = points3d_generator(data=mdata, options=options, bg=bg, width=width, height=height, signif=signif)
   ans
 }
 
@@ -268,56 +268,56 @@ renderScatterplotThree <- function(expr, env = parent.frame(), quoted = FALSE) {
 }
 
 
-
-
-
-
-# A mutabe closure that supports adding points to a plot
-points3d_generator = function(data=mdata, options=options, bg=bg, width=width, height=height)
+# A mutabe closure generator that supports adding points to a plot
+points3d_generator = function(data, options, bg, width, height, signif)
 {
   function(x,y,z,color="steelblue",size=1,labels=NULL,...)
+  {
+    if(!missing(y) && !missing(z))
     {
-  if(!missing(y) && !missing(z))
-  {
-    if(is.matrix(x)) stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
-    x = cbind(x=x,y=y,z=z)
-  }
-  if(ncol(x)!=3) stop("x must be a three column matrix")
-  if(is.data.frame(x)) x = as.matrix(x)
-  if(!is.matrix(x)) stop("x must be a three column matrix")
-  x = na.omit(x)
-  # Strip alpha channel from colors
-  i = grep("^#",color)
-  if(length(i)>0)
-  {
-    j = nchar(color[i])>7
-    if(any(j))
-    { 
-      color[i][j] = substr(color[i][j],1,7)
+      if(is.matrix(x)) stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
+      x = cbind(x=x,y=y,z=z)
     }
-  }
-  # re-order so z points up as expected.
-  x = matrix(x[,c(1,3,2)], ncol=3)
-  n = nrow(x)
-  x = (x - rep(options$mn, each=n))/(rep(options$mx - options$mn, each=n))
-  if(options$flipy) x[,3] = 1-x[,3]
+    if(ncol(x)!=3) stop("x must be a three column matrix")
+    if(is.data.frame(x)) x = as.matrix(x)
+    if(!is.matrix(x)) stop("x must be a three column matrix")
+    x = na.omit(x)
+    # Strip alpha channel from colors
+    i = grep("^#",color)
+    if(length(i)>0)
+    {
+      j = nchar(color[i])>7
+      if(any(j))
+      { 
+        color[i][j] = substr(color[i][j],1,7)
+      }
+    }
+    # re-order so z points up as expected.
+    x = matrix(x[,c(1,3,2)], ncol=3)
+    n = nrow(x)
+    x = (x - rep(options$mn, each=n))/(rep(options$mx - options$mn, each=n))
+    if(options$flipy) x[,3] = 1-x[,3]
 
-# Combine new data with old data
-  data <<- rbind(data, x)
-  local_options = options
-  local_options$color = c(options$color, color)
-## size
-## labels
-  options <<- local_options
-  # create widget
-  ans = htmlwidgets::createWidget(
+    # Combine new data with old data
+    data <<- rbind(data, x)
+    local_options = options
+    local_options$color = c(options$color, color)
+    # convert matrix to a JSON array required by scatterplotThree.js and strip
+    # them (required by s3d.js)
+    x = as.vector(t(signif(data,signif)))
+## XXX size
+## XXX color
+## XXX labels
+    options <<- local_options
+    # create widget
+    ans = htmlwidgets::createWidget(
       name = "scatterplotThree",
-      x = list(data=data, options=options, bg=bg),
+      x = list(data=x, options=options, bg=bg),
       width = width,
       height = height,
       htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
       package = "threejs")
-  ans$points3d = points3d_generator(data=mdata, options=options, bg=bg, width=width, height=height)
-  ans
-    }
+    ans$points3d = points3d_generator(data=data, options=options, bg=bg, width=width, height=height, signif=signif)
+    ans
+  }
 }
