@@ -84,13 +84,17 @@ down.}
 \item{pch}{Not yet used but one day will support changing the point glyph.}
 }
 \value{
-An htmlwidget object (displayed using the object's show or print method).
+An htmlwidget object (displayed using the object's show or print method). The
+returned object includes a special \code{points3d} function for adding points to the
+plot similar to \code{scatterplot3d}. See the note below and examples for details.
 }
 \description{
 A 3D scatterplot widget using three.js. Many options
 follow the \code{scatterplot3d} function from the eponymous package.
 }
 \note{
+Points with missing values are omitted.
+
 Use the \code{renderer} option to manually select from the available
 rendering options.
 The \code{canvas} renderer is the fallback rendering option when \code{webgl}
@@ -101,7 +105,16 @@ renderer for plotting large numbers of points (if available). Use the
 \code{canvas} renderer to excercise finer control of plotting of smaller
 numbers of points. See the examples.
 
-Points with missing values are omitted.
+The returned object includes a \code{points3d} function that can add points
+to a plot, returning a new htmlwidget plot object. The function signature
+is a subset of the full \code{scatterplot3js} function:
+
+ \code{points3d (x, y, z, color="steelblue", size=1, labels="")}
+
+It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
+with optionally specified color, size, and labels. New points are plotted in
+the same scale as the existing plot. See the examples section below for an
+example.
 }
 \examples{
 \dontrun{
@@ -110,8 +123,7 @@ N <- 100
 i <- sample(3, N, replace=TRUE)
 x <- matrix(rnorm(N*3),ncol=3)
 lab <- c("small", "bigger", "biggest")
-scatterplot3js(x, color=rainbow(N), labels=lab[i],
-               size=i, renderer="canvas")
+scatterplot3js(x, color=rainbow(N), labels=lab[i], size=i, renderer="canvas")
 
 # Example 1 from the scatterplot3d package (cf.)
 z <- seq(-10, 10, 0.1)
@@ -131,6 +143,12 @@ scatterplot3js(x,y,z, color=col, size=0.25)
 
 # A shiny example
 shiny::runApp(system.file("examples/scatterplot",package="threejs"))
+
+# Adding points to a plot with points3d
+set.seed(1)
+lim = c(-3,3)
+(x = scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim))
+(a = x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red", labels="NEW"))
 }
 }
 \references{

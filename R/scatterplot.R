@@ -52,9 +52,13 @@
 #' @param pch Not yet used but one day will support changing the point glyph.
 #'
 #' @return
-#' An htmlwidget object (displayed using the object's show or print method).
+#' An htmlwidget object (displayed using the object's show or print method). The
+#' returned object includes a special \code{points3d} function for adding points to the
+#' plot similar to \code{scatterplot3d}. See the note below and examples for details.
 #'
 #' @note
+#' Points with missing values are omitted.
+#'
 #' Use the \code{renderer} option to manually select from the available
 #' rendering options.
 #' The \code{canvas} renderer is the fallback rendering option when \code{webgl}
@@ -65,7 +69,16 @@
 #' \code{canvas} renderer to excercise finer control of plotting of smaller
 #' numbers of points. See the examples.
 #'
-#' Points with missing values are omitted.
+#' The returned object includes a \code{points3d} function that can add points
+#' to a plot, returning a new htmlwidget plot object. The function signature
+#' is a subset of the full \code{scatterplot3js} function:
+#'
+#'  \code{points3d (x, y, z, color="steelblue", size=1, labels="")}
+#'
+#' It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
+#' with optionally specified color, size, and labels. New points are plotted in
+#' the same scale as the existing plot. See the examples section below for an
+#' example.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -77,8 +90,7 @@
 #' i <- sample(3, N, replace=TRUE)
 #' x <- matrix(rnorm(N*3),ncol=3)
 #' lab <- c("small", "bigger", "biggest")
-#' scatterplot3js(x, color=rainbow(N), labels=lab[i],
-#'                size=i, renderer="canvas")
+#' scatterplot3js(x, color=rainbow(N), labels=lab[i], size=i, renderer="canvas")
 #'
 #' # Example 1 from the scatterplot3d package (cf.)
 #' z <- seq(-10, 10, 0.1)
@@ -98,6 +110,12 @@
 #'
 #' # A shiny example
 #' shiny::runApp(system.file("examples/scatterplot",package="threejs"))
+#'
+#' # Adding points to a plot with points3d
+#' set.seed(1)
+#' lim = c(-3,3)
+#' (x = scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim))
+#' (a = x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red", labels="NEW"))
 #' }
 #' 
 #' @seealso scatterplot3d, rgl
@@ -268,7 +286,7 @@ renderScatterplotThree <- function(expr, env = parent.frame(), quoted = FALSE) {
 }
 
 
-# A mutabe closure generator that supports adding points to a plot
+# Support for adding points to a plot
 points3d_generator = function(data, options, bg, width, height, signif)
 {
   function(x,y,z,color="steelblue",size=1,labels=NULL,...)
@@ -299,15 +317,37 @@ points3d_generator = function(data, options, bg, width, height, signif)
     if(options$flipy) x[,3] = 1-x[,3]
 
     # Combine new data with old data
+    n_old = nrow(data)
     data <<- rbind(data, x)
     local_options = options
     local_options$color = c(options$color, color)
     # convert matrix to a JSON array required by scatterplotThree.js and strip
     # them (required by s3d.js)
     x = as.vector(t(signif(data,signif)))
-## XXX size
-## XXX color
-## XXX labels
+    # size, color, and label settings for old and new points
+    if(length(options$size) + length(size) == nrow(data)) 
+    {
+      local_options$size = c(options$size, size)
+    } else
+    {
+      local_options$size = c(rep(options$size,length.out=n_old), rep(size,length.out=n))
+    }
+    if(length(options$color) + length(color) == nrow(data)) 
+    {
+      local_options$color = c(options$color, color)
+    } else
+    {
+      local_options$color = c(rep(options$color,length.out=n_old), rep(color,length.out=n))
+    }
+    if(is.null(local_options$labels)) local_options$labels = ""
+    if(is.null(labels)) labels = ""
+    if(length(local_options$labels) + length(labels) == nrow(data)) 
+    {
+      local_options$labels = c(local_options$labels, labels)
+    } else
+    {
+      local_options$labels = c(rep(local_options$labels,length.out=n_old), rep(labels,length.out=n))
+    }
     options <<- local_options
     # create widget
     ans = htmlwidgets::createWidget(
