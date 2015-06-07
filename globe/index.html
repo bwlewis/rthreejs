@@ -26,7 +26,7 @@ library(threejs)
 data(flights)
 
 # Approximate locations as factors
-dest   <- factor(sprintf("\%.2f:\%.2f",flights[,3], flights[,4]))
+dest   <- factor(sprintf("%.2f:%.2f",flights[,3], flights[,4]))
 
 # A table of destination frequencies
 freq <- sort(table(dest), decreasing=TRUE)
@@ -35,7 +35,7 @@ freq <- sort(table(dest), decreasing=TRUE)
 frequent_destinations <- names(freq)[1:10]
 
 # Subset the flight data by destination frequency
-idx <- dest \%in\% frequent_destinations
+idx <- dest %in% frequent_destinations
 frequent_flights <- flights[idx, ]
 
 # Lat/long of frequent destinations
