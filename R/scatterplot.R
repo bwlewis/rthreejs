@@ -50,9 +50,11 @@
 #' @param ylim Optional two-element vector of y-axis limits. Default auto-scales to data.
 #' @param zlim Optional two-element vector of z-axis limits. Default auto-scales to data.
 #' @param pch Not yet used but one day will support changing the point glyph.
+#' @param ... Additional options (see note).
 #'
 #' @return
-#' An htmlwidget object (displayed using the object's show or print method). The
+#' An htmlwidget object that is displayed using the object's show or print method.
+#' (If you don't see your widget plot, try printing it with the \code{print}) function. The
 #' returned object includes a special \code{points3d} function for adding points to the
 #' plot similar to \code{scatterplot3d}. See the note below and examples for details.
 #'
@@ -68,6 +70,9 @@
 #' renderer for plotting large numbers of points (if available). Use the
 #' \code{canvas} renderer to excercise finer control of plotting of smaller
 #' numbers of points. See the examples.
+#'
+#' Use the optional \code{...} argument to explicitly supply \code{axisLabels}
+#' as a three-element character vector, see the examples below.
 #'
 #' The returned object includes a \code{points3d} function that can add points
 #' to a plot, returning a new htmlwidget plot object. The function signature
@@ -97,16 +102,32 @@
 #' x <- cos(z)
 #' y <- sin(z)
 #' scatterplot3js(x,y,z, color=rainbow(length(z)),
-#'    labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
+#'       labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
 #'
-#' # Interesting 100,000 point cloud example, should run this with WebGL!
-#' N1 <- 10000
-#' N2 <- 90000
-#' x <- c(rnorm(N1, sd=0.5), rnorm(N2, sd=2))
-#' y <- c(rnorm(N1, sd=0.5), rnorm(N2, sd=2))
-#' z <- c(rnorm(N1, sd=0.5), rpois(N2, lambda=20)-20)
-#' col <- c(rep("#ffff00",N1),rep("#0000ff",N2))
-#' scatterplot3js(x,y,z, color=col, size=0.25)
+#' # Same example with explicit axis labels
+#' scatterplot3js(x,y,z, color=rainbow(length(z)), axisLabels=c("a","b","c"))
+#'
+#' # Pretty point cloud example, should run this with WebGL!
+#' N     = 20000
+#' theta = runif(N)*2*pi
+#' phi   = runif(N)*2*pi
+#' R     = 1.5
+#' r     = 1.0
+#' x = (R + r*cos(theta))*cos(phi)
+#' y = (R + r*cos(theta))*sin(phi)
+#' z = r*sin(theta)
+#' d = 6
+#' h = 6
+#' t = 2*runif(N) - 1
+#' w = t^2*sqrt(1-t^2)
+#' x1 = d*cos(theta)*sin(phi)*w
+#' y1 = d*sin(theta)*sin(phi)*w
+#' i = order(phi)
+#' j = order(t)
+#' col = c( rainbow(length(phi))[order(i)],
+#'          rainbow(length(t),start=0, end=2/6)[order(j)])
+#' M = cbind(x=c(x,x1),y=c(y,y1),z=c(z,h*t))
+#' scatterplot3js(M,size=0.25,color=col,bg="black")
 #'
 #' # A shiny example
 #' shiny::runApp(system.file("examples/scatterplot",package="threejs"))
@@ -139,7 +160,7 @@ scatterplot3js <- function(
   renderer = c("auto","canvas","webgl"),
   signif = 8,
   bg = "#ffffff",
-  xlim, ylim, zlim, pch)
+  xlim, ylim, zlim, pch, ...)
 {
   # validate input
   if(!missing(y) && !missing(z))
@@ -180,11 +201,14 @@ scatterplot3js <- function(
   }
 
   # create options
-  options = as.list(environment())
+  options = c(as.list(environment()), list(...))
   options = options[!(names(options) %in% c("x","y","z","i","j"))]
   # javascript does not like dots in names
   i = grep("\\.",names(options))
   if(length(i)>0) names(options)[i] = gsub("\\.","",names(options)[i])
+
+  # set axis labels if they exist
+  if(length(colnames(x))==3 && is.null(options$axisLabels)) options$axisLabels = colnames(x)
 
   # re-order so z points up as expected.
   x = matrix(x[,c(1,3,2)], ncol=3)
@@ -218,8 +242,6 @@ scatterplot3js <- function(
 
   # convert matrix to a JSON array required by scatterplotThree.js and strip
   # them (required by s3d.js)
-  if(length(colnames(x))==3) options$axisLabels = colnames(x)
-  colnames(x)=c()
   x = as.vector(t(signif(x,signif)))
 
   # Ticks
