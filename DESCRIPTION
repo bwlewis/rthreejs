@@ -21,7 +21,6 @@ Imports:
     base64enc
 Suggests:
     htmltools (>= 0.2.6),
-    RCurl,
     maps,
     sp
 Enhances: knitr, shiny
