@@ -28,6 +28,8 @@ HTMLWidgets.widget(
   {
     stuff.renderer.clear();
     stuff.renderer.setSize( width, height );
+    stuff.width = width;
+    stuff.height = height;
     stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(stuff.camera.fov,  stuff.renderer.domElement.width/stuff.renderer.domElement.height, stuff.camera.near, stuff.camera.far);
     stuff.camera.lookAt(stuff.scene.position);
     stuff.renderer.render( stuff.scene, stuff.camera );
