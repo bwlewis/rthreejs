@@ -19,6 +19,8 @@ HTMLWidgets.widget(
   resize: function(el, width, height, stuff)
   {
     stuff.renderer.clear();
+    stuff.width = width;
+    stuff.height = height;
     stuff.renderer.setSize(parseInt(width), parseInt(height));
     stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(stuff.camera.fov,  stuff.renderer.domElement.width/stuff.renderer.domElement.height, stuff.camera.near, stuff.camera.far);
     stuff.camera.lookAt(stuff.scene.position);
@@ -58,15 +60,6 @@ function render_init(el, width, height, choice, labelmargin)
   coordLabel.style.top = "0";
   coordLabel.style.margin = labelmargin;
   el.appendChild(coordLabel);
-
-//   d3.select(el).node().innerHTML="";
-//   d3.select(el).node().appendChild(r.domElement);
-//   d3.select(el).append("div").text(" ").attr("id","coordinate_label");
-//   document.getElementById("coordinate_label").style.zIndex = "100";
-//   document.getElementById("coordinate_label").style.position = "absolute";
-//   document.getElementById("coordinate_label").style.top = "0";
-//   document.getElementById("coordinate_label").style.margin = labelmargin;
-
 
   return r;
 }
