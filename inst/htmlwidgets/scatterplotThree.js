@@ -318,8 +318,8 @@ function scatter(el, x, obj)
     ev.preventDefault();
 
     var canvasRect = this.getBoundingClientRect();
-    mouse.x = 2 * ( ev.pageX - canvasRect.left ) / canvasRect.width - 1;
-    mouse.y = -2 * ( ev.pageY - canvasRect.top ) / canvasRect.height + 1;
+    mouse.x = 2 * ( ev.clientX - canvasRect.left ) / canvasRect.width - 1;
+    mouse.y = -2 * ( ev.clientY - canvasRect.top ) / canvasRect.height + 1;
 
     if (down) {
       var dx = ev.clientX - sx;
