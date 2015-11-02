@@ -52,14 +52,13 @@ function render_init(el, width, height, choice, labelmargin)
   r.setSize(parseInt(width), parseInt(height));
   r.setClearColor("white");
     el.innerHTML = "";
-  el.appendChild(r.domElement);
   var coordLabel = document.createElement("div");
-  coordLabel.setAttribute("id","coordinate_label");
+  coordLabel.setAttribute("name","coordinate_label");
   coordLabel.style.zIndex = "100";
   coordLabel.style.position = "absolute";
-  coordLabel.style.top = "0";
   coordLabel.style.margin = labelmargin;
   el.appendChild(coordLabel);
+  el.appendChild(r.domElement);
 
   return r;
 }
@@ -318,8 +317,8 @@ function scatter(el, x, obj)
     ev.preventDefault();
 
     var canvasRect = this.getBoundingClientRect();
-    mouse.x = 2 * ( ev.pageX - canvasRect.left ) / canvasRect.width - 1;
-    mouse.y = -2 * ( ev.pageY - canvasRect.top ) / canvasRect.height + 1;
+    mouse.x = 2 * ( ev.clientX - canvasRect.left ) / canvasRect.width - 1;
+    mouse.y = -2 * ( ev.clientY - canvasRect.top ) / canvasRect.height + 1;
 
     if (down) {
       var dx = ev.clientX - sx;
@@ -363,7 +362,12 @@ function scatter(el, x, obj)
         label = intersects[0].object.name;
       }
     }
-    document.getElementById("coordinate_label").innerHTML = label;
+    //This actually synchronises all scatter plot labels, but I don't know how to 
+    //get a unique name 
+    var labels = document.getElementsByName("coordinate_label");
+    for(var i =0 ; i < labels.length ; i++){
+      labels[i].innerHTML = label;
+    }
   }
 
   function render()
