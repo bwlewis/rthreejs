@@ -1,0 +1,17 @@
+dependencies:
+  - name: threejs
+    version: 70
+    src: "htmlwidgets/lib/threejs-70"
+    script:
+      - three.min.js
+      - Detector.js
+      - Projector.js
+  - name: graph
+    version: 1
+    src: "htmlwidgets/lib/graph-1"
+    script:
+      - force-directed-layout.js
+      - Graph.js
+      - Label.js
+      - ObjectSelection.js
+      - TrackballControls.js

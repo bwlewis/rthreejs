@@ -118,10 +118,10 @@ HTMLWidgets.widget(
       tex.needsUpdate = true;
     } else
     {
-      tex = THREE.ImageUtils.loadTexture( x.img );
+      tex = THREE.ImageUtils.loadTexture(x.img);
     }
 
-    var material = new THREE.MeshLambertMaterial({map: tex, color: x.bodycolor, emissive:x.emissive});
+    var material = new THREE.MeshLambertMaterial({map: tex, color: x.bodycolor, emissive: x.emissive});
 
     earth = new THREE.Mesh( geometry, material );
     earth.position.x = earth.position.y = 0;

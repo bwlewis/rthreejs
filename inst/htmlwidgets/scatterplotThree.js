@@ -13,7 +13,7 @@ HTMLWidgets.widget(
     var r = render_init(el, width, height, false);
     var c = new THREE.PerspectiveCamera(39, r.domElement.width/r.domElement.height, 1E-5, 10);
     var s = new THREE.Scene();
-    return {renderer:r, camera:c, scene: s, width: parseInt(width), height: parseInt(height)};
+    return {renderer: r, camera: c, scene: s, width: parseInt(width), height: parseInt(height)};
   },
 
   resize: function(el, width, height, stuff)
