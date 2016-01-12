@@ -48,12 +48,12 @@ var Widget = Widget || {};
 Widget.SimpleGraph = function()
 {
 //  var options = options || {};
-  this.layout_options = {};
   this.show_title = true;
   this.show_labels = false;
+  this.layout_options = {};
+  this.idle = true;
 
   var camera, controls, scene, object_selection, sprite_map, scene2;
-  var stats;
   var info_text = {};
   var graph = new Graph();
   var geometries = [];
@@ -67,8 +67,16 @@ Widget.SimpleGraph = function()
     _this.renderer.setSize(el.innerWidth, el.innerHeight);
     _this.el = el;
 
+    el.onmousemove = function(ev)
+    {
+      if(_this.idle)
+      {
+        _this.idle = false;
+        _this.animate();
+      }
+    }
+
     camera = new THREE.PerspectiveCamera(40, width/height, 1, 1000000);
-//    camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000000);
     camera.position.z = 5000;
 
     controls = new THREE.TrackballControls(camera);
@@ -118,7 +126,6 @@ Widget.SimpleGraph = function()
     }
   }
 
-
   /* create_graph
    * x.nodes a data frame with at least columns id, label, size, color
    * x.edges a data frame with at least columns from, to, size, color
@@ -149,7 +156,7 @@ Widget.SimpleGraph = function()
           dataColor[k*4 + 1] = 255;
           dataColor[k*4 + 2] = 255;
           dataColor[k*4 + 3] = 255;
-        } else if(dz > 0.85 && dz <= 1)
+        } else if(dz > 0.85 && dz < 1)
         {
           dataColor[k*4] = Math.floor(stroke.r * 255);
           dataColor[k*4 + 1] = Math.floor(stroke.g * 255);
@@ -189,6 +196,8 @@ Widget.SimpleGraph = function()
     graph.layout.init();
     controls.owner = graph;
     info_text.title = x.main;
+    _this.idle = false;
+    _this.animate();
   }
 
 
@@ -253,37 +262,46 @@ Widget.SimpleGraph = function()
     scene.add(line);
   }
 
+  
   _this.animate = function ()
   {
-    requestAnimationFrame(_this.animate);
     controls.update();
     render();
     if(_this.show_title) {
       printInfo();
     }
+    if(! _this.idle)  requestAnimationFrame(_this.animate); // Aggressive render loop (hogs CPU)
   };
 
   function render()
   {
-    // Generate layout if not finished
-    if(!graph.layout.finished) {
-      info_text.calc = "<span style='color: red'>Calculating layout...</span>";
-      graph.layout.generate();
-    } else {
+    if(graph.layout.finished && controls.idle)
+    {
+      _this.idle = true; // Conserve CPU by terminating render loop when not needed
       info_text.calc = "";
+    } else {
+      if(!graph.layout.finished)
+      {
+        // continue layout if not finished
+        info_text.calc = "<span style='color: red'>Calculating layout...</span>";
+        graph.layout.generate();
+      }
     }
 
     // Update position of lines (edges)
-    for(var i=0; i< geometries.length; i++) {
+    for(var i=0; i< geometries.length; i++)
+    {
       if(_this.curvature > 0)  update_edge(geometries[i], _this.curvature);   // only needed if spline edge
       geometries[i].verticesNeedUpdate = true;
     }
 
     // Show labels if set
     // It creates the labels when this options is set during visualization
-    if(_this.show_labels) {
+    if(_this.show_labels)
+    {
       var length = graph.nodes.length;
-      for(var i=0; i<length; i++) {
+      for(var i=0; i<length; i++)
+      {
         var node = graph.nodes[i];
         if(node.data.label_object != undefined) {
           node.data.label_object.position.x = node.data.draw_object.position.x;
@@ -312,9 +330,7 @@ Widget.SimpleGraph = function()
     }
 
     // render scenes
-    object_selection.render(scene, camera);
     _this.renderer.render( scene, camera );
-
     object_selection.render(scene2, camera);
     _this.renderer.render( scene2, camera );
   }

@@ -26,6 +26,7 @@ THREE.TrackballControls = function ( object, domElement ) {
   this.maxDistance = Infinity;
   this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
   this.owner = {};
+  this.idle = true;
 
   // internals
   this.target = new THREE.Vector3();
@@ -183,7 +184,8 @@ THREE.TrackballControls = function ( object, domElement ) {
     }
   };
 
-  this.update = function () {
+  this.update = function ()
+  {
     _eye.subVectors( _this.object.position, _this.target );
     if ( !_this.noRotate ) {
       _this.rotateCamera();
@@ -197,10 +199,12 @@ THREE.TrackballControls = function ( object, domElement ) {
     _this.object.position.addVectors( _this.target, _eye );
     _this.checkDistances();
     _this.object.lookAt( _this.target );
-    if ( lastPosition.distanceToSquared( _this.object.position ) > 0 ) {
+    if ( lastPosition.distanceToSquared( _this.object.position ) > 0 )
+    {
       _this.dispatchEvent( changeEvent );
       lastPosition.copy( _this.object.position );
-    }
+      _this.idle = false
+    } else {_this.idle = true};
   };
 
   this.reset = function () {
