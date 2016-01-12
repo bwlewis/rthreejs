@@ -4,18 +4,18 @@
 #'
 #' @param nodes A node (vertex) data frame with at least columns:
 #' \itemize{
-#'   \item label Node character labels
-#'   \item id    Unique integer node ids (corresponding to edges below)
-#'   \item size  Positive numeric node plot size
-#'   \item color A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
+#'   \item \code{label} Node character labels
+#'   \item \code{id}    Unique integer node ids (corresponding to edges below)
+#'   \item \code{size}  Positive numeric node plot size
+#'   \item \code{color} A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
 #' }
 #' Each row of the data frame defines a graph node.
 #' @param edges An edge data frame with at least columns:
 #' \itemize{
-#'   \item from Integer node id identifying edge 'from' node
-#'   \item to Integer ndoe id identifying the edge 'to' node
-#'   \item size Nonnegative numeric edge line width
-#'   \item color Edge color specified like node color above
+#'   \item \code{from} Integer node id identifying edge 'from' node
+#'   \item \code{to} Integer node id identifying the edge 'to' node
+#'   \item \code{size} Nonnegative numeric edge line width
+#'   \item \code{color} Edge color specified like node color above
 #' }
 #' Each row of the data frame identifies a graph edge.
 #' @param main Plot title
@@ -39,10 +39,10 @@
 #' The plot responds to the following mouse controls (touch analogs may also be
 #' supported on some systems):
 #' \itemize{
-#' \item  scrollwheel: zoom
-#' \item  left-mouse button + move: rotate
-#' \item  right-mouse button + move: pan
-#' \item  mouse over: identify node by appending its label to the title
+#' \item  \code{scrollwheel} zoom
+#' \item  \code{left-mouse button + move} rotate
+#' \item  \code{right-mouse button + move} pan
+#' \item  \code{mouse over} identify node by appending its label to the title
 #' }
 #' Press the 'r' key to reset the view.
 #'
