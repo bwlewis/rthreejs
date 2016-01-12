@@ -54,6 +54,10 @@
 #' Original code by DAvid Piegza: \url{https://github.com/davidpiegza/Graph-Visualization}.
 #' The three.js project \url{http://threejs.org}.
 #' 
+#' @examples
+#' data(LeMis)
+#' g <- graphjs(nodes=LeMis$nodes, edges=LeMis$edges, main="Les Mis&eacute;rables")
+#' print(g)
 #' @export
 graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
                     attraction=1, repulsion=1, max_iterations=1500, nodeType=c("circle", "sphere"),

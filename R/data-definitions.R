@@ -1,9 +1,26 @@
+#' Les Miserables Character Coappearance Data
+#'
+#' Les Miserables Character Coappearance Data
+#'
+#' @docType data
+#' @name LeMis
+#' @keywords datasets
+#' @source \url{http://bl.ocks.org/mbostock/4062045}
+#' Data based on character coappearence in Victor Hugo's Les Miserables, compiled by Donald Knuth
+#' (\url{http://www-cs-faculty.stanford.edu/~uno/sgb.html}).
+#' @usage data(LeMis)
+#' @format A list of two data frames: nodes with 77 observations (characters) of 4 variables; edges: with 254 observations of 4 variables.
+NULL
+
+
 #' Global flight example data from Callum Prentice.
 #' 
-#'  @docType data
-#'  @source See Callum Prentice \url{https://raw.githubusercontent.com/callumprentice/callumprentice.github.io/master/apps/flight_stream/js/flights_one.js}
-#'  @keywords datasets
-#'  @format A data frame with 34,296 observations of 4 variables, origin_lat, origin_long, dest_lat, and dest_long.
-#'  @name flights 
-#'
+#' Global flight example data from Callum Prentice.
+#' 
+#' @docType data
+#' @name flights
+#' @keywords datasets
+#' @source See Callum Prentice \url{https://raw.githubusercontent.com/callumprentice/callumprentice.github.io/master/apps/flight_stream/js/flights_one.js}
+#' @usage data(flights)
+#' @format A data frame with 34,296 observations of 4 variables, origin_lat, origin_long, dest_lat, and dest_long.
 NULL
