@@ -1,4 +1,3 @@
-
 #' Global flight example data from Callum Prentice.
 #' 
 #'  @docType data

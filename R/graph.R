@@ -51,7 +51,7 @@
 #' (If you don't see your widget plot, try printing it with the \code{print}) function.
 #'
 #' @references
-#' Original code by DAvid Piegza: https://github.com/davidpiegza/Graph-Visualization
+#' Original code by DAvid Piegza: \url{https://github.com/davidpiegza/Graph-Visualization}.
 #' The three.js project \url{http://threejs.org}.
 #' 
 #' @export

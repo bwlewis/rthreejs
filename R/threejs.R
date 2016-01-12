@@ -1,4 +1,3 @@
-
 #' Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
 #'
 #' Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
