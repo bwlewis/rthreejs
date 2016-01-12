@@ -52,7 +52,7 @@ Widget.SimpleGraph = function()
   this.show_title = true;
   this.show_labels = false;
 
-  var camera, controls, scene, interaction, geometry, object_selection, sprite_map, img_map;
+  var camera, controls, scene, interaction, geometry, object_selection, sprite_map, img_map, scene2;
   var stats;
   var info_text = {};
   var graph = new Graph();
@@ -61,8 +61,9 @@ Widget.SimpleGraph = function()
 
   _this.init = function (el, width, height)
   {
-    _this.renderer = new THREE.WebGLRenderer();
+    _this.renderer = new THREE.WebGLRenderer({alpha: true});
     _this.renderer.sortObjects = false;  // see https://github.com/mrdoob/three.js/issues/3490
+    _this.renderer.autoClearColor = false;
     _this.renderer.setSize(el.innerWidth, el.innerHeight);
     _this.el = el;
 
@@ -82,6 +83,7 @@ Widget.SimpleGraph = function()
     controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
+    scene2 = new THREE.Scene(); // for sprite rendering, node_type=1 (to control z-order)
 
     // Node geometry (used by spherical nodes)
     geometry = new THREE.SphereGeometry( 64, 25, 25 );
@@ -147,7 +149,7 @@ Widget.SimpleGraph = function()
   _this.create_graph = function(x)
   {
     _this.node_type = x.nodeType;
-    if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
+    _this.renderer.domElement.style.backgroundColor = x.bg;
     _this.fg = new THREE.Color(x.fg);
     _this.fgcss = x.fg;
     _this.curvature = x.curvature / 2;
@@ -251,7 +253,8 @@ Widget.SimpleGraph = function()
     draw_object.nodeid = node.id;
     node.data.draw_object = draw_object;
     node.position = draw_object.position;
-    scene.add( node.data.draw_object );
+    if(_this.node_type == 1) scene2.add(node.data.draw_object);
+    else scene.add(node.data.draw_object);
   }
 
   update_edge = function(geo, curvature)
@@ -353,10 +356,14 @@ Widget.SimpleGraph = function()
       }
     }
 
-    object_selection.render(scene, camera);
-
     // render scene
+    object_selection.render(scene, camera);
     _this.renderer.render( scene, camera );
+    if(_this.node_type == 1)
+    {
+      object_selection.render(scene2, camera);
+      _this.renderer.render( scene2, camera );
+    }
   }
 
   /**
