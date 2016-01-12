@@ -1,5 +1,7 @@
 /*
- * Adapted from simple_graph.js by David Piegza
+ * Adapted from simple_graph.js by David Piegza, see
+ * https://github.com/davidpiegza/Graph-Visualization
+ * Copyright (c) 2011 David Piegza
  *
  * Implements a simple graph drawing with force-directed placement in 3D.
  *
@@ -62,21 +64,12 @@ Widget.SimpleGraph = function()
   _this.init = function (el, width, height)
   {
     _this.renderer = new THREE.WebGLRenderer({alpha: true});
-    _this.renderer.sortObjects = false;  // see https://github.com/mrdoob/three.js/issues/3490
+    _this.renderer.sortObjects = false; // we control z-order with two scenes
     _this.renderer.autoClearColor = false;
     _this.renderer.setSize(el.innerWidth, el.innerHeight);
     _this.el = el;
 
     el.onmousemove = function(ev)
-    {
-      if(_this.idle)
-      {
-        _this.idle = false;
-        _this.animate();
-      }
-    }
-
-    el.onkeypress = function(ev)
     {
       if(_this.idle)
       {
@@ -206,7 +199,6 @@ Widget.SimpleGraph = function()
     controls.owner = graph;
     info_text.title = x.main;
     _this.idle = false;
-    _this.animate();
   }
 
 
@@ -287,12 +279,10 @@ Widget.SimpleGraph = function()
     if(graph.layout.finished && controls.idle)
     {
       _this.idle = true; // Conserve CPU by terminating render loop when not needed
-      info_text.calc = "";
     } else {
       if(!graph.layout.finished)
       {
         // continue layout if not finished
-        info_text.calc = "<span style='color: red'>Calculating layout...</span>";
         graph.layout.generate();
       }
     }
@@ -357,16 +347,5 @@ Widget.SimpleGraph = function()
     }
     document.getElementById("graph-info").innerHTML = str;
     document.getElementById("graph-info").style.color = _this.fgcss;
-  }
-
-  // Generate random number
-  function randomFromTo(from, to) {
-    return Math.floor(Math.random() * (to - from + 1) + from);
-  }
-
-  // Stop layout calculation
-  this.stop_calculating = function()
-  {
-    graph.layout.stop_calculating();
   }
 };
