@@ -22,13 +22,11 @@
 #' @param curvature Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs. Larger numbers = more curvature, with 1 a usually reasonable value.
 #' @param bg Plot background color specified similarly to the node colors described above
 #' @param fg Plot foreground text color
-#' @param showLabels If TRUE then display text labels near each node, may not work well with nodeType="sphere"
+#' @param showLabels If TRUE then display text labels near each node
 #' @param attraction Numeric value specifying attraction of connected nodes to each other, larger values indicate more attraction
 #' @param repulsion Numeric value specifying repulsion of all nodes to each other, larger values indicate greater repulsion
 #' @param max_iterations Integer value specifying the maximum number of rendering iterations before stopping
-#' @param nodeType circle or sphere nodes
-#' @param stroke Node stroke color, applies only to nodeType="cicrle"
-#' @param img Optional node image, applies only to nodeType="sphere"--see notes
+#' @param stroke Node stroke color
 #' @param width optional widget width
 #' @param height optional widget height
 #'
@@ -56,14 +54,12 @@
 #' 
 #' @examples
 #' data(LeMis)
-#' g <- graphjs(nodes=LeMis$nodes, edges=LeMis$edges, main="Les Mis&eacute;rables")
+#' g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
 #' print(g)
 #' @export
 graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
-                    attraction=1, repulsion=1, max_iterations=1500, nodeType=c("circle", "sphere"),
-                    stroke="black", img, width=NULL, height=NULL)
+                    attraction=1, repulsion=1, max_iterations=1500, stroke="black", width=NULL, height=NULL)
 {
-  nodeType = (match.arg(nodeType) == "sphere") + 1
   # create widget
   x = list(nodes=nodes,
            edges=edges,
@@ -74,10 +70,8 @@ graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", 
            attraction=attraction,
            repulsion=repulsion,
            iterations=max_iterations,
-           nodeType=nodeType,
            curvature=curvature,
            stroke=stroke)
-  if(!missing(img)) x$img = texture(img)
   ans = htmlwidgets::createWidget(
           name = "graph",
           x = jsonlite::toJSON(x, auto_unbox=TRUE),

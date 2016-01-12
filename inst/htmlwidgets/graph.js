@@ -52,7 +52,7 @@ Widget.SimpleGraph = function()
   this.show_title = true;
   this.show_labels = false;
 
-  var camera, controls, scene, interaction, geometry, object_selection, sprite_map, img_map, scene2;
+  var camera, controls, scene, object_selection, sprite_map, scene2;
   var stats;
   var info_text = {};
   var graph = new Graph();
@@ -83,29 +83,7 @@ Widget.SimpleGraph = function()
     controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
-    scene2 = new THREE.Scene(); // for sprite rendering, node_type=1 (to control z-order)
-
-    // Node geometry (used by spherical nodes)
-    geometry = new THREE.SphereGeometry( 64, 25, 25 );
-    var t = 128;
-    var dataColor2 = new Uint8Array( t * t * 4 );
-    for(var i = 0; i < t * t * 4; i++) dataColor2[i] = 255;
-    for(var i = 0; i < t; i++)
-    {
-      for(var j = 0; j < t; j++)
-      {
-        var k = i*t + j;
-        if((i/4) == Math.floor(i/4) || (j/4) == Math.floor(j/4))
-        {
-          dataColor2[k*4] = 190;
-          dataColor2[k*4 + 1] = 190;
-          dataColor2[k*4 + 2] = 190;
-          dataColor2[k*4 + 3] = 255;
-        }
-      }
-    }
-    img_map = new THREE.DataTexture(dataColor2, t, t, THREE.RGBAFormat, THREE.UnsignedByteType );
-    img_map.needsUpdate = true;
+    scene2 = new THREE.Scene();
 
     object_selection = new THREE.ObjectSelection({
       domElement: _this.renderer.domElement,
@@ -148,26 +126,11 @@ Widget.SimpleGraph = function()
    */
   _this.create_graph = function(x)
   {
-    _this.node_type = x.nodeType;
     _this.renderer.domElement.style.backgroundColor = x.bg;
     _this.fg = new THREE.Color(x.fg);
     _this.fgcss = x.fg;
     _this.curvature = x.curvature / 2;
 
-    // map user-supplied image to sphere
-    if(x.img && x.img.dataURI)
-    { 
-      img = document.createElement("img");
-      img.src = x.img.img;
-      img_map = new THREE.Texture();
-      img_map.minFilter = THREE.LinearFilter;
-      img_map.image = img;
-      img_map.needsUpdate = true;
-    } else if(x.img)
-    { 
-      img_map = THREE.ImageUtils.loadTexture(x.img.img);
-      img_map.minFilter = THREE.LinearFilter;
-    }
     // node sprite (used by circular nodes), with user-supplied stroke color
     var dataColor = new Uint8Array( 256 * 256 * 4 );
     var stroke = new THREE.Color(x.stroke);
@@ -229,22 +192,15 @@ Widget.SimpleGraph = function()
   }
 
 
-  /**
-   *  Create a node object and add it to the scene.
+  /*
+   *  Create a node object and add it to the scene2.
    */
   function drawNode(node)
   {
     var draw_object;
-    var draw_scale = 1;
-    var smaterial = new THREE.SpriteMaterial({color: node.color, map: sprite_map, opacity: 1});
-    if(_this.node_type == 1)
-    {
-      draw_object = new THREE.Sprite(smaterial);
-      draw_scale = 100;
-    } else
-    {
-      draw_object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: node.color, opacity: 0.9, map: img_map}));
-    }
+    var draw_scale = 100;
+    var smaterial = new THREE.SpriteMaterial({color: node.color, map: sprite_map});
+    draw_object = new THREE.Sprite(smaterial);
     draw_object.scale.x = draw_object.scale.y = draw_scale * node.scale;
     var area = 50;
     draw_object.position.x = Math.floor(Math.random() * (area + area + 1) - area);
@@ -253,8 +209,7 @@ Widget.SimpleGraph = function()
     draw_object.nodeid = node.id;
     node.data.draw_object = draw_object;
     node.position = draw_object.position;
-    if(_this.node_type == 1) scene2.add(node.data.draw_object);
-    else scene.add(node.data.draw_object);
+    scene2.add(node.data.draw_object);
   }
 
   update_edge = function(geo, curvature)
@@ -356,14 +311,12 @@ Widget.SimpleGraph = function()
       }
     }
 
-    // render scene
+    // render scenes
     object_selection.render(scene, camera);
     _this.renderer.render( scene, camera );
-    if(_this.node_type == 1)
-    {
-      object_selection.render(scene2, camera);
-      _this.renderer.render( scene2, camera );
-    }
+
+    object_selection.render(scene2, camera);
+    _this.renderer.render( scene2, camera );
   }
 
   /**
