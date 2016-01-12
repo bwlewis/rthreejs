@@ -91,7 +91,7 @@ THREE.ObjectSelection = function(parameters)
       var others = tribe(N, [N], 1);
       for(var j=1; j < others.length; j++)  // start at 1 cause others[0] = N.
       {
-        var d = Math.pow(0.85, 1.1*others[j].distance);
+        var d = Math.pow(0.70, 1.5*others[j].distance);
         others[j].position.x = others[j].position.x - dx * d;
         others[j].position.y = others[j].position.y - dy * d;
       }

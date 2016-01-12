@@ -12,11 +12,11 @@
 #' The three.js project \url{http://threejs.org}.
 #' 
 #' @export
-graphjs <- function(nodes, edges, main="", bg="white", fg="black", showLabels=FALSE,
-                    attraction=5, repulsion=0.5, iterations=1500, nodeType=0, img, width=NULL, height=NULL)
+graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
+                    attraction=1, repulsion=1, max_iterations=1500, nodeType=0, stroke="black", img, width=NULL, height=NULL)
 {
   # create widget
-  x = list(nodes=nodes, edges=edges, main=main, bg=bg, fg=fg, showLabels=showLabels, attraction=attraction, repulsion=repulsion, iterations=iterations, nodeType=nodeType)
+  x = list(nodes=nodes, edges=edges, main=main, bg=bg, fg=fg, showLabels=showLabels, attraction=attraction, repulsion=repulsion, iterations=max_iterations, nodeType=nodeType, curvature=curvature, stroke=stroke)
   if(!missing(img)) x$img = texture(img)
   ans = htmlwidgets::createWidget(
           name = "graph",

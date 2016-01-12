@@ -5,10 +5,8 @@
  *
  * Parameters:
  * options = {
- *
  *   nodes: A data frame with at least the 5 columns id, label, size,
  *          color, type. The id column is the data frame row number.
- *
  *   edges: A data frame with at least the 4 columns from, to, size, color.
  *          The from and to columns indicate node ids.
  * }
@@ -28,6 +26,8 @@ HTMLWidgets.widget(
 
   resize: function(el, width, height, obj)
   {
+    obj.width = parseInt(width);
+    obj.height = parseInt(height);
     obj.widget.renderer.setSize(width, height);
   },
 
@@ -61,12 +61,13 @@ Widget.SimpleGraph = function()
 
   _this.init = function (el, width, height)
   {
-    _this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, precision: "lowp"});
+    _this.renderer = new THREE.WebGLRenderer();
     _this.renderer.sortObjects = false;  // see https://github.com/mrdoob/three.js/issues/3490
     _this.renderer.setSize(el.innerWidth, el.innerHeight);
     _this.el = el;
 
     camera = new THREE.PerspectiveCamera(40, width/height, 1, 1000000);
+//    camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000000);
     camera.position.z = 5000;
 
     controls = new THREE.TrackballControls(camera);
@@ -84,37 +85,7 @@ Widget.SimpleGraph = function()
 
     // Node geometry (used by spherical nodes)
     geometry = new THREE.SphereGeometry( 64, 25, 25 );
-    // Node sprite (used by circular nodes)
-    var t = 256;
-    var size = t * t;
-    var dataColor = new Uint8Array( size * 4 );
-    for(var i = 0; i < size * 4; i++) dataColor[i] = 0;
-    for(var i = 0; i < t; i++)
-    {
-      for(var j = 0; j < t; j++)
-      {
-        var x = 2*i/(t-1) - 1;
-        var y = 2*j/(t-1) - 1;
-        var z = x*x + y*y;
-        var k = i*t + j;
-        if(z <= 0.75)
-        {
-          dataColor[k*4] = 255;
-          dataColor[k*4 + 1] = 255;
-          dataColor[k*4 + 2] = 255;
-          dataColor[k*4 + 3] = 255;
-        } else if(z > 0.75 && z <= 1)
-        {
-          dataColor[k*4] = 0;
-          dataColor[k*4 + 1] = 0;
-          dataColor[k*4 + 2] = 0;
-          dataColor[k*4 + 3] = 255;
-        }
-      }
-    }
-    sprite_map = new THREE.DataTexture(dataColor, t, t, THREE.RGBAFormat, THREE.UnsignedByteType );
-    sprite_map.needsUpdate = true;
-    t = 128;
+    var t = 128;
     var dataColor2 = new Uint8Array( t * t * 4 );
     for(var i = 0; i < t * t * 4; i++) dataColor2[i] = 255;
     for(var i = 0; i < t; i++)
@@ -179,7 +150,9 @@ Widget.SimpleGraph = function()
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
     _this.fg = new THREE.Color(x.fg);
     _this.fgcss = x.fg;
+    _this.curvature = x.curvature / 2;
 
+    // map user-supplied image to sphere
     if(x.img && x.img.dataURI)
     { 
       img = document.createElement("img");
@@ -193,13 +166,42 @@ Widget.SimpleGraph = function()
       img_map = THREE.ImageUtils.loadTexture(x.img.img);
       img_map.minFilter = THREE.LinearFilter;
     }
+    // node sprite (used by circular nodes), with user-supplied stroke color
+    var dataColor = new Uint8Array( 256 * 256 * 4 );
+    var stroke = new THREE.Color(x.stroke);
+    for(var i = 0; i < 256 * 256 * 4; i++) dataColor[i] = 0;
+    for(var i = 0; i < 256; i++)
+    {
+      for(var j = 0; j < 256; j++)
+      {
+        var dx = 2*i/255 - 1;
+        var dy = 2*j/255 - 1;
+        var dz = dx*dx + dy*dy;
+        var k = i*256 + j;
+        if(dz <= 0.85)
+        {
+          dataColor[k*4] = 255;
+          dataColor[k*4 + 1] = 255;
+          dataColor[k*4 + 2] = 255;
+          dataColor[k*4 + 3] = 255;
+        } else if(dz > 0.85 && dz <= 1)
+        {
+          dataColor[k*4] = Math.floor(stroke.r * 255);
+          dataColor[k*4 + 1] = Math.floor(stroke.g * 255);
+          dataColor[k*4 + 2] = Math.floor(stroke.b * 255);
+          dataColor[k*4 + 3] = 255;
+        }
+      }
+    }
+    sprite_map = new THREE.DataTexture(dataColor, 256, 256, THREE.RGBAFormat, THREE.UnsignedByteType );
+    sprite_map.needsUpdate = true;
 
     for(var j=0; j < x.nodes.length; j++)
     {
       var node = new Node(x.nodes[j].id);
       node.data.title = x.nodes[j].label;
       node.color = new THREE.Color(x.nodes[j].color);
-      node.scale = x.nodes[j].size/2;
+      node.scale = x.nodes[j].size;
       graph.addNode(node);
       drawNode(node);
     }
@@ -208,7 +210,7 @@ Widget.SimpleGraph = function()
       var source = graph.getNode(x.edges[j].from);
       var target = graph.getNode(x.edges[j].to);
       graph.addEdge(source, target);
-      drawEdge(source, target, new THREE.Color(x.edges[j].color), x.edges[j].size);
+      drawEdge(source, target, new THREE.Color(x.edges[j].color), x.edges[j].size, x.curvature);
     }
 
     _this.show_labels = x.showLabels;
@@ -235,11 +237,11 @@ Widget.SimpleGraph = function()
     var smaterial = new THREE.SpriteMaterial({color: node.color, map: sprite_map, opacity: 1});
     if(_this.node_type == 1)
     {
-      draw_object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: node.color, opacity: 0.9, map: img_map}));
-    } else
-    {
       draw_object = new THREE.Sprite(smaterial);
       draw_scale = 100;
+    } else
+    {
+      draw_object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: node.color, opacity: 0.9, map: img_map}));
     }
     draw_object.scale.x = draw_object.scale.y = draw_scale * node.scale;
     var area = 50;
@@ -252,23 +254,45 @@ Widget.SimpleGraph = function()
     scene.add( node.data.draw_object );
   }
 
-  /**
-   *  Create an edge object (line) and add it to the scene.
-   */
-  function drawEdge(source, target, color, size) {
-    material = new THREE.LineBasicMaterial({ color: color, opacity: 1, linewidth: size });
+  update_edge = function(geo, curvature)
+  {
+    geo.vertices = [];
+    if(curvature > 0)
+    {
+      var dx = geo.source.data.draw_object.position.x -  geo.target.data.draw_object.position.x;
+      var dy = geo.source.data.draw_object.position.y -  geo.target.data.draw_object.position.y;
+      var dz = geo.source.data.draw_object.position.z -  geo.target.data.draw_object.position.z;
+      var sx = geo.source.data.draw_object.position.x +  geo.target.data.draw_object.position.x;
+      var sy = geo.source.data.draw_object.position.y +  geo.target.data.draw_object.position.y;
+      var sz = geo.source.data.draw_object.position.z +  geo.target.data.draw_object.position.z;
+      var n  = Math.sqrt(geo.source.data.draw_object.position.x * geo.source.data.draw_object.position.x +
+                         geo.source.data.draw_object.position.y * geo.source.data.draw_object.position.y +
+                         geo.source.data.draw_object.position.z * geo.source.data.draw_object.position.z) +
+               Math.sqrt(geo.target.data.draw_object.position.x * geo.target.data.draw_object.position.x +
+                         geo.target.data.draw_object.position.y * geo.target.data.draw_object.position.y +
+                         geo.target.data.draw_object.position.z * geo.target.data.draw_object.position.z);
+      var a  = curvature * Math.sign(geo.source.id - geo.target.id) * Math.sqrt(dx * dx + dy * dy + dz * dz) / n;
+      var v = new THREE.Vector3(sx/2, sy/2, sz/2 + a*sz/2);
+      var curve = new THREE.SplineCurve3([geo.source.data.draw_object.position, v, geo.target.data.draw_object.position]);
+      geo.vertices = curve.getPoints(20);
+    } else
+    {
+      geo.vertices.push(geo.source.data.draw_object.position);
+      geo.vertices.push(geo.target.data.draw_object.position);
+    }
+  }
 
-    var tmp_geo = new THREE.Geometry();
-    tmp_geo.vertices.push(source.data.draw_object.position);
-    tmp_geo.vertices.push(target.data.draw_object.position);
-
-//    line = new THREE.Line( tmp_geo, material, THREE.LinePieces );
-    var line = new THREE.Line( tmp_geo, material );
+  function drawEdge(source, target, color, size, curvature) {
+    var material = new THREE.LineBasicMaterial({ color: color, opacity: 1, linewidth: size });
+    var geo = new THREE.Geometry();
+    geo.source = source;
+    geo.target = target;
+    update_edge(geo, curvature);
+    var line = new THREE.Line( geo, material );
     line.scale.x = line.scale.y = line.scale.z = 1;
     line.originalScale = 1;
-
-    geometries.push(tmp_geo);
-    scene.add( line );
+    geometries.push(geo);
+    scene.add(line);
   }
 
   _this.animate = function ()
@@ -281,7 +305,8 @@ Widget.SimpleGraph = function()
     }
   };
 
-  function render() {
+  function render()
+  {
     // Generate layout if not finished
     if(!graph.layout.finished) {
       info_text.calc = "<span style='color: red'>Calculating layout...</span>";
@@ -292,6 +317,7 @@ Widget.SimpleGraph = function()
 
     // Update position of lines (edges)
     for(var i=0; i< geometries.length; i++) {
+      if(_this.curvature > 0)  update_edge(geometries[i], _this.curvature);   // only needed if spline edge
       geometries[i].verticesNeedUpdate = true;
     }
 
@@ -326,10 +352,6 @@ Widget.SimpleGraph = function()
         }
       }
     }
-
-// XXX make options
-    var ambientLight = new THREE.AmbientLight(0xffffff);
-    scene.add( ambientLight );
 
     object_selection.render(scene, camera);
 
