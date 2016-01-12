@@ -24,6 +24,8 @@ visualization widgets for R.
 
 ## What's new
 
+Create force directed graphs the `graphjs` function.
+
 The `scatterplot3js` function now supports `scatterplot3d`-like `xlim`, `ylim`
 and `zlim` options.
 

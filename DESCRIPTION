@@ -1,7 +1,8 @@
 Package: threejs
 Type: Package
 Title: Interactive 3D Scatter Plots and Globes
-Description: Create interactive 3D scatter plots and globes using the 'three.js' visualization library ("http://threejs.org").
+Description: Create interactive 3D scatter plots and globes using the 'three.js'
+    visualization library ("http://threejs.org").
 Version: 0.2.2
 Date: 2015-04-24
 Authors@R: c(
@@ -9,7 +10,10 @@ Authors@R: c(
     person(family="Three.js authors", role="cph", comment="three.js JavaScript library"),
     person("Alexey", "Stukalov", role=("ctb"), email="astukalov@gmail.com"),
     person("Yihui","Xie", role=("ctb"), email="xie@yihui.name"),
-    person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de")
+    person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de"),
+    person("Mark", "Lundin", role="cph"),
+    person("Eberhard", "Graether", role="cph"),
+    person("David", "Piegza", role="cph")
     )
 URL: http://bwlewis.github.io/rthreejs
 BugReports: https://github.com/bwlewis/rthreejs/issues
@@ -24,3 +28,4 @@ Suggests:
     maps,
     sp
 Enhances: knitr, shiny
+RoxygenNote: 5.0.0

@@ -1,4 +1,4 @@
-#' scatterplot3js Three.js 3D scatterplot widget.
+#' Interactive 3D Scatterplots
 #'
 #' A 3D scatterplot widget using three.js. Many options
 #' follow the \code{scatterplot3d} function from the eponymous package.

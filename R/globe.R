@@ -1,6 +1,6 @@
-#' globejs Three.js globe widget
+#' Plot Data on 3D Globes
 #'
-#' Three.js widget for mapping points, arcs and images on a globe. The globe
+#' Plot points, arcs and images on a globe in 3D using Three.js. The globe
 #' can be rotated and and zoomed.
 #'
 #' @param img A character string representing a file path or URI of an image to plot on the globe surface.

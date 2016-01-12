@@ -1,22 +1,78 @@
-#' graphjs Three.js 3D force-directed graph
+#' Interactive 3D Force-directed Graphs
 #'
-#' @param ... Additional options (see note).
+#' Plot interactive force-directed graphs.
+#'
+#' @param nodes A node (vertex) data frame with at least columns:
+#' \itemize{
+#'   \item label Node character labels
+#'   \item id    Unique integer node ids (corresponding to edges below)
+#'   \item size  Positive numeric node plot size
+#'   \item color A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
+#' }
+#' Each row of the data frame defines a graph node.
+#' @param edges An edge data frame with at least columns:
+#' \itemize{
+#'   \item from Integer node id identifying edge 'from' node
+#'   \item to Integer ndoe id identifying the edge 'to' node
+#'   \item size Nonnegative numeric edge line width
+#'   \item color Edge color specified like node color above
+#' }
+#' Each row of the data frame identifies a graph edge.
+#' @param main Plot title
+#' @param curvature Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs. Larger numbers = more curvature, with 1 a usually reasonable value.
+#' @param bg Plot background color specified similarly to the node colors described above
+#' @param fg Plot foreground text color
+#' @param showLabels If TRUE then display text labels near each node, may not work well with nodeType="sphere"
+#' @param attraction Numeric value specifying attraction of connected nodes to each other, larger values indicate more attraction
+#' @param repulsion Numeric value specifying repulsion of all nodes to each other, larger values indicate greater repulsion
+#' @param max_iterations Integer value specifying the maximum number of rendering iterations before stopping
+#' @param nodeType circle or sphere nodes
+#' @param stroke Node stroke color, applies only to nodeType="cicrle"
+#' @param img Optional node image, applies only to nodeType="sphere"--see notes
+#' @param width optional widget width
+#' @param height optional widget height
+#'
+#' @note All colors must be specified as color names like "red", "blue", etc. or
+#' as hexadecimal color values without alpha channel, for example "#FF0000", "#0a3e55"
+#' (upper or lower case hex digits are allowed).
+#'
+#' The plot responds to the following mouse controls (touch analogs may also be
+#' supported on some systems):
+#' \itemize{
+#' \item  scrollwheel: zoom
+#' \item  left-mouse button + move: rotate
+#' \item  right-mouse button + move: pan
+#' \item  mouse over: identify node by appending its label to the title
+#' }
+#' Press the 'r' key to reset the view.
 #'
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
-#' (If you don't see your widget plot, try printing it with the \code{print}) function. The
-#' returned object includes a special \code{points3d} function for adding points to the
-#' plot similar to \code{scatterplot3d}. See the note below and examples for details.
+#' (If you don't see your widget plot, try printing it with the \code{print}) function.
 #'
 #' @references
+#' Original code by DAvid Piegza: https://github.com/davidpiegza/Graph-Visualization
 #' The three.js project \url{http://threejs.org}.
 #' 
 #' @export
 graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
-                    attraction=1, repulsion=1, max_iterations=1500, nodeType=0, stroke="black", img, width=NULL, height=NULL)
+                    attraction=1, repulsion=1, max_iterations=1500, nodeType=c("circle", "sphere"),
+                    stroke="black", img, width=NULL, height=NULL)
 {
+  nodeType = (match.arg(nodeType) == "sphere") + 1
   # create widget
-  x = list(nodes=nodes, edges=edges, main=main, bg=bg, fg=fg, showLabels=showLabels, attraction=attraction, repulsion=repulsion, iterations=max_iterations, nodeType=nodeType, curvature=curvature, stroke=stroke)
+  x = list(nodes=nodes,
+           edges=edges,
+           main=main,
+           bg=bg,
+           fg=fg,
+           showLabels=showLabels,
+           attraction=attraction,
+           repulsion=repulsion,
+           iterations=max_iterations,
+           nodeType=nodeType,
+           curvature=curvature,
+           stroke=stroke)
   if(!missing(img)) x$img = texture(img)
   ans = htmlwidgets::createWidget(
           name = "graph",
