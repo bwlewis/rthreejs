@@ -6,8 +6,7 @@
 \usage{
 graphjs(nodes, edges, main = "", curvature = 0, bg = "white",
   fg = "black", showLabels = FALSE, attraction = 1, repulsion = 1,
-  max_iterations = 1500, nodeType = c("circle", "sphere"),
-  stroke = "black", img, width = NULL, height = NULL)
+  max_iterations = 1500, stroke = "black", width = NULL, height = NULL)
 }
 \arguments{
 \item{nodes}{A node (vertex) data frame with at least columns:
@@ -36,7 +35,7 @@ Each row of the data frame identifies a graph edge.}
 
 \item{fg}{Plot foreground text color}
 
-\item{showLabels}{If TRUE then display text labels near each node, may not work well with nodeType="sphere"}
+\item{showLabels}{If TRUE then display text labels near each node}
 
 \item{attraction}{Numeric value specifying attraction of connected nodes to each other, larger values indicate more attraction}
 
@@ -44,11 +43,7 @@ Each row of the data frame identifies a graph edge.}
 
 \item{max_iterations}{Integer value specifying the maximum number of rendering iterations before stopping}
 
-\item{nodeType}{circle or sphere nodes}
-
-\item{stroke}{Node stroke color, applies only to nodeType="cicrle"}
-
-\item{img}{Optional node image, applies only to nodeType="sphere"--see notes}
+\item{stroke}{Node stroke color}
 
 \item{width}{optional widget width}
 
@@ -78,7 +73,7 @@ Press the 'r' key to reset the view.
 }
 \examples{
 data(LeMis)
-g <- graphjs(nodes=LeMis$nodes, edges=LeMis$edges, main="Les Mis&eacute;rables")
+g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
 print(g)
 }
 \references{

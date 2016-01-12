@@ -122,7 +122,7 @@ if(!down)
         }
         this.INTERSECTED = intersects[ 0 ].object;
         this.INTERSECTED.currentHex = this.INTERSECTED.material.color.getHex();
-        this.INTERSECTED.material.color.setHex( 0xff0000 );
+        this.INTERSECTED.material.color.setHex( 0xff5555 );
         if(typeof callbackSelected === 'function') {
           callbackSelected(this.INTERSECTED);
         }

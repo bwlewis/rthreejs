@@ -76,6 +76,15 @@ Widget.SimpleGraph = function()
       }
     }
 
+    el.onkeypress = function(ev)
+    {
+      if(_this.idle)
+      {
+        _this.idle = false;
+        _this.animate();
+      }
+    }
+
     camera = new THREE.PerspectiveCamera(40, width/height, 1, 1000000);
     camera.position.z = 5000;
 
