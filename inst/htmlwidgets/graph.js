@@ -31,6 +31,7 @@ HTMLWidgets.widget(
     obj.width = parseInt(width);
     obj.height = parseInt(height);
     obj.widget.renderer.setSize(width, height);
+    obj.widget.reset();
   },
 
   renderValue: function(el, x, obj)
@@ -45,6 +46,7 @@ HTMLWidgets.widget(
 /* Define a force-directed graph widget with methods
  * init(el, width, height)
  * create_graph(options)
+ * reset()
  * animate()
  */
 var Widget = Widget || {};
@@ -79,10 +81,12 @@ Widget.SimpleGraph = function()
       }
     }
 
+    _this.renderer.domElement.addEventListener('dblclick', function(ev) { _this.reset(); }, true);
+
     camera = new THREE.PerspectiveCamera(40, width/height, 1, 1000000);
     camera.position.z = 5000;
 
-    controls = new THREE.TrackballControls(camera);
+    controls = new THREE.TrackballControls(camera, el);
     controls.rotateSpeed = 0.5;
     controls.zoomSpeed = 5.2;
     controls.panSpeed = 1;
@@ -90,7 +94,6 @@ Widget.SimpleGraph = function()
     controls.noPan = false;
     controls.staticMoving = false;
     controls.dynamicDampingFactor = 0.3;
-    controls.keys = [ 65, 83, 68 ]; // a s d also r for 'reset'
     controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
@@ -126,6 +129,17 @@ Widget.SimpleGraph = function()
       info.style.position = "absolute";
       info.style.top = "10px";
       el.appendChild(info);
+    }
+  }
+
+  _this.reset = function()
+  {
+    controls.reset();
+    graph.layout.init();
+    if(_this.idle)
+    {
+      _this.idle = false;
+      _this.animate();
     }
   }
 
@@ -191,7 +205,7 @@ Widget.SimpleGraph = function()
       var source = graph.getNode(x.edges[j].from);
       var target = graph.getNode(x.edges[j].to);
       graph.addEdge(source, target);
-      drawEdge(source, target, new THREE.Color(x.edges[j].color), x.edges[j].size, x.curvature);
+      drawEdge(source, target, new THREE.Color(x.edges[j].color), 2*x.edges[j].size, x.curvature);
     }
 
     _this.show_labels = x.showLabels;
@@ -202,7 +216,6 @@ Widget.SimpleGraph = function()
     _this.layout_options.iterations = x.iterations;
     graph.layout = new Layout.ForceDirected(graph, _this.layout_options);
     graph.layout.init();
-    controls.owner = graph;
     info_text.title = x.main;
     _this.idle = false;
   }

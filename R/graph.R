@@ -19,7 +19,7 @@
 #' }
 #' Each row of the data frame identifies a graph edge.
 #' @param main Plot title
-#' @param curvature Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs. Larger numbers = more curvature, with 1 a usually reasonable value.
+#' @param curvature Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs (the z-axis of the curve depends on the sign of \code{edge$from - edge$to}). Larger numbers = more curvature, with 1 a usually reasonable value.
 #' @param bg Plot background color specified similarly to the node colors described above
 #' @param fg Plot foreground text color
 #' @param showLabels If TRUE then display text labels near each node
@@ -43,7 +43,7 @@
 #' \item  \code{right-mouse button + move} pan
 #' \item  \code{mouse over} identify node by appending its label to the title
 #' }
-#' Press the 'r' key to reset the view.
+#' Double-click or tap on the plot to reset the view.
 #'
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
@@ -62,6 +62,12 @@
 graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
                     attraction=1, repulsion=1, max_iterations=1500, opacity = 1, stroke="black", width=NULL, height=NULL)
 {
+  # check input
+  if(!all(c("id", "size", "label", "color") %in% names(nodes)))
+    stop("The nodes data frame must contain 'id', 'size', 'label', and 'color' variables")
+  if(!all(c("from", "size", "to", "color") %in% names(edges)))
+    stop("The edges data frame must contain 'from', 'to', 'size', and 'color' variables")
+
   # create widget
   x = list(nodes=nodes,
            edges=edges,
@@ -102,7 +108,7 @@ renderGraph = function(expr, env = parent.frame(), quoted = FALSE) {
 #' Convert from node and edge graph representation to a sparse adjacency matrix representation
 #'
 #' @param nodes A data frame with at least a column named "id" as used by \code{\link{graphjs}}. The size of the matrix is determined by  number of rows in the data frame.
-#' @param edges A data frame with at least the columns "from" and "to" referring to edges between ids in the \code{nodes} data frame.
+#' @param edges A data frame with at least the columns "from" and "to" referring to edges between ids in the \code{nodes} data frame. If the data frame includes a numeric "size" variable then graph is assumed to be weighted and the corresponding matrix entries are set to the size values.
 #' @param symmetric Set to \code{FALSE} for directed graphs, or leave as \code{TRUE} for undirected graphs.
 #' @return A sparse matrix
 #' @seealso \code{\link{graphjs}}, \code{\link{graph2Matrix}}
@@ -116,14 +122,19 @@ graph2Matrix = function(nodes, edges, symmetric=TRUE)
 {
   N  = nrow(nodes)
   id = seq(1, N)
+  x = 1
+  if(!is.null(edges$size) && is.numeric(edges$size)) x = edges$size
   names(id) = nodes[,"id"]
-  sparseMatrix(i=id[as.character(edges$from)], j=id[as.character(edges$to)], x=1, dims=c(N, N), symmetric=symmetric)
+  M = sparseMatrix(i=id[as.character(edges$from)], j=id[as.character(edges$to)], x=x, dims=c(N, N), symmetric=symmetric)
+  if(!is.null(nodes$label)) colnames(M) = rownames(M) = nodes$label
+  M
 }
 
 #' Convert a matrix or column-sparse matrix to a list of edges and nodes for
 #' use by \code{\link{graphjs}}.
 #' @param M either a matrix or any of the possible column sparse matrix objects from the \link{Matrix} package.
-#' @return A list with node and edges data frame entries.
+#' @return A list with node and edges data frame entries used by \code{\link{graphjs}}.
+#' @note Numeric graphs are assumed to be weighted and the edge "size" values are set to the corresponding matrix entries.
 #' @seealso \code{\link{graphjs}}, \code{\link{graph2Matrix}}
 #' @importFrom Matrix Matrix
 #' @examples
@@ -136,8 +147,11 @@ matrix2graph = function(M)
   M = Matrix(M)
   if(!any(grepl("CMatrix", class(M)))) stop("M must be a matrix or CsparseMatrix object")
   n = nrow(M)
+  size = 1
+  if("x" %in% slotNames(M)) size = as.numeric(M@x)
   nodes = data.frame(id=1:n, label=1:n, size=1, color="orange")
+  if(!is.null(colnames(M))) nodes$label = colnames(M)
   dp = diff(M@p)
-  edges = data.frame(from=M@i + 1, to=rep(seq_along(dp), dp), size=1, color="lightgray")
+  edges = data.frame(from=M@i + 1, to=rep(seq_along(dp), dp), size=size, color="lightgray")
   list(nodes=nodes, edges=edges)
 }

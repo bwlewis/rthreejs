@@ -30,7 +30,7 @@ Each row of the data frame identifies a graph edge.}
 
 \item{main}{Plot title}
 
-\item{curvature}{Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs. Larger numbers = more curvature, with 1 a usually reasonable value.}
+\item{curvature}{Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs (the z-axis of the curve depends on the sign of \code{edge$from - edge$to}). Larger numbers = more curvature, with 1 a usually reasonable value.}
 
 \item{bg}{Plot background color specified similarly to the node colors described above}
 
@@ -72,7 +72,7 @@ supported on some systems):
 \item  \code{right-mouse button + move} pan
 \item  \code{mouse over} identify node by appending its label to the title
 }
-Press the 'r' key to reset the view.
+Double-click or tap on the plot to reset the view.
 }
 \examples{
 data(LeMis)
