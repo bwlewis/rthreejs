@@ -126,9 +126,11 @@ Widget.SimpleGraph = function()
       info.style.zIndex = 100;
       info.style.fontFamily = "Sans";
       info.style.fontSize = "x-large";
-      info.style.position = "absolute";
-      info.style.top = "10px";
+      info.style.position = "relative";
+      info.style.color = _this.fgcss;
+      info.style.top = 10 - _this.renderer.domElement.height;
       el.appendChild(info);
+      _this.infobox = info;
     }
   }
 
@@ -288,7 +290,7 @@ Widget.SimpleGraph = function()
     controls.update();
     render();
     if(_this.show_title) {
-      printInfo();
+      printInfo(); // XXX why repeat this over and over? Improve...
     }
     if(! _this.idle)  requestAnimationFrame(_this.animate); // Aggressive render loop (hogs CPU)
   };
@@ -363,7 +365,7 @@ Widget.SimpleGraph = function()
       }
       str += info_text[index];
     }
-    document.getElementById("graph-info").innerHTML = str;
-    document.getElementById("graph-info").style.color = _this.fgcss;
+    _this.infobox.innerHTML = str;
+    _this.infobox.style.top = "" + 10 - _this.renderer.domElement.height + "px";
   }
 };
