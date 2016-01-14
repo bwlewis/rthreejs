@@ -87,14 +87,57 @@ graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", 
 
 #' @rdname threejs-shiny
 #' @export
-graphOutput <- function(outputId, width = "100%", height = "500px") {
+graphOutput = function(outputId, width = "100%", height = "500px") {
     shinyWidgetOutput(outputId, "graph", width, height,
                         package = "threejs")
 }
 
 #' @rdname threejs-shiny
 #' @export
-renderGraph <- function(expr, env = parent.frame(), quoted = FALSE) {
+renderGraph = function(expr, env = parent.frame(), quoted = FALSE) {
     if (!quoted) { expr <- substitute(expr) } # force quoted
     shinyRenderWidget(expr, graphOutput, env, quoted = TRUE)
+}
+
+#' Convert from node and edge graph representation to a sparse adjacency matrix representation
+#'
+#' @param nodes A data frame with at least a column named "id" as used by \code{\link{graphjs}}. The size of the matrix is determined by  number of rows in the data frame.
+#' @param edges A data frame with at least the columns "from" and "to" referring to edges between ids in the \code{nodes} data frame.
+#' @param symmetric Set to \code{FALSE} for directed graphs, or leave as \code{TRUE} for undirected graphs.
+#' @return A sparse matrix
+#' @seealso \code{\link{graphjs}}, \code{\link{graph2Matrix}}
+#' @importFrom Matrix sparseMatrix
+#' @examples
+#' data(LeMis)
+#' M <- graph2Matrix(LeMis$nodes, LeMis$edges)
+#' G <- matrix2graph(M)
+#' @export
+graph2Matrix = function(nodes, edges, symmetric=TRUE)
+{
+  N  = nrow(nodes)
+  id = seq(1, N)
+  names(id) = nodes[,"id"]
+  sparseMatrix(i=id[as.character(edges$from)], j=id[as.character(edges$to)], x=1, dims=c(N, N), symmetric=symmetric)
+}
+
+#' Convert a matrix or column-sparse matrix to a list of edges and nodes for
+#' use by \code{\link{graphjs}}.
+#' @param M either a matrix or any of the possible column sparse matrix objects from the \link{Matrix} package.
+#' @return A list with node and edges data frame entries.
+#' @seealso \code{\link{graphjs}}, \code{\link{graph2Matrix}}
+#' @importFrom Matrix Matrix
+#' @examples
+#' data(LeMis)
+#' M <- graph2Matrix(LeMis$nodes, LeMis$edges)
+#' G <- matrix2graph(M)
+#' @export
+matrix2graph = function(M)
+{
+  M = Matrix(M)
+  if(!any(grepl("CMatrix", class(M)))) stop("M must be a matrix or CsparseMatrix object")
+  n = nrow(M)
+  nodes = data.frame(id=1:n, label=1:n, size=1, color="orange")
+  dp = diff(M@p)
+  edges = data.frame(from=M@i + 1, to=rep(seq_along(dp), dp), size=1, color="lightgray")
+  list(nodes=nodes, edges=edges)
 }

@@ -122,7 +122,12 @@ if(!down)
         }
         this.INTERSECTED = intersects[ 0 ].object;
         this.INTERSECTED.currentHex = this.INTERSECTED.material.color.getHex();
-        this.INTERSECTED.material.color.setHex( 0xff5555 );
+        if(this.INTERSECTED.material.color.getHexString().startsWith("ff"))
+        {
+          this.INTERSECTED.material.color.setHex( 0x00ffff );
+        } else {
+          this.INTERSECTED.material.color.setHex( 0xff0000 );
+        }
         if(typeof callbackSelected === 'function') {
           callbackSelected(this.INTERSECTED);
         }

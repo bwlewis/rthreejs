@@ -22,7 +22,8 @@ Depends:
     R (>= 3.0.0)
 Imports:
     htmlwidgets (>= 0.3.2),
-    base64enc
+    base64enc,
+    Matrix
 Suggests:
     htmltools (>= 0.2.6),
     maps,
