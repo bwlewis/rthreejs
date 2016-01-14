@@ -308,7 +308,7 @@ Widget.SimpleGraph = function()
       for(var i=0; i<length; i++)
       {
         var node = graph.nodes[i];
-        var text_scale = 500 * Math.max(0.25, node.scale);
+        var text_scale = 500 * Math.max(0.75, node.scale);
         if(node.data.label_object != undefined) {
           node.data.label_object.position.x = node.data.draw_object.position.x;
           node.data.label_object.position.y = node.data.draw_object.position.y - 100;
