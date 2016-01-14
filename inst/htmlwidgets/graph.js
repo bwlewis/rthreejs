@@ -45,6 +45,7 @@ HTMLWidgets.widget(
 /* Define a force-directed graph widget with methods
  * init(el, width, height)
  * create_graph(options)
+ * animate()
  */
 var Widget = Widget || {};
 Widget.SimpleGraph = function()
@@ -131,7 +132,12 @@ Widget.SimpleGraph = function()
   /* create_graph
    * x.nodes a data frame with at least columns id, label, size, color
    * x.edges a data frame with at least columns from, to, size, color
-   * x.title  a character plot title
+   * x.title a character plot title
+   * x. fg foreground text color
+   * x.curvature numeric edge curvature (0 for no cuvature)
+   * x.showLabels logical if true show node labels
+   * x.attraction node graph attraction
+   * x.repulsion node graph repulsion
    */
   _this.create_graph = function(x)
   {
@@ -143,6 +149,7 @@ Widget.SimpleGraph = function()
     // node sprite (used by circular nodes), with user-supplied stroke color
     var dataColor = new Uint8Array( 256 * 256 * 4 );
     var stroke = new THREE.Color(x.stroke);
+    var alpha = 255 * x.opacity;
     for(var i = 0; i < 256 * 256 * 4; i++) dataColor[i] = 0;
     for(var i = 0; i < 256; i++)
     {
@@ -157,13 +164,13 @@ Widget.SimpleGraph = function()
           dataColor[k*4] = 255;
           dataColor[k*4 + 1] = 255;
           dataColor[k*4 + 2] = 255;
-          dataColor[k*4 + 3] = 255;
+          dataColor[k*4 + 3] = alpha;
         } else if(dz > 0.85 && dz < 1)
         {
           dataColor[k*4] = Math.floor(stroke.r * 255);
           dataColor[k*4 + 1] = Math.floor(stroke.g * 255);
           dataColor[k*4 + 2] = Math.floor(stroke.b * 255);
-          dataColor[k*4 + 3] = 255;
+          dataColor[k*4 + 3] = alpha;
         }
       }
     }
@@ -190,7 +197,6 @@ Widget.SimpleGraph = function()
     _this.show_labels = x.showLabels;
     _this.layout_options.width = _this.layout_options.width || 2000;
     _this.layout_options.height = _this.layout_options.height || 2000;
-    _this.layout_options.iterations = _this.layout_options.iterations || 2000;
     _this.layout_options.attraction = x.attraction;
     _this.layout_options.repulsion = x.repulsion;
     _this.layout_options.iterations = x.iterations;
@@ -302,6 +308,7 @@ Widget.SimpleGraph = function()
       for(var i=0; i<length; i++)
       {
         var node = graph.nodes[i];
+        var text_scale = 500 * Math.max(0.25, node.scale);
         if(node.data.label_object != undefined) {
           node.data.label_object.position.x = node.data.draw_object.position.x;
           node.data.label_object.position.y = node.data.draw_object.position.y - 100;
@@ -309,9 +316,7 @@ Widget.SimpleGraph = function()
           node.data.label_object.lookAt(camera.position);
         } else {
           if(node.data.title != undefined) {
-            var label_object = new THREE.Label(node.data.title, _this.fg, 600 * node.scale, node.data.draw_object);
-          } else {
-            var label_object = new THREE.Label(node.id, _this.fg, 600 * node.scale, node.data.draw_object);
+            var label_object = new THREE.Label(node.data.title, _this.fg, text_scale, node.data.draw_object);
           }
           node.data.label_object = label_object;
           scene.add( node.data.label_object );

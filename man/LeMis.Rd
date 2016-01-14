@@ -6,7 +6,7 @@
 \title{Les Miserables Character Coappearance Data}
 \format{A list of two data frames: nodes with 77 observations (characters) of 4 variables; edges: with 254 observations of 4 variables.}
 \source{
-\url{http://bl.ocks.org/mbostock/4062045}
+Mike Bostock's D3.js force-directed graph example  \url{http://bl.ocks.org/mbostock/4062045}.
 Data based on character coappearence in Victor Hugo's Les Miserables, compiled by Donald Knuth
 (\url{http://www-cs-faculty.stanford.edu/~uno/sgb.html}).
 }

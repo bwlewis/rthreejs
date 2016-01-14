@@ -5,7 +5,8 @@
 #' @docType data
 #' @name LeMis
 #' @keywords datasets
-#' @source \url{http://bl.ocks.org/mbostock/4062045}
+#' @source
+#' Mike Bostock's D3.js force-directed graph example  \url{http://bl.ocks.org/mbostock/4062045}.
 #' Data based on character coappearence in Victor Hugo's Les Miserables, compiled by Donald Knuth
 #' (\url{http://www-cs-faculty.stanford.edu/~uno/sgb.html}).
 #' @usage data(LeMis)

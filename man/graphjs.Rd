@@ -6,7 +6,8 @@
 \usage{
 graphjs(nodes, edges, main = "", curvature = 0, bg = "white",
   fg = "black", showLabels = FALSE, attraction = 1, repulsion = 1,
-  max_iterations = 1500, stroke = "black", width = NULL, height = NULL)
+  max_iterations = 1500, opacity = 1, stroke = "black", width = NULL,
+  height = NULL)
 }
 \arguments{
 \item{nodes}{A node (vertex) data frame with at least columns:
@@ -43,6 +44,8 @@ Each row of the data frame identifies a graph edge.}
 
 \item{max_iterations}{Integer value specifying the maximum number of rendering iterations before stopping}
 
+\item{opacity}{Node transparency, 0 <= opacity <= 1}
+
 \item{stroke}{Node stroke color}
 
 \item{width}{optional widget width}
@@ -58,7 +61,7 @@ Plot interactive force-directed graphs.
 }
 \note{
 All colors must be specified as color names like "red", "blue", etc. or
-as hexadecimal color values without alpha channel, for example "#FF0000", "#0a3e55"
+as hexadecimal color values without opacity channel, for example "#FF0000", "#0a3e55"
 (upper or lower case hex digits are allowed).
 
 The plot responds to the following mouse controls (touch analogs may also be
@@ -77,7 +80,11 @@ g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
 print(g)
 }
 \references{
-Original code by DAvid Piegza: \url{https://github.com/davidpiegza/Graph-Visualization}.
+Original code by David Piegza: \url{https://github.com/davidpiegza/Graph-Visualization}.
+
 The three.js project \url{http://threejs.org}.
+}
+\seealso{
+\code{\link{LeMis}}
 }
 

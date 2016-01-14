@@ -26,12 +26,13 @@
 #' @param attraction Numeric value specifying attraction of connected nodes to each other, larger values indicate more attraction
 #' @param repulsion Numeric value specifying repulsion of all nodes to each other, larger values indicate greater repulsion
 #' @param max_iterations Integer value specifying the maximum number of rendering iterations before stopping
+#' @param opacity Node transparency, 0 <= opacity <= 1
 #' @param stroke Node stroke color
 #' @param width optional widget width
 #' @param height optional widget height
 #'
 #' @note All colors must be specified as color names like "red", "blue", etc. or
-#' as hexadecimal color values without alpha channel, for example "#FF0000", "#0a3e55"
+#' as hexadecimal color values without opacity channel, for example "#FF0000", "#0a3e55"
 #' (upper or lower case hex digits are allowed).
 #'
 #' The plot responds to the following mouse controls (touch analogs may also be
@@ -48,17 +49,18 @@
 #' An htmlwidget object that is displayed using the object's show or print method.
 #' (If you don't see your widget plot, try printing it with the \code{print}) function.
 #'
+#' @seealso \code{\link{LeMis}}
 #' @references
-#' Original code by DAvid Piegza: \url{https://github.com/davidpiegza/Graph-Visualization}.
+#' Original code by David Piegza: \url{https://github.com/davidpiegza/Graph-Visualization}.
+#'
 #' The three.js project \url{http://threejs.org}.
-#' 
 #' @examples
 #' data(LeMis)
 #' g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
 #' print(g)
 #' @export
 graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
-                    attraction=1, repulsion=1, max_iterations=1500, stroke="black", width=NULL, height=NULL)
+                    attraction=1, repulsion=1, max_iterations=1500, opacity = 1, stroke="black", width=NULL, height=NULL)
 {
   # create widget
   x = list(nodes=nodes,
@@ -71,6 +73,7 @@ graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", 
            repulsion=repulsion,
            iterations=max_iterations,
            curvature=curvature,
+           opacity=opacity,
            stroke=stroke)
   ans = htmlwidgets::createWidget(
           name = "graph",

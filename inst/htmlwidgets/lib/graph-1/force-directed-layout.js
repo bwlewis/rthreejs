@@ -1,5 +1,5 @@
 /**
-  XXX Switch to FFM ?
+  XXX Switch to a FFM algorithm for better performance. XXX
   Based on:
 
   @author David Piegza

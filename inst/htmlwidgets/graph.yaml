@@ -6,6 +6,7 @@ dependencies:
       - three.min.js
       - Detector.js
       - Projector.js
+      - CanvasRenderer.js
   - name: graph
     version: 1
     src: "htmlwidgets/lib/graph-1"

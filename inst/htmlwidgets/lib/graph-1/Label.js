@@ -7,15 +7,21 @@ THREE.Label = function(text, color, scale, parameters)
 
   function create()
   {
-    var size = 256;
-    canvas.width = size;
-    canvas.height = size;
+    var width, height;
+    height = 64;
+    width = 512;
+    canvas.width = width;
+    canvas.height = height;
     var context = canvas.getContext('2d');
     context.fillStyle = "#" + color.getHexString();
-    context.textAlign = 'center';
-    context.font = '24px Arial';
-    context.fillText(text, size / 2, size / 2);
+    context.textAlign = "center";
+    context.textBaseline = "top";
+    context.font = "48px Arial";
+    context.fillText(text, width / 2, 0);
     var amap = new THREE.Texture(canvas);
+    amap.generateMipmaps = false;
+    amap.minFilter = THREE.LinearFilter;
+    amap.magFilter = THREE.LinearFilter;
     amap.needsUpdate = true;
     var mat = new THREE.SpriteMaterial({
       map: amap,
@@ -23,7 +29,7 @@ THREE.Label = function(text, color, scale, parameters)
       useScreenCoordinates: false,
       color: 0xffffff });
     sp = new THREE.Sprite(mat);
-    sp.scale.set(scale, scale, scale);
+    sp.scale.set(scale, scale/8, scale);
     return sp;
   }
   return create();
