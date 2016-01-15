@@ -14,7 +14,7 @@ Victor Hugo's novel Les Mis&eacute;rables, compiled in the Stanford Graph Databa
 by Donaled Knuth(http://www-cs-faculty.stanford.edu/~uno/sgb.html) and taken from
 the D3.js force directed graph example by Mike Bostock (http://bl.ocks.org/mbostock/4062045).
 
-We explore the `graphhs` function by looking at the graph of character coappearance
+We explore the `graphjs` function by looking at the graph of character coappearance
 in Les Mis&eacute;rables. We then illustrate a few measures of network centrality
 and connectivity.
 
