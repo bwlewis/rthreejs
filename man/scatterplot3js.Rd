@@ -123,7 +123,6 @@ the same scale as the existing plot. See the examples section below for an
 example.
 }
 \examples{
-\dontrun{
 # Gumball machine
 N <- 100
 i <- sample(3, N, replace=TRUE)
@@ -142,35 +141,35 @@ scatterplot3js(x,y,z, color=rainbow(length(z)),
 scatterplot3js(x,y,z, color=rainbow(length(z)), axisLabels=c("a","b","c"))
 
 # Pretty point cloud example, should run this with WebGL!
-N     = 20000
-theta = runif(N)*2*pi
-phi   = runif(N)*2*pi
-R     = 1.5
-r     = 1.0
-x = (R + r*cos(theta))*cos(phi)
-y = (R + r*cos(theta))*sin(phi)
-z = r*sin(theta)
-d = 6
-h = 6
-t = 2*runif(N) - 1
-w = t^2*sqrt(1-t^2)
-x1 = d*cos(theta)*sin(phi)*w
-y1 = d*sin(theta)*sin(phi)*w
-i = order(phi)
-j = order(t)
-col = c( rainbow(length(phi))[order(i)],
+N     <- 20000
+theta <- runif(N)*2*pi
+phi   <- runif(N)*2*pi
+R     <- 1.5
+r     <- 1.0
+x <- (R + r*cos(theta))*cos(phi)
+y <- (R + r*cos(theta))*sin(phi)
+z <- r*sin(theta)
+d <- 6
+h <- 6
+t <- 2*runif(N) - 1
+w <- t^2*sqrt(1-t^2)
+x1 <- d*cos(theta)*sin(phi)*w
+y1 <- d*sin(theta)*sin(phi)*w
+i <- order(phi)
+j <- order(t)
+col <- c( rainbow(length(phi))[order(i)],
          rainbow(length(t),start=0, end=2/6)[order(j)])
-M = cbind(x=c(x,x1),y=c(y,y1),z=c(z,h*t))
+M <- cbind(x=c(x,x1),y=c(y,y1),z=c(z,h*t))
 scatterplot3js(M,size=0.25,color=col,bg="black")
-
-# A shiny example
-shiny::runApp(system.file("examples/scatterplot",package="threejs"))
 
 # Adding points to a plot with points3d
 set.seed(1)
-lim = c(-3,3)
-(x = scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim))
-(a = x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red", labels="NEW"))
+lim <- c(-3,3)
+x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
+a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red", labels="NEW")
+\dontrun{
+  # A shiny example
+  shiny::runApp(system.file("examples/scatterplot",package="threejs"))
 }
 
 }

@@ -23,7 +23,8 @@ Depends:
 Imports:
     htmlwidgets (>= 0.3.2),
     base64enc,
-    Matrix
+    Matrix,
+    jsonlite
 Suggests:
     htmltools (>= 0.2.6),
     maps,

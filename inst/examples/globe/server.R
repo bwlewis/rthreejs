@@ -26,19 +26,18 @@ shinyServer(function(input, output) {
   values <- reactive({
     cities <- cull()
     value <- h * cities$pop / max(cities$pop)
-    col <- rainbow(10,start=2.8/6,end=3.4/6)
+    col <- rainbow(10, start=2.8 / 6,end=3.4 / 6)
     names(col) <- c()
     # Extend palette to data values
-    col <- col[floor(length(col)*(h-value)/h) + 1]
+    col <- col[floor(length(col) * (h - value) / h) + 1]
     list(value=value, color=col, cities=cities)
   })
 
   output$globe <- renderGlobe({
     v <- values()
     p <- input$map
-    atmo <- ifelse(input$map=="earth_dark", TRUE, FALSE)
-    args = c(col[[input$map]] , list(lat=v$cities$lat, long=v$cities$long, value=v$value, color=v$color, atmosphere=atmo))
+    atmo <- ifelse(input$map == "earth_dark", TRUE, FALSE)
+    args <- c(col[[input$map]] , list(lat=v$cities$lat, long=v$cities$long, value=v$value, color=v$color, atmosphere=atmo))
     do.call(globejs, args=args)
   })
-  
 })

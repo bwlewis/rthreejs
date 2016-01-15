@@ -58,6 +58,7 @@
 #' data(LeMis)
 #' g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
 #' print(g)
+#' @importFrom jsonlite toJSON
 #' @export
 graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
                     attraction=1, repulsion=1, max_iterations=1500, opacity = 1, stroke="black", width=NULL, height=NULL)
@@ -83,7 +84,7 @@ graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", 
            stroke=stroke)
   ans = htmlwidgets::createWidget(
           name = "graph",
-          x = jsonlite::toJSON(x, auto_unbox=TRUE),
+          x = toJSON(x, auto_unbox=TRUE),
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
@@ -101,7 +102,9 @@ graphOutput = function(outputId, width = "100%", height = "500px") {
 #' @rdname threejs-shiny
 #' @export
 renderGraph = function(expr, env = parent.frame(), quoted = FALSE) {
-    if (!quoted) { expr <- substitute(expr) } # force quoted
+    if (!quoted) {
+      expr <- substitute(expr)
+    } # force quoted
     shinyRenderWidget(expr, graphOutput, env, quoted = TRUE)
 }
 

@@ -2,9 +2,9 @@ library("shiny")
 library("threejs")
 
 shinyUI(fluidPage(
-  
+
   titlePanel("Shiny three.js scatterplot example"),
-  
+
   sidebarLayout(
     sidebarPanel(
       numericInput("nticks", "Number of ticks", 6, min = 0, max = 10, step = 1),

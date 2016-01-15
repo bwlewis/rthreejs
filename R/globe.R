@@ -78,9 +78,6 @@
 #' Jupiter image: \url{http://maps.jpl.nasa.gov/textures/jup0vtt2.jpg}.
 #'
 #' @examples
-#' \dontrun{
-#' library("threejs")
-#"
 #' # Plot flights to frequent destinations from
 #' # Callum Prentice's global flight data set,
 #' # http://callumprentice.github.io/apps/flight_stream/index.html
@@ -102,10 +99,6 @@
 #'         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
 #'         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
 #'
-#' # A shiny example:
-#'
-#' shiny::runApp(system.file("examples/globe",package="threejs"))
-#' 
 #' # Plot populous world cities from the 'maps' package.
 #' library("threejs")
 #' library("maps")
@@ -157,9 +150,13 @@
 #'      setParUsrBB=TRUE)
 #' dev.off()
 #' globejs(earth)
-#' See http://bwlewis.github.io/rthreejs for additional examples.
-#' }
 #'
+#' \dontrun{
+#'   # A shiny example:
+#'   shiny::runApp(system.file("examples/globe",package="threejs"))
+#' }
+#' 
+#' # See http://bwlewis.github.io/rthreejs for additional examples.
 #' @export
 globejs <- function(
   img=system.file("images/world.jpg",  package="threejs"),
@@ -176,66 +173,66 @@ globejs <- function(
   height = NULL,
   width = NULL, ...)
 {
-  if(missing(lat)|| missing(long))
+  if(missing(lat) || missing(long))
   {
     lat = NULL
     long = NULL
   }
   # Strip alpha channel from colors
-  i = grep("^#",color)
-  if(length(i)>0)
+  i = grep("^#", color)
+  if(length(i) > 0)
   {
-    j = nchar(color[i])>7
+    j = nchar(color[i]) > 7
     if(any(j))
-    { 
-      color[i][j] = substr(color[i][j],1,7)
+    {
+      color[i][j] = substr(color[i][j], 1, 7)
     }
   }
-  i = grep("^#",arcsColor)
-  if(length(i)>0)
+  i = grep("^#", arcsColor)
+  if(length(i) > 0)
   {
-    j = nchar(arcsColor[i])>7
+    j = nchar(arcsColor[i]) > 7
     if(any(j))
-    { 
-      arcsColor[i][j] = substr(arcsColor[i][j],1,7)
+    {
+      arcsColor[i][j] = substr(arcsColor[i][j], 1, 7)
     }
   }
-  i = grep("^#",bg)
-  if(length(i)>0) bg = substr(bg,1,7)
+  i = grep("^#", bg)
+  if(length(i) > 0) bg = substr(bg, 1, 7)
   if(missing(arcs))
-    arcs=NULL
+    arcs = NULL
   else
   {
     arcs = data.frame(arcs)
-    names(arcs) = c("fromlat","fromlong","tolat","tolong")
+    names(arcs) = c("fromlat", "fromlong", "tolat", "tolong")
   }
   arcsHeight = max(min(arcsHeight, 1), 0.2)
-  arcsOpacity = max(min(arcsOpacity,1),0)
+  arcsOpacity = max(min(arcsOpacity, 1), 0)
 
   options = list(lat=lat, long=long, color=color, arcsOpacity=arcsOpacity,
                  value=value, atmosphere=atmosphere, bg=bg, arcs=arcs,
                  arcsColor=arcsColor, arcsLwd=arcsLwd, arcsHeight=arcsHeight)
   additional_args = list(...)
-  if(length(additional_args)>0) options = c(options, additional_args)
+  if(length(additional_args) > 0) options = c(options, additional_args)
 # Clean up optional color arguments
   if("bodycolor" %in% names(options))
   {
     i = grep("^#",options$bodycolor)
-    if(length(i)>0) options$bodycolor = substr(options$bodycolor,1,7)
+    if(length(i) > 0) options$bodycolor = substr(options$bodycolor,1,7)
   }
   if("emissive" %in% names(options))
   {
     i = grep("^#",options$emissive)
-    if(length(i)>0) options$emissive = substr(options$emissive,1,7)
+    if(length(i) > 0) options$emissive = substr(options$emissive,1,7)
   }
   if("lightcolor" %in% names(options))
   {
     i = grep("^#",options$lightcolor)
-    if(length(i)>0) options$lightcolor = substr(options$lightcolor,1,7)
+    if(length(i) > 0) options$lightcolor = substr(options$lightcolor,1,7)
   }
 
 # Convert image files to dataURI using the texture function
-  if(!is.list(img)) img=texture(img)
+  if (!is.list(img)) img = texture(img)
   x = c(img, options)
   htmlwidgets::createWidget(
       name = "globe",
@@ -256,6 +253,8 @@ globeOutput <- function(outputId, width = "100%", height = "600px") {
 #' @rdname threejs-shiny
 #' @export
 renderGlobe <- function(expr, env = parent.frame(), quoted = FALSE) {
-    if (!quoted) { expr <- substitute(expr) } # force quoted
+    if (!quoted) {
+      expr = substitute(expr)
+    } # force quoted
     shinyRenderWidget(expr, globeOutput, env, quoted = TRUE)
 }

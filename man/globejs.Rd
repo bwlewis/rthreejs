@@ -83,8 +83,6 @@ the map image. Their default values of zero radians result in the front of the
 globe corresponding to the center of the flat map image.
 }
 \examples{
-\dontrun{
-library("threejs")
 # Plot flights to frequent destinations from
 # Callum Prentice's global flight data set,
 # http://callumprentice.github.io/apps/flight_stream/index.html
@@ -105,10 +103,6 @@ ll <- unique(frequent_flights[,3:4])
 globejs(lat=ll[,1], long=ll[,2], arcs=frequent_flights,
         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
-
-# A shiny example:
-
-shiny::runApp(system.file("examples/globe",package="threejs"))
 
 # Plot populous world cities from the 'maps' package.
 library("threejs")
@@ -160,9 +154,13 @@ plot(wrld_simpl, col="black", bg=bgcolor, border="cyan", ann=FALSE,
      setParUsrBB=TRUE)
 dev.off()
 globejs(earth)
-See http://bwlewis.github.io/rthreejs for additional examples.
+
+\dontrun{
+  # A shiny example:
+  shiny::runApp(system.file("examples/globe",package="threejs"))
 }
 
+# See http://bwlewis.github.io/rthreejs for additional examples.
 }
 \references{
 The three.js project \url{http://threejs.org}.
