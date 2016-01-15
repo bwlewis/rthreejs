@@ -1,0 +1,137 @@
+---
+title: "graphjs"
+author: "bwlewis"
+date: "1/14/2016"
+output: html_document
+---
+
+The new `grapjhs` function (an html widget), part of the threejs package, makes it easy to plot
+interactive 3-d force directed graphs.
+
+This vignette explores the `graphjs` function using the `LeMis` data included in
+the `threejs` package. The `LeMis` data contain character coappearance data for
+Victor Hugo's novel Les Mis&eacute;rables, compiled in the Stanford Graph Database
+by Donaled Knuth(http://www-cs-faculty.stanford.edu/~uno/sgb.html) and taken from
+the D3.js force directed graph example by Mike Bostock (http://bl.ocks.org/mbostock/4062045).
+
+We explore the `graphhs` function by looking at the graph of character coappearance
+in Les Mis&eacute;rables. We then illustrate a few measures of network centrality
+and connectivity.
+
+## Interactivity in graphjs
+
+Plots produced by `graphjs` are primarily designed for mouse interaction. They
+do also try to support touch interfaces with touch analogs of the indicated
+mouse operations.
+
+* Move the mouse over a node to show its label.
+* Hold the left mouse button down and move the mouse to rotate the graph.
+* Hold the right mouse button down and move the mouse to pan.
+* Use the mouse scroll wheel to zoom in and out.
+* Double-click on the plot to reset the view.
+
+## A force directed graph
+
+Let's plot a force directed graph of the characters in Les Mis&eacute;rables.
+Each circle in the plot represents a character and an edge between circles
+indicates that the corresponding characters interacted in the novel. The colors
+are taken from http://bl.ocks.org/mbostock/4062045.
+
+```{r, fig.width=9}
+library(threejs)
+data(LeMis)
+graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+```
+
+
+## Degree centrality
+
+Perhaps most intuitive measure of graph
+centrality, degree centrality of a node simply counts the number of other nodes
+it's connected to.
+
+It turns out that many graph measurements are most easily computed using an
+adjacency matrix representation of the graph. We can use the `graph2Matrix`
+function to convert our node/edge list graph representation to a sparse matrix.
+Degree centrality, for instance, is just a sum along columns of our adjacency
+matrix. Note that the graph used here is undirected, resulting in a symmetric
+adjacency matrix.
+
+The following example computes degree centrality and adjusts the sizes of the
+nodes accordingly. Bigger nodes are connected to more nodes than smaller ones.
+```{r, fig.width=9}
+M = graph2Matrix(LeMis$nodes, LeMis$edges)
+v = Matrix::colSums(M)
+v = v/max(v)    # normalize
+LeMis$nodes$size = 4*v
+graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+```
+
+
+## Eigen centrality
+
+One possibile criticism of degree centrality is that it does not take into account
+how "important" the nodes connected to a given node are. Eigen centrality helps
+to account for that by, loosely, recursively measuring degree centrality&mdash;that
+is, nodes connected to other nodes that are also connected receive more weight.
+
+Eigen centrality is defined by the entries of the eigenvector of the adjacency
+matrix associated with the largest eigenvalue. We can say "largest" eigenvalue
+because our adjacency matrix is symmetric, and therefore its eigenvalues are real
+numbers. The fact that there is a single, non-degenerate largest eigenvalue is
+a consequence of the Perron-Frobenius theorem, one of the most beautiful results
+in linear algebra.
+
+The next example adjusts the sizes of the nodes by eigen centrality.
+```{r, fig.width=9}
+v = abs(eigen(M)$vector[,1])
+v = v/max(v)
+LeMis$nodes$size = 4*v
+graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+```
+
+
+## f-subgraph centrality
+
+Eigen centrality gives more weight to nodes that are connected to other nodes with
+lots of connections. Other measures like f-subgraph centrality 
+(see, for example, E. Estrada and D. J. Higham, Network properties revealed through matrix functions, SIAM Rev., 52 (2010), pp. 696–714.) adjust this concept to
+emphasize shorter paths more than longer ones.
+
+The next example illustrates f-subgraph centrality for the exponential
+function f(x)=exp(x) using the matrix exponential function `expm` from R's
+Matrix package.
+```{r, fig.width=9}
+library(Matrix)
+v = diag(expm(M))
+v = v/max(v)
+LeMis$nodes$size = 4*v
+graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+```
+
+
+## f-subgraph communicability
+
+The off-diagonal elements of the matrix exponential used in the last example
+can be interpreted as a measure of the ease of travel between nodes. That is,
+nodes with many available paths between them of relatively short lengths have
+larger off-diagonal entries.
+
+The next example adjusts the plotted edge thickness by this f-subgraph
+communicability for f=exp; node sizes are determined by f-subgraph centrality
+as in the last example. This example colors the edges by the color of the
+originating node. It also sets a minimum node size beacuse some of the nodes
+in the last example are effectively invisible.
+```{r, fig.width=9}
+library(Matrix)
+E = expm(M)
+v = diag(E)
+v = v/max(v)
+v = pmax(0.1, v) # minimum node size
+E = E * M
+E = E / max(E)
+LeMis$nodes$size = 4*v
+LeMis$edges$size = 20*E@x
+LeMis$edges$color = LeMis$nodes$color[LeMis$edges$from + 1]
+graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+```
