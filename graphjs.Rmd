@@ -73,7 +73,7 @@ graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
 One possibile criticism of degree centrality is that it does not take into account
 how "important" the nodes connected to a given node are. Eigen centrality helps
 to account for that by, loosely, recursively measuring degree centrality&mdash;that
-is, nodes connected to other nodes that are also connected receive more weight.
+is, nodes connected to other nodes that themselves highly connected receive more weight.
 
 Eigen centrality is defined by the entries of the eigenvector of the adjacency
 matrix associated with the largest eigenvalue. We can say "largest" eigenvalue
