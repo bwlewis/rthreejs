@@ -6,6 +6,7 @@ ok = length(grep("var THREE=window.THREE=",
                  readLines(paste(d, grep("three.min.js", dir(d, recursive=TRUE), value=TRUE), sep="/"), n=5)) > 0)
 if(!ok) stop("The threejs package requires a modified version of the three.min.js JavaScript library. See the package README.md.")
 
+library(threejs)
 # scatterplots
 N <- 100
 i <- sample(3, N, replace=TRUE)

@@ -28,6 +28,7 @@ Imports:
 Suggests:
     htmltools (>= 0.2.6),
     maps,
+    maptools,
     sp
 Enhances: knitr, shiny
 RoxygenNote: 5.0.0

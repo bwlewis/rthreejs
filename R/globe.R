@@ -99,16 +99,16 @@
 #'         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
 #'         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
 #'
-#' # Plot populous world cities from the 'maps' package.
-#' library("threejs")
-#' library("maps")
+#' # Plot populous world cities from the maps package.
+#' library(threejs)
+#' library(maps)
 #' data(world.cities, package="maps")
-#' cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
+#' cities <- world.cities[order(world.cities$pop, decreasing=TRUE)[1:1000],]
 #' value  <- 100 * cities$pop / max(cities$pop)
 #' 
 #' # Set up a data color map and plot
-#' col <- rainbow(10,start=2.8/6,end=3.4/6)
-#' col <- col[floor(length(col)*(100-value)/100) + 1]
+#' col <- rainbow(10, start=2.8 / 6, end=3.4 / 6)
+#' col <- col[floor(length(col) * (100 - value) / 100) + 1]
 #' globejs(lat=cities$lat, long=cities$long, value=value, color=col, atmosphere=TRUE)
 #'
 #' # Plot the data on the moon:
@@ -121,7 +121,7 @@
 #' # the image!)
 #' globejs(paste("http://eoimages.gsfc.nasa.gov/",
 #'               "images/imagerecords/73000/73909/",
-#'               "world.topo.bathy.200412.3x5400x2700.jpg",sep="")
+#'               "world.topo.bathy.200412.3x5400x2700.jpg", sep=""))
 #'
 #' # Using global plots from the maptools, rworldmap, or sp packages.
 #'
@@ -130,8 +130,8 @@
 #' # dynamically. With a little extra effort you can build globes with total
 #' # control over how they are plotted.
 #'
-#' library("maptools")
-#' library("threejs")
+#' library(maptools)
+#' library(threejs)
 #' data(wrld_simpl)
 #' 
 #' bgcolor <- "#000025"
