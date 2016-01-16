@@ -101,3 +101,13 @@ to
 ```
 
 That enables the library to work correctly with the shiny `renderUI` functions.
+
+
+
+# Status
+<a href="https://travis-ci.org/bwlewis/rthreejs">
+<img src="https://travis-ci.org/bwlewis/rthreejs.svg?branch=master" alt="Travis CI status"></img>
+</a>
+[![codecov.io](https://codecov.io/github/bwlewis/rthreejs/coverage.svg?branch=master)](https://codecov.io/github/bwlewis/rthreejs?branch=master)
+[![CRAN version](http://www.r-pkg.org/badges/version/threejs)](http://cran.rstudio.com/web/packages/threejs/index.html)
+![](http://cranlogs.r-pkg.org/badges/threejs)

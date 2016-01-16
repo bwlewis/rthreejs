@@ -36,4 +36,5 @@ globejs(lat=ll[,1], long=ll[,2], arcs=frequent_flights,
 
 # graphs
 data(LeMis, package="threejs")
-g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
+g <- graphjs(LeMis$edges, main="Les Mis&eacute;rables")
+g <- graphjs(LeMis$edges, LeMis$nodes, main="Les Mis&eacute;rables")

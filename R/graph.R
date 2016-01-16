@@ -2,14 +2,6 @@
 #'
 #' Plot interactive force-directed graphs.
 #'
-#' @param nodes A node (vertex) data frame with at least columns:
-#' \itemize{
-#'   \item \code{label} Node character labels
-#'   \item \code{id}    Unique integer node ids (corresponding to edges below)
-#'   \item \code{size}  Positive numeric node plot size
-#'   \item \code{color} A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
-#' }
-#' Each row of the data frame defines a graph node.
 #' @param edges An edge data frame with at least columns:
 #' \itemize{
 #'   \item \code{from} Integer node id identifying edge 'from' node
@@ -18,6 +10,15 @@
 #'   \item \code{color} Edge color specified like node color above
 #' }
 #' Each row of the data frame identifies a graph edge.
+#' @param nodes Optional node (vertex) data frame with at least columns:
+#' \itemize{
+#'   \item \code{label} Node character labels
+#'   \item \code{id}    Unique integer node ids (corresponding to node ids used by \code{edges})
+#'   \item \code{size}  Positive numeric node plot size
+#'   \item \code{color} A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
+#' }
+#' Each row of the data frame defines a graph node. If the \code{nodes} argument is missing it will be
+#  inferred from the \code{edges} argument.
 #' @param main Plot title
 #' @param curvature Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs (the z-axis of the curve depends on the sign of \code{edge$from - edge$to}). Larger numbers = more curvature, with 1 a usually reasonable value.
 #' @param bg Plot background color specified similarly to the node colors described above
@@ -27,7 +28,7 @@
 #' @param repulsion Numeric value specifying repulsion of all nodes to each other, larger values indicate greater repulsion
 #' @param max_iterations Integer value specifying the maximum number of rendering iterations before stopping
 #' @param opacity Node transparency, 0 <= opacity <= 1
-#' @param stroke Node stroke color
+#' @param stroke If TRUE, stroke each node with a black circle
 #' @param width optional widget width
 #' @param height optional widget height
 #'
@@ -56,18 +57,32 @@
 #' The three.js project \url{http://threejs.org}.
 #' @examples
 #' data(LeMis)
-#' g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
+#' g <- graphjs(LeMis$edges, LeMis$nodes, main="Les Mis&eacute;rables")
 #' print(g)
 #' @importFrom jsonlite toJSON
 #' @export
-graphjs <- function(nodes, edges, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
-                    attraction=1, repulsion=1, max_iterations=1500, opacity = 1, stroke="black", width=NULL, height=NULL)
+graphjs <- function(edges, nodes, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
+                    attraction=1, repulsion=1, max_iterations=1500, opacity = 1, stroke=TRUE, width=NULL, height=NULL)
 {
   # check input
+  if(!is.data.frame(edges))
+    stop("The edges data frame must contain 'from', 'to' variables")
+  if(is.null(edges$size)) edges$size = 1
+  if(is.null(edges$color)) edges$color = "lightgray"
+  if(!all(c("from", "size", "to", "color") %in% names(edges)))
+    stop("The edges data frame must contain 'from', 'to' variables")
+  if (missing(nodes))
+  {
+    nodes = data.frame(id=unique(c(edges$from, edges$to)), size=1, color="orange", stringsAsFactors=FALSE)
+    nodes$label = nodes$id
+  }
+  if(is.null(nodes$label)) nodes$label = nodes$id
+  if(is.null(nodes$size)) nodes$size = 1
+  if(is.null(nodes$color)) nodes$color = "orange"
   if(!all(c("id", "size", "label", "color") %in% names(nodes)))
     stop("The nodes data frame must contain 'id', 'size', 'label', and 'color' variables")
-  if(!all(c("from", "size", "to", "color") %in% names(edges)))
-    stop("The edges data frame must contain 'from', 'to', 'size', and 'color' variables")
+
+  stroke = switch(as.character(stroke), "black", "white")
 
   # create widget
   x = list(nodes=nodes,
@@ -126,7 +141,7 @@ renderGraph = function(expr, env = parent.frame(), quoted = FALSE) {
 #' @importFrom Matrix sparseMatrix
 #' @examples
 #' data(LeMis)
-#' M <- graph2Matrix(LeMis$nodes, LeMis$edges)
+#' M <- graph2Matrix(LeMis$edges, LeMis$nodes)
 #' G <- matrix2graph(M)
 #' @export
 graph2Matrix = function(edges, nodes, symmetric=TRUE)
@@ -166,7 +181,7 @@ graph2Matrix = function(edges, nodes, symmetric=TRUE)
 #' @importFrom Matrix Matrix
 #' @examples
 #' data(LeMis)
-#' M <- graph2Matrix(LeMis$nodes, LeMis$edges)
+#' M <- graph2Matrix(LeMis$edges, LeMis$nodes)
 #' G <- matrix2graph(M)
 #' @export
 matrix2graph = function(M)

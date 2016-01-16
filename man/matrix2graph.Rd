@@ -22,7 +22,7 @@ Numeric graphs are assumed to be weighted and the edge "size" values are set to 
 }
 \examples{
 data(LeMis)
-M <- graph2Matrix(LeMis$nodes, LeMis$edges)
+M <- graph2Matrix(LeMis$edges, LeMis$nodes)
 G <- matrix2graph(M)
 }
 \seealso{

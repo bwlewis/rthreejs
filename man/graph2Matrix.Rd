@@ -29,7 +29,7 @@ Convert from node and edge graph representation to a sparse adjacency matrix rep
 }
 \examples{
 data(LeMis)
-M <- graph2Matrix(LeMis$nodes, LeMis$edges)
+M <- graph2Matrix(LeMis$edges, LeMis$nodes)
 G <- matrix2graph(M)
 }
 \seealso{

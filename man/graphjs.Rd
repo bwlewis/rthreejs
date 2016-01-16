@@ -4,21 +4,12 @@
 \alias{graphjs}
 \title{Interactive 3D Force-directed Graphs}
 \usage{
-graphjs(nodes, edges, main = "", curvature = 0, bg = "white",
+graphjs(edges, nodes, main = "", curvature = 0, bg = "white",
   fg = "black", showLabels = FALSE, attraction = 1, repulsion = 1,
-  max_iterations = 1500, opacity = 1, stroke = "black", width = NULL,
+  max_iterations = 1500, opacity = 1, stroke = TRUE, width = NULL,
   height = NULL)
 }
 \arguments{
-\item{nodes}{A node (vertex) data frame with at least columns:
-\itemize{
-  \item \code{label} Node character labels
-  \item \code{id}    Unique integer node ids (corresponding to edges below)
-  \item \code{size}  Positive numeric node plot size
-  \item \code{color} A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
-}
-Each row of the data frame defines a graph node.}
-
 \item{edges}{An edge data frame with at least columns:
 \itemize{
   \item \code{from} Integer node id identifying edge 'from' node
@@ -27,6 +18,15 @@ Each row of the data frame defines a graph node.}
   \item \code{color} Edge color specified like node color above
 }
 Each row of the data frame identifies a graph edge.}
+
+\item{nodes}{Optional node (vertex) data frame with at least columns:
+\itemize{
+  \item \code{label} Node character labels
+  \item \code{id}    Unique integer node ids (corresponding to node ids used by \code{edges})
+  \item \code{size}  Positive numeric node plot size
+  \item \code{color} A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
+}
+Each row of the data frame defines a graph node. If the \code{nodes} argument is missing it will be}
 
 \item{main}{Plot title}
 
@@ -46,7 +46,7 @@ Each row of the data frame identifies a graph edge.}
 
 \item{opacity}{Node transparency, 0 <= opacity <= 1}
 
-\item{stroke}{Node stroke color}
+\item{stroke}{If TRUE, stroke each node with a black circle}
 
 \item{width}{optional widget width}
 
@@ -76,7 +76,7 @@ Double-click or tap on the plot to reset the view.
 }
 \examples{
 data(LeMis)
-g <- graphjs(LeMis$nodes, LeMis$edges, main="Les Mis&eacute;rables")
+g <- graphjs(LeMis$edges, LeMis$nodes, main="Les Mis&eacute;rables")
 print(g)
 }
 \references{
