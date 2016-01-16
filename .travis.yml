@@ -39,7 +39,7 @@ before_script:
   - Rscript -e 'devtools::install_github("jimhester/lintr")'
 
 script:
-  - Rscript -e 'devtools::check(document=FALSE)'
+  - Rscript -e 'devtools::check(document=FALSE, build_args="--resave-data")'
 
 after_success:
   - Rscript -e 'library(threejs); covr::codecov()'
