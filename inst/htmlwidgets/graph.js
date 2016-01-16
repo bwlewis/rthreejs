@@ -163,18 +163,19 @@ Widget.SimpleGraph = function()
     _this.curvature = x.curvature / 2;
 
     // node sprite (used by circular nodes), with user-supplied stroke color
-    var dataColor = new Uint8Array( 256 * 256 * 4 );
+    var sz = 512;
+    var dataColor = new Uint8Array( sz * sz * 4 );
     var stroke = new THREE.Color(x.stroke);
     var alpha = 255 * x.opacity;
-    for(var i = 0; i < 256 * 256 * 4; i++) dataColor[i] = 0;
-    for(var i = 0; i < 256; i++)
+    for(var i = 0; i < sz * sz * 4; i++) dataColor[i] = 0;
+    for(var i = 0; i < sz; i++)
     {
-      for(var j = 0; j < 256; j++)
+      for(var j = 0; j < sz; j++)
       {
-        var dx = 2*i/255 - 1;
-        var dy = 2*j/255 - 1;
+        var dx = 2*i/(sz-1) - 1;
+        var dy = 2*j/(sz-1) - 1;
         var dz = dx*dx + dy*dy;
-        var k = i*256 + j;
+        var k = i*sz + j;
         if(dz <= 0.85)
         {
           dataColor[k*4] = 255;
@@ -190,7 +191,7 @@ Widget.SimpleGraph = function()
         }
       }
     }
-    sprite_map = new THREE.DataTexture(dataColor, 256, 256, THREE.RGBAFormat, THREE.UnsignedByteType );
+    sprite_map = new THREE.DataTexture(dataColor, sz, sz, THREE.RGBAFormat, THREE.UnsignedByteType );
     sprite_map.needsUpdate = true;
 
     for(var j=0; j < x.nodes.length; j++)
