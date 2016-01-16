@@ -122,7 +122,7 @@ Widget.SimpleGraph = function()
       var id_attr = document.createAttribute("id");
       id_attr.nodeValue = "graph-info";
       info.setAttributeNode(id_attr);
-      info.style.left = "40%";
+      info.style.textAlign = "center";
       info.style.zIndex = 100;
       info.style.fontFamily = "Sans";
       info.style.fontSize = "x-large";
