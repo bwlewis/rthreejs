@@ -113,7 +113,7 @@ graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
 ## f-subgraph communicability
 
 The off-diagonal elements of the matrix exponential used in the last example
-can be interpreted as a measure of the ease of travel between nodes. That is,
+can be interpreted as a measure connectivity between nodes. That is,
 nodes with many available paths between them of relatively short lengths have
 larger off-diagonal entries.
 
