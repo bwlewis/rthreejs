@@ -110,8 +110,16 @@ renderGraph = function(expr, env = parent.frame(), quoted = FALSE) {
 
 #' Convert from node and edge graph representation to a sparse adjacency matrix representation
 #'
-#' @param nodes A data frame with at least a column named "id" as used by \code{\link{graphjs}}. The size of the matrix is determined by  number of rows in the data frame.
-#' @param edges A data frame with at least the columns "from" and "to" referring to edges between ids in the \code{nodes} data frame. If the data frame includes a numeric "size" variable then graph is assumed to be weighted and the corresponding matrix entries are set to the size values.
+#' @param edges A data frame with at least the columns "from" and "to"
+#' referring to edges between ids in the \code{nodes} data frame. If the data
+#' frame includes a numeric "size" variable then graph is assumed to be weighted
+#' and the corresponding matrix entries are set to the size values.
+#' @param nodes Optional data frame with at least a column named "id"
+#' corresponding to the \code{from} and \code{to} node ids in the \code{edges}
+#' argument. The size of the matrix is determined by  number of rows in the data
+#' frame. If \code{nodes} is missing it will be inferred from the \code{edges}. If
+#' \code{nodes} has a "label" column, the matrix row and column names will be set
+#' to the corresponding node labels.
 #' @param symmetric Set to \code{FALSE} for directed graphs, or leave as \code{TRUE} for undirected graphs.
 #' @return A sparse matrix
 #' @seealso \code{\link{graphjs}}, \code{\link{graph2Matrix}}
@@ -121,12 +129,28 @@ renderGraph = function(expr, env = parent.frame(), quoted = FALSE) {
 #' M <- graph2Matrix(LeMis$nodes, LeMis$edges)
 #' G <- matrix2graph(M)
 #' @export
-graph2Matrix = function(nodes, edges, symmetric=TRUE)
+graph2Matrix = function(edges, nodes, symmetric=TRUE)
 {
+  if (!is.data.frame(edges) || !(c("from", "to") %in% names(edges))) stop("edges must be a data frame with 'from' and 'to' columns")
+  if (missing(nodes))
+  {
+    nodes = data.frame(id=unique(c(edges$from, edges$to)))
+  }
+  if (symmetric)
+  {
+    # Enforce ordering edges$from <= edges$to
+    idx = edges[,"from"] > edges[,"to"]
+    if(any(idx))
+    {
+      x = edges[idx, "from"]
+      edges[idx, "from"] = edges[idx, "to"]
+      edges[idx, "to"] = x
+    }
+  }
   N  = nrow(nodes)
   id = seq(1, N)
   x = 1
-  if(!is.null(edges$size) && is.numeric(edges$size)) x = edges$size
+  if (!is.null(edges$size) && is.numeric(edges$size)) x = edges$size
   names(id) = nodes[,"id"]
   M = sparseMatrix(i=id[as.character(edges$from)], j=id[as.character(edges$to)], x=x, dims=c(N, N), symmetric=symmetric)
   if(!is.null(nodes$label)) colnames(M) = rownames(M) = nodes$label
