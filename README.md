@@ -2,6 +2,7 @@
 
 Three.js widgets for R and shiny. The package includes
 
+* graphjs: an interactive force directed graph widget
 * scatterplot3js:  a 3-d scatterplot widget similar to the scatterplot3d function
 * globejs:  a widget that plots data and images on a 3-d globe
 
