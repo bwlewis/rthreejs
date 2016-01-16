@@ -5,13 +5,13 @@ date: "1/14/2016"
 output: html_document
 ---
 
-The new `grapjhs` function (an html widget), part of the threejs package, makes it easy to plot
+The new `grapjhs` function (an [html widget](http://htmlwidgets.org) and part of the [threejs](http://bwlewis.github.io/rthreejs) package), makes it easy to plot
 interactive 3-d force directed graphs.
 
 This vignette explores the `graphjs` function using the `LeMis` data included in
 the `threejs` package. The `LeMis` data contain character coappearance data for
 Victor Hugo's novel Les Mis&eacute;rables, compiled in the Stanford Graph Database
-by Donaled Knuth(http://www-cs-faculty.stanford.edu/~uno/sgb.html) and taken from
+by Donaled Knuth (see http://www-cs-faculty.stanford.edu/~uno/sgb.html) and taken from
 the D3.js force directed graph example by Mike Bostock (http://bl.ocks.org/mbostock/4062045).
 
 We explore the `graphjs` function by looking at the graph of character coappearance
@@ -40,7 +40,7 @@ are taken from http://bl.ocks.org/mbostock/4062045.
 ```{r, fig.width=9}
 library(threejs)
 data(LeMis)
-graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
 ```
 
 
@@ -60,11 +60,11 @@ adjacency matrix.
 The following example computes degree centrality and adjusts the sizes of the
 nodes accordingly. Bigger nodes are connected to more nodes than smaller ones.
 ```{r, fig.width=9}
-M = graph2Matrix(LeMis$nodes, LeMis$edges)
+M = graph2Matrix(LeMis$edges, LeMis$nodes)
 v = Matrix::colSums(M)
 v = v/max(v)    # normalize
 LeMis$nodes$size = 4*v
-graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
 ```
 
 
@@ -87,7 +87,7 @@ The next example adjusts the sizes of the nodes by eigen centrality.
 v = abs(eigen(M)$vector[,1])
 v = v/max(v)
 LeMis$nodes$size = 4*v
-graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
 ```
 
 
@@ -106,7 +106,7 @@ library(Matrix)
 v = diag(expm(M))
 v = v/max(v)
 LeMis$nodes$size = 4*v
-graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
 ```
 
 
@@ -133,5 +133,5 @@ E = E / max(E)
 LeMis$nodes$size = 4*v
 LeMis$edges$size = 20*E@x
 LeMis$edges$color = LeMis$nodes$color[LeMis$edges$from + 1]
-graphjs(LeMis$nodes, LeMis$edges, bg="#fbfbfb")
+graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
 ```
