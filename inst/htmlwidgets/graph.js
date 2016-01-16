@@ -149,7 +149,7 @@ Widget.SimpleGraph = function()
    * x.nodes a data frame with at least columns id, label, size, color
    * x.edges a data frame with at least columns from, to, size, color
    * x.title a character plot title
-   * x. fg foreground text color
+   * x.fg foreground text color
    * x.curvature numeric edge curvature (0 for no cuvature)
    * x.showLabels logical if true show node labels
    * x.attraction node graph attraction
@@ -366,6 +366,7 @@ Widget.SimpleGraph = function()
       str += info_text[index];
     }
     _this.infobox.innerHTML = str;
+    _this.infobox.style.color = _this.fgcss;
     _this.infobox.style.top = "" + 10 - _this.renderer.domElement.height + "px";
   }
 };
