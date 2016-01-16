@@ -82,7 +82,7 @@ graphjs <- function(edges, nodes, main="", curvature=0, bg="white", fg="black", 
   if(!all(c("id", "size", "label", "color") %in% names(nodes)))
     stop("The nodes data frame must contain 'id', 'size', 'label', and 'color' variables")
 
-  stroke = switch(as.character(stroke), "black", "white")
+  stroke = switch(as.character(stroke), "TRUE"="black", "white")
 
   # create widget
   x = list(nodes=nodes,
