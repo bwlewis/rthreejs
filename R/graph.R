@@ -2,15 +2,16 @@
 #'
 #' Plot interactive force-directed graphs.
 #'
-#' @param edges An edge data frame with at least columns:
-#' \itemize{
-#'   \item \code{from} Integer node id identifying edge 'from' node
-#'   \item \code{to} Integer node id identifying the edge 'to' node
-#'   \item \code{size} Nonnegative numeric edge line width
-#'   \item \code{color} Edge color specified like node color above
-#' }
-#' Each row of the data frame identifies a graph edge. Alternatively,
-#' \code{edges} may be an \code{igraph} graph object, see \code{\link{igraph2graphjs}}.
+#' @param edges Either a list with \code{edges} and \code{nodes} data frames as described below,
+#' or a graph object produced from the \code{igraph} package (see \code{\link{igraph2graphjs}}),
+#' or an edge data frame with at least columns:
+#'   \itemize{
+#'     \item \code{from} Integer node id identifying edge 'from' node
+#'     \item \code{to} Integer node id identifying the edge 'to' node
+#'     \item \code{size} Nonnegative numeric edge line width
+#'     \item \code{color} Edge color specified like node color above
+#'   }
+#' Each row of the data frame identifies a graph edge.
 #' @param nodes Optional node (vertex) data frame with at least columns:
 #' \itemize{
 #'   \item \code{label} Node character labels
@@ -60,7 +61,7 @@
 #' The three.js project \url{http://threejs.org}.
 #' @examples
 #' data(LeMis)
-#' g <- graphjs(LeMis$edges, LeMis$nodes, main="Les Mis&eacute;rables")
+#' g <- graphjs(LeMis, main="Les Mis&eacute;rables")
 #' print(g)
 #'
 #' \dontrun{
@@ -78,7 +79,13 @@ graphjs <- function(edges, nodes, main="", curvature=0, bg="white", fg="black", 
     edges = ig$edges
   }
   if(!is.data.frame(edges))
-    stop("The edges data frame must contain 'from', 'to' variables")
+  {
+    if(is.list(edges))
+    {
+      nodes = edges[["nodes"]]
+      edges = edges[["edges"]]
+    } else stop("edges must be either a list, igraph object or data frame, see help('graphjs')")
+  }
   if(is.null(edges$size)) edges$size = 1
   if(is.null(edges$color)) edges$color = "lightgray"
   if(!all(c("from", "size", "to", "color") %in% names(edges)))
@@ -158,7 +165,8 @@ renderGraph = function(expr, env = parent.frame(), quoted = FALSE) {
 #' @export
 graph2Matrix = function(edges, nodes, symmetric=TRUE)
 {
-  if (!is.data.frame(edges) || !(c("from", "to") %in% names(edges))) stop("edges must be a data frame with 'from' and 'to' columns")
+  if (!is.data.frame(edges) || !(c("from", "to") %in% names(edges)))
+    stop("edges must be a data frame with 'from' and 'to' columns")
   if (missing(nodes))
   {
     nodes = data.frame(id=unique(c(edges$from, edges$to)))
@@ -239,7 +247,7 @@ igraph2graphjs = function(ig)
   # adjust variable names as required
   ne = names(edges)
   nv = names(nodes)
-  nv[which(nv %in% "name")] = "label" 
+  nv[which(nv %in% "name")] = "label"
   ne[which(ne %in% "weight")] = "size"
   names(nodes) = nv
   names(edges) = ne

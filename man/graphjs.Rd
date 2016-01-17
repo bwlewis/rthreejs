@@ -10,15 +10,16 @@ graphjs(edges, nodes, main = "", curvature = 0, bg = "white",
   height = NULL)
 }
 \arguments{
-\item{edges}{An edge data frame with at least columns:
-\itemize{
-  \item \code{from} Integer node id identifying edge 'from' node
-  \item \code{to} Integer node id identifying the edge 'to' node
-  \item \code{size} Nonnegative numeric edge line width
-  \item \code{color} Edge color specified like node color above
-}
-Each row of the data frame identifies a graph edge. Alternatively,
-\code{edges} may be an \code{igraph} graph object, see \code{\link{igraph2graphjs}}.}
+\item{edges}{Either a list with \code{edges} and \code{nodes} data frames as described below,
+or a graph object produced from the \code{igraph} package (see \code{\link{igraph2graphjs}}),
+or an edge data frame with at least columns:
+  \itemize{
+    \item \code{from} Integer node id identifying edge 'from' node
+    \item \code{to} Integer node id identifying the edge 'to' node
+    \item \code{size} Nonnegative numeric edge line width
+    \item \code{color} Edge color specified like node color above
+  }
+Each row of the data frame identifies a graph edge.}
 
 \item{nodes}{Optional node (vertex) data frame with at least columns:
 \itemize{
@@ -80,7 +81,7 @@ Basic support for plotting \code{igraph} objects is provided by the
 }
 \examples{
 data(LeMis)
-g <- graphjs(LeMis$edges, LeMis$nodes, main="Les Mis&eacute;rables")
+g <- graphjs(LeMis, main="Les Mis&eacute;rables")
 print(g)
 
 \dontrun{
