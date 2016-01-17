@@ -17,7 +17,8 @@ graphjs(edges, nodes, main = "", curvature = 0, bg = "white",
   \item \code{size} Nonnegative numeric edge line width
   \item \code{color} Edge color specified like node color above
 }
-Each row of the data frame identifies a graph edge.}
+Each row of the data frame identifies a graph edge. Alternatively,
+\code{edges} may be an \code{igraph} graph object, see \code{\link{igraph2graphjs}}.}
 
 \item{nodes}{Optional node (vertex) data frame with at least columns:
 \itemize{
@@ -73,11 +74,17 @@ supported on some systems):
 \item  \code{mouse over} identify node by appending its label to the title
 }
 Double-click or tap on the plot to reset the view.
+
+Basic support for plotting \code{igraph} objects is provided by the
+\code{\link{igraph2graphjs}} function.
 }
 \examples{
 data(LeMis)
 g <- graphjs(LeMis$edges, LeMis$nodes, main="Les Mis&eacute;rables")
 print(g)
+
+\dontrun{
+}
 }
 \references{
 Original code by David Piegza: \url{https://github.com/davidpiegza/Graph-Visualization}.

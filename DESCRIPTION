@@ -27,6 +27,7 @@ Imports:
     jsonlite
 Suggests:
     htmltools (>= 0.2.6),
+    igraph,
     maps,
     maptools,
     sp

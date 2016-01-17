@@ -9,7 +9,8 @@
 #'   \item \code{size} Nonnegative numeric edge line width
 #'   \item \code{color} Edge color specified like node color above
 #' }
-#' Each row of the data frame identifies a graph edge.
+#' Each row of the data frame identifies a graph edge. Alternatively,
+#' \code{edges} may be an \code{igraph} graph object, see \code{\link{igraph2graphjs}}.
 #' @param nodes Optional node (vertex) data frame with at least columns:
 #' \itemize{
 #'   \item \code{label} Node character labels
@@ -46,6 +47,8 @@
 #' }
 #' Double-click or tap on the plot to reset the view.
 #'
+#' Basic support for plotting \code{igraph} objects is provided by the
+#' \code{\link{igraph2graphjs}} function.
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
 #' (If you don't see your widget plot, try printing it with the \code{print}) function.
@@ -59,12 +62,21 @@
 #' data(LeMis)
 #' g <- graphjs(LeMis$edges, LeMis$nodes, main="Les Mis&eacute;rables")
 #' print(g)
+#'
+#' \dontrun{
+#' }
 #' @importFrom jsonlite toJSON
 #' @export
 graphjs <- function(edges, nodes, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
                     attraction=1, repulsion=1, max_iterations=1500, opacity = 1, stroke=TRUE, width=NULL, height=NULL)
 {
   # check input
+  if("igraph" %in% class(edges))
+  {
+    ig = igraph2graphjs(edges)
+    nodes = ig$nodes
+    edges = ig$edges
+  }
   if(!is.data.frame(edges))
     stop("The edges data frame must contain 'from', 'to' variables")
   if(is.null(edges$size)) edges$size = 1
@@ -196,4 +208,40 @@ matrix2graph = function(M)
   dp = diff(M@p)
   edges = data.frame(from=M@i + 1, to=rep(seq_along(dp), dp), size=size, color="lightgray")
   list(nodes=nodes, edges=edges)
+}
+
+
+#' Convert \code{igraph} graph objects to a simpler form used by \code{\link{graphjs}}
+#' @param ig A graph object from \code{igraph}
+#' @return A list with node and edges data frame entries used by \code{\link{graphjs}}.
+#' @export
+#' @examples
+#' \dontrun{
+#'   library(igraph)
+#'   g <- make_ring(10) %>%
+#'        set_edge_attr("weight", value = 1:10) %>%
+#'        set_edge_attr("color", value = "red") %>%
+#'        set_vertex_attr("label", value = letters[1:10])
+#'   (G <- igraph2graphjs(g))
+#'
+#'   # Can also directly run:
+#'   graphjs(g)
+#' }
+igraph2graphjs = function(ig)
+{
+  E = igraph::as_edgelist(ig)
+  nodes = data.frame(id=1:igraph::vcount(ig))
+  vattr = data.frame(igraph::vertex_attr(ig))
+  if(length(vattr) > 0 && nrow(vattr) == nrow(nodes)) nodes = cbind(nodes, vattr)
+  edges = data.frame(from=E[,1], to=E[,2])
+  eattr = data.frame(igraph::edge_attr(ig))
+  if(length(eattr) > 0 && nrow(eattr) == nrow(edges)) edges = cbind(edges, eattr)
+  # adjust variable names as required
+  ne = names(edges)
+  nv = names(nodes)
+  nv[which(nv %in% "name")] = "label" 
+  ne[which(ne %in% "weight")] = "size"
+  names(nodes) = nv
+  names(edges) = ne
+  list(edges=edges, nodes=nodes)
 }
