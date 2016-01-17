@@ -99,6 +99,7 @@ function scatter(el, x, obj)
   obj.scene.add( pointgroup );
   obj.raycaster = new THREE.Raycaster();
   obj.raycaster.params.PointCloud.threshold = 0.05; // XXX Investigate these units...
+HOMER=obj;
 
 
 // program for drawing a Canvas point
@@ -299,8 +300,8 @@ function scatter(el, x, obj)
   el.onmouseup = function(){ down = false; };
   function mousewheel(event)
   {
-    var fovMAX = 100;
-    var fovMIN = 2;
+    var fovMAX = 180;
+    var fovMIN = 1;
     event.wheelDeltaY = event.wheelDeltaY || -10*event.detail || event.wheelDelta;
     if(GL) obj.camera.fov -= event.wheelDeltaY * 0.02;
     else obj.camera.fov -= event.wheelDeltaY * 0.0075;

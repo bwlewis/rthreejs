@@ -208,7 +208,7 @@ scatterplot3js <- function(
   if(length(i) > 0) names(options)[i] = gsub("\\.", "", names(options)[i])
 
   # set axis labels if they exist
-  if(length(colnames(x)) == 3 && is.null(options$axisLabels)) options$axisLabels = colnames(x)
+  if(length(colnames(x)) == 3 && is.null(options$axisLabels)) options$axisLabels = colnames(x)[c(1,3,2)]
 
   # re-order so z points up as expected.
   x = matrix(x[, c(1,3,2)], ncol=3)
