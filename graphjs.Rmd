@@ -93,10 +93,14 @@ graphjs(LeMis, bg="#fbfbfb")
 
 ## f-subgraph centrality
 
-Eigen centrality gives more weight to nodes that are connected to other nodes with
-lots of connections. Other measures like f-subgraph centrality 
-(see, for example, E. Estrada and D. J. Higham, Network properties revealed through matrix functions, SIAM Rev., 52 (2010), pp. 696–714.) adjust this concept to
-emphasize shorter paths more than longer ones.
+Eigen centrality gives more weight to nodes that are connected to other nodes
+with lots of connections. Other measures like f-subgraph centrality (see, for
+example, E. Estrada and D. J. Higham, Network properties revealed through
+matrix functions, SIAM Rev., 52 (2010), pp. 696–714.) adjust this concept to
+emphasize shorter paths more than longer ones.  Roughly, nodes that are
+connected to lots of other nodes by relatively short paths recieve more weight
+in this measure of graph centrality.
+
 
 The next example illustrates f-subgraph centrality for the exponential
 function f(x)=exp(x) using the matrix exponential function `expm` from R's
