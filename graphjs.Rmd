@@ -40,7 +40,7 @@ are taken from http://bl.ocks.org/mbostock/4062045.
 ```{r, fig.width=9}
 library(threejs)
 data(LeMis)
-graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
+graphjs(LeMis, bg="#fbfbfb")
 ```
 
 
@@ -64,7 +64,7 @@ M = graph2Matrix(LeMis$edges, LeMis$nodes)
 v = Matrix::colSums(M)
 v = v/max(v)    # normalize
 LeMis$nodes$size = 4*v
-graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
+graphjs(LeMis, bg="#fbfbfb")
 ```
 
 
@@ -87,7 +87,7 @@ The next example adjusts the sizes of the nodes by eigen centrality.
 v = abs(eigen(M)$vector[,1])
 v = v/max(v)
 LeMis$nodes$size = 4*v
-graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
+graphjs(LeMis, bg="#fbfbfb")
 ```
 
 
@@ -106,7 +106,7 @@ library(Matrix)
 v = diag(expm(M))
 v = v/max(v)
 LeMis$nodes$size = 4*v
-graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
+graphjs(LeMis, bg="#fbfbfb")
 ```
 
 
@@ -133,5 +133,11 @@ E = E / max(E)
 LeMis$nodes$size = 4*v
 LeMis$edges$size = 20*E@x
 LeMis$edges$color = LeMis$nodes$color[LeMis$edges$from + 1]
-graphjs(LeMis$edges, LeMis$nodes, bg="#fbfbfb")
+graphjs(LeMis, bg="#fbfbfb")
 ```
+
+## Use with the igraph package
+
+The `igraph` package defines a comprehensive interface to the superb
+[igraph](http://igraph.org/redirect.html) network analysis library.
+Use `graphjs` directly on igraph graph objects.
