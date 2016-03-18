@@ -65,6 +65,12 @@
 #' print(g)
 #'
 #' \dontrun{
+#' # The next example uses the `igraph` package.
+#' library(igraph)
+#' g <- sample_islands(3, 10, 5/10, 1)
+#' i <- cluster_optimal(g)
+#' g <- set_vertex_attr(g, "color", value=c("red", "green", "blue")[i$membership])
+#' print(graphjs(g))
 #' }
 #' @importFrom jsonlite toJSON
 #' @export
@@ -229,7 +235,7 @@ matrix2graph = function(M)
 #'   g <- make_ring(10) %>%
 #'        set_edge_attr("weight", value = 1:10) %>%
 #'        set_edge_attr("color", value = "red") %>%
-#'        set_vertex_attr("label", value = letters[1:10])
+#'        set_vertex_attr("name", value = letters[1:10])
 #'   (G <- igraph2graphjs(g))
 #'
 #'   # Can also directly run:
@@ -239,17 +245,24 @@ igraph2graphjs = function(ig)
 {
   E = igraph::as_edgelist(ig)
   nodes = data.frame(id=1:igraph::vcount(ig))
-  vattr = data.frame(igraph::vertex_attr(ig))
+  vattr = data.frame(igraph::vertex_attr(ig), stringsAsFactors=FALSE)
   if(length(vattr) > 0 && nrow(vattr) == nrow(nodes)) nodes = cbind(nodes, vattr)
-  edges = data.frame(from=E[,1], to=E[,2])
-  eattr = data.frame(igraph::edge_attr(ig))
+  nv = names(nodes)
+  nv[which(nv %in% "name")] = "label"
+  names(nodes) = nv
+  if(!is.numeric(E))
+  {
+    if(is.null(nodes$label)) stop("can't determine edge list")
+    n = nodes$id
+    names(n) = nodes$label
+    E = cbind(n[E[, 1]], n[E[, 2]])
+  }
+  edges = data.frame(from=E[,1], to=E[,2], stringAsFactors=FALSE)
+  eattr = data.frame(igraph::edge_attr(ig), stringsAsFactors=FALSE)
   if(length(eattr) > 0 && nrow(eattr) == nrow(edges)) edges = cbind(edges, eattr)
   # adjust variable names as required
   ne = names(edges)
-  nv = names(nodes)
-  nv[which(nv %in% "name")] = "label"
   ne[which(ne %in% "weight")] = "size"
-  names(nodes) = nv
   names(edges) = ne
   list(edges=edges, nodes=nodes)
 }

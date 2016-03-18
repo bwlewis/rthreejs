@@ -21,7 +21,7 @@ Convert \code{igraph} graph objects to a simpler form used by \code{\link{graphj
   g <- make_ring(10) \%>\%
        set_edge_attr("weight", value = 1:10) \%>\%
        set_edge_attr("color", value = "red") \%>\%
-       set_vertex_attr("label", value = letters[1:10])
+       set_vertex_attr("name", value = letters[1:10])
   (G <- igraph2graphjs(g))
 
   # Can also directly run:

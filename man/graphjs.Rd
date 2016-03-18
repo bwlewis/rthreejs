@@ -85,6 +85,12 @@ g <- graphjs(LeMis, main="Les Mis&eacute;rables")
 print(g)
 
 \dontrun{
+# The next example uses the `igraph` package.
+library(igraph)
+g <- sample_islands(3, 10, 5/10, 1)
+i <- cluster_optimal(g)
+g <- set_vertex_attr(g, "color", value=c("red", "green", "blue")[i$membership])
+print(graphjs(g))
 }
 }
 \references{
