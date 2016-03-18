@@ -20,7 +20,7 @@
 #'   \item \code{color} A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
 #' }
 #' Each row of the data frame defines a graph node. If the \code{nodes} argument is missing it will be
-#  inferred from the \code{edges} argument.
+#' inferred from the \code{edges} argument.
 #' @param main Plot title
 #' @param curvature Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs (the z-axis of the curve depends on the sign of \code{edge$from - edge$to}). Larger numbers = more curvature, with 1 a usually reasonable value.
 #' @param bg Plot background color specified similarly to the node colors described above

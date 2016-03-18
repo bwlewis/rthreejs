@@ -28,7 +28,8 @@ Each row of the data frame identifies a graph edge.}
   \item \code{size}  Positive numeric node plot size
   \item \code{color} A character color value, either color names ("blue", "red", ...) or 3-digit hexadecimal values ("#0000FF", "#EE0011")
 }
-Each row of the data frame defines a graph node. If the \code{nodes} argument is missing it will be}
+Each row of the data frame defines a graph node. If the \code{nodes} argument is missing it will be
+inferred from the \code{edges} argument.}
 
 \item{main}{Plot title}
 
