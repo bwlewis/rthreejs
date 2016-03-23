@@ -5,13 +5,6 @@
  *
  * Implements a simple graph drawing with force-directed placement in 3D.
  *
- * Parameters:
- * options = {
- *   nodes: A data frame with at least the 5 columns id, label, size,
- *          color, type. The id column is the data frame row number.
- *   edges: A data frame with at least the 4 columns from, to, size, color.
- *          The from and to columns indicate node ids.
- * }
  */
 
 HTMLWidgets.widget(
@@ -61,7 +54,7 @@ Widget.SimpleGraph = function()
   var camera, controls, scene, object_selection, sprite_map, scene2;
   var info_text = {};
   var graph = new Graph();
-  var geometries = [];
+geometries = []; // XXX HOMER
   var _this = this;
 
   _this.init = function (el, width, height)
@@ -162,7 +155,7 @@ Widget.SimpleGraph = function()
     _this.fgcss = x.fg;
     _this.curvature = x.curvature / 2;
 
-    // node sprite (used by circular nodes), with user-supplied stroke color
+    // node sprite with user-supplied stroke color
     var sz = 512;
     var dataColor = new Uint8Array( sz * sz * 4 );
     var stroke = new THREE.Color(x.stroke);
@@ -208,7 +201,7 @@ Widget.SimpleGraph = function()
       var source = graph.getNode(x.edges[j].from);
       var target = graph.getNode(x.edges[j].to);
       graph.addEdge(source, target);
-      drawEdge(source, target, new THREE.Color(x.edges[j].color), 2*x.edges[j].size, x.curvature);
+      drawEdge(source, target, new THREE.Color(x.edges[j].color), 2 * x.edges[j].size, x.curvature / 2);
     }
 
     _this.show_labels = x.showLabels;
@@ -262,7 +255,7 @@ Widget.SimpleGraph = function()
                          geo.target.data.draw_object.position.y * geo.target.data.draw_object.position.y +
                          geo.target.data.draw_object.position.z * geo.target.data.draw_object.position.z);
       var a  = curvature * Math.sign(geo.source.id - geo.target.id) * Math.sqrt(dx * dx + dy * dy + dz * dz) / n;
-      var v = new THREE.Vector3(sx/2, sy/2, sz/2 + a*sz/2);
+      var v = new THREE.Vector3(sx/2, sy/2 + a*sy/2, sz/2 + a*sz/2);
       var curve = new THREE.SplineCurve3([geo.source.data.draw_object.position, v, geo.target.data.draw_object.position]);
       geo.vertices = curve.getPoints(20);
     } else
@@ -277,6 +270,7 @@ Widget.SimpleGraph = function()
     var geo = new THREE.Geometry();
     geo.source = source;
     geo.target = target;
+
     update_edge(geo, curvature);
     var line = new THREE.Line( geo, material );
     line.scale.x = line.scale.y = line.scale.z = 1;
@@ -285,7 +279,6 @@ Widget.SimpleGraph = function()
     scene.add(line);
   }
 
-  
   _this.animate = function ()
   {
     controls.update();
@@ -310,7 +303,7 @@ Widget.SimpleGraph = function()
     }
 
     // Update position of lines (edges)
-    for(var i=0; i< geometries.length; i++)
+    for(var i=0; i < geometries.length; i++)
     {
       if(_this.curvature > 0)  update_edge(geometries[i], _this.curvature);   // only needed if spline edge
       geometries[i].verticesNeedUpdate = true;

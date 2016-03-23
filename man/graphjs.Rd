@@ -39,7 +39,7 @@ inferred from the \code{edges} argument.}
 
 \item{fg}{Plot foreground text color}
 
-\item{showLabels}{If TRUE then display text labels near each node}
+\item{showLabels}{If \code{TRUE} then display text labels near each node}
 
 \item{attraction}{Numeric value specifying attraction of connected nodes to each other, larger values indicate more attraction}
 
@@ -82,15 +82,16 @@ Basic support for plotting \code{igraph} objects is provided by the
 }
 \examples{
 data(LeMis)
-g <- graphjs(LeMis, main="Les Mis&eacute;rables")
+g <- graphjs(LeMis, main="Les Mis&eacute;rables", showLabels=TRUE)
 print(g)
 
 \dontrun{
 # The next example uses the `igraph` package.
 library(igraph)
+set.seed(1)
 g <- sample_islands(3, 10, 5/10, 1)
 i <- cluster_optimal(g)
-g <- set_vertex_attr(g, "color", value=c("red", "green", "blue")[i$membership])
+g <- set_vertex_attr(g, "color", value=c("yellow", "green", "blue")[i$membership])
 print(graphjs(g))
 }
 }

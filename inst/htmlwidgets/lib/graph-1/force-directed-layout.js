@@ -189,7 +189,7 @@ Layout.ForceDirected = function(graph, options)
       }
       temperature *= (1 - (layout_iterations / this.max_iterations));
       ds = ds/graph.nodes.length;
-      if(Math.abs(ds - ds_old) < 0.001) temperature = 0;
+      if(Math.abs(ds - ds_old) < 0.01) temperature = 0;
       ds_old = ds;
       layout_iterations++;
     } else {

@@ -25,7 +25,7 @@
 #' @param curvature Zero implies that edges are straight lines. Specify a positive number to curve the edges, useful to distinguish multiple edges in directed graphs (the z-axis of the curve depends on the sign of \code{edge$from - edge$to}). Larger numbers = more curvature, with 1 a usually reasonable value.
 #' @param bg Plot background color specified similarly to the node colors described above
 #' @param fg Plot foreground text color
-#' @param showLabels If TRUE then display text labels near each node
+#' @param showLabels If \code{TRUE} then display text labels near each node
 #' @param attraction Numeric value specifying attraction of connected nodes to each other, larger values indicate more attraction
 #' @param repulsion Numeric value specifying repulsion of all nodes to each other, larger values indicate greater repulsion
 #' @param max_iterations Integer value specifying the maximum number of rendering iterations before stopping
@@ -61,15 +61,16 @@
 #' The three.js project \url{http://threejs.org}.
 #' @examples
 #' data(LeMis)
-#' g <- graphjs(LeMis, main="Les Mis&eacute;rables")
+#' g <- graphjs(LeMis, main="Les Mis&eacute;rables", showLabels=TRUE)
 #' print(g)
 #'
 #' \dontrun{
 #' # The next example uses the `igraph` package.
 #' library(igraph)
+#' set.seed(1)
 #' g <- sample_islands(3, 10, 5/10, 1)
 #' i <- cluster_optimal(g)
-#' g <- set_vertex_attr(g, "color", value=c("red", "green", "blue")[i$membership])
+#' g <- set_vertex_attr(g, "color", value=c("yellow", "green", "blue")[i$membership])
 #' print(graphjs(g))
 #' }
 #' @importFrom jsonlite toJSON
