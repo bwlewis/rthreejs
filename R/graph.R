@@ -263,7 +263,7 @@ igraph2graphjs = function(ig)
   if(length(eattr) > 0 && nrow(eattr) == nrow(edges)) edges = cbind(edges, eattr)
   # adjust variable names as required
   ne = names(edges)
-  ne[which(ne %in% "weight")] = "size"
+  ne[which(ne %in% c("weight", "width"))] = "size"
   names(edges) = ne
   list(edges=edges, nodes=nodes)
 }
