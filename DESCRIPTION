@@ -24,6 +24,8 @@ Imports:
     htmlwidgets (>= 0.3.2),
     base64enc,
     Matrix,
+    stats,
+    methods,
     jsonlite
 Suggests:
     htmltools (>= 0.2.6),
@@ -32,4 +34,4 @@ Suggests:
     maptools,
     sp
 Enhances: knitr, shiny
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1

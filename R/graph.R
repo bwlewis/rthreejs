@@ -74,6 +74,7 @@
 #' print(graphjs(g))
 #' }
 #' @importFrom jsonlite toJSON
+#' @importFrom methods slotNames
 #' @export
 graphjs <- function(edges, nodes, main="", curvature=0, bg="white", fg="black", showLabels=FALSE,
                     attraction=1, repulsion=1, max_iterations=1500, opacity = 1, stroke=TRUE, width=NULL, height=NULL)

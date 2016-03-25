@@ -139,6 +139,7 @@
 #' }
 #' 
 #' @seealso scatterplot3d, rgl
+#' @importFrom stats na.omit
 #' @export
 scatterplot3js <- function(
   x, y, z,
