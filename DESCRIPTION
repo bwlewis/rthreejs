@@ -29,9 +29,7 @@ Imports:
     jsonlite
 Suggests:
     htmltools (>= 0.2.6),
-    igraph,
     maps,
-    maptools,
-    sp
+    igraph
 Enhances: knitr, shiny
-RoxygenNote: 5.0.1
+RoxygenNote: 5.0.0

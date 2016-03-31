@@ -54,7 +54,7 @@ sphere. If you plan to plot points using \code{lat} and \code{lon}
 the image must be a plate carree (aka lat/long) equirectangular
 map projection; see
 \url{https://en.wikipedia.org/wiki/Equirectangular_projection} for
-details..
+details.
 Lat/long maps are commonly found for most planetary bodies in the
 solar system, and are also easily generated directly in R
 (see the references and examples below).
@@ -83,8 +83,8 @@ the map image. Their default values of zero radians result in the front of the
 globe corresponding to the center of the flat map image.
 }
 \examples{
-# Plot flights to frequent destinations from
-# Callum Prentice's global flight data set,
+# Plot flights to frequent destinations from Callum Prentice's
+# global flight data set,
 # http://callumprentice.github.io/apps/flight_stream/index.html
 data(flights)
 # Approximate locations as factors
@@ -110,10 +110,7 @@ library(maps)
 data(world.cities, package="maps")
 cities <- world.cities[order(world.cities$pop, decreasing=TRUE)[1:1000],]
 value  <- 100 * cities$pop / max(cities$pop)
-
-# Set up a data color map and plot
-col <- rainbow(10, start=2.8 / 6, end=3.4 / 6)
-col <- col[floor(length(col) * (100 - value) / 100) + 1]
+col <- colorRampPalette(c("cyan", "lightgreen"))(10)[floor(10 * value/100) + 1]
 globejs(lat=cities$lat, long=cities$long, value=value, color=col, atmosphere=TRUE)
 
 # Plot the data on the moon:
@@ -122,16 +119,16 @@ globejs(img=moon, bodycolor="#555555", emissive="#444444",
          lightcolor="#555555", lat=cities$lat, long=cities$long,
          value=value, color=col)
 
-# Plot a high-resolution NASA MODIS globe (it can take a while to download
-# the image!)
-globejs(paste("http://eoimages.gsfc.nasa.gov/",
-              "images/imagerecords/73000/73909/",
-              "world.topo.bathy.200412.3x5400x2700.jpg", sep=""))
+\dontrun{
+# Plot a high-resolution NASA MODIS globe, setting colors to more closely reproduce
+# the natural image colors. Note that this example can can take a while to download!
+globejs("http://goo.gl/GVjxJ",
+        emmisive="#000000", bodycolor="#000000", lightcolor="#aaaa44")
 
 # Using global plots from the maptools, rworldmap, or sp packages.
 
-# Instead of using ready-made images of the earth, we can employ some
-# incredibly capable R spatial imaging packages to produce globe images
+# Instead of using ready-made images of the earth, we can use
+# many R spatial imaging packages to produce globe images
 # dynamically. With a little extra effort you can build globes with total
 # control over how they are plotted.
 
@@ -142,12 +139,11 @@ data(wrld_simpl)
 bgcolor <- "#000025"
 earth <- tempfile(fileext=".jpg")
 
-
 # NOTE: Use antialiasing to smooth border boundary lines. But! Set the jpeg
 # background color to the globe background color to avoid a visible aliasing
 # effect at the the plot edges.
 
-jpeg(earth,width=2048,height=1024,quality=100,bg=bgcolor,antialias="default")
+jpeg(earth, width=2048, height=1024, quality=100, bg=bgcolor, antialias="default")
 par(mar = c(0,0,0,0), pin = c(4,2), pty = "m",  xaxs = "i",
     xaxt = "n",       xpd = FALSE,  yaxs = "i", bty = "n", yaxt = "n")
 plot(wrld_simpl, col="black", bg=bgcolor, border="cyan", ann=FALSE,
@@ -155,9 +151,8 @@ plot(wrld_simpl, col="black", bg=bgcolor, border="cyan", ann=FALSE,
 dev.off()
 globejs(earth)
 
-\dontrun{
-  # A shiny example:
-  shiny::runApp(system.file("examples/globe",package="threejs"))
+# A shiny example:
+shiny::runApp(system.file("examples/globe",package="threejs"))
 }
 
 # See http://bwlewis.github.io/rthreejs for additional examples.
@@ -170,17 +165,8 @@ The three.js project \url{http://threejs.org}.
 An excellent overview of available map coordinate reference systems (PDF):
 \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 
-Includes ideas and images from the dat.globe Javascript WebGL Globe Toolkit
-Copyright 2011 Data Arts Team, Google Creative Lab
-Licensed under the Apache License, Version 2.0
-\url{http://www.apache.org/licenses/LICENSE-2.0}
-
-NASA Blue Marble/MODIS Earth images \url{visibleearth.nasa.gov}
-
+Includes images adapted from the NASA Earth Observatory and NASA's Jet Propulsion Laboratory.
+World image: \url{http://goo.gl/GVjxJ}.
 Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
-
-Mars image: \url{http://pdsmaps.wr.usgs.gov/PDS/public/explorer/html/marsadvc.htm}.
-
-Jupiter image: \url{http://maps.jpl.nasa.gov/textures/jup0vtt2.jpg}.
 }
 

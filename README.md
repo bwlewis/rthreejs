@@ -54,7 +54,7 @@ RStudio will support WebGL.
 Use the devtools package to install threejs directly from GitHub on any
 R platform (Mac, Windows, Linux, ...). You'll need the 'devtools' package.
 ```r
-if(!require("devtools")) install.packages("devtools",repos="http://cran.rstudio.com/")
+if(!require("devtools")) install.packages("devtools")
 devtools::install_github("bwlewis/rthreejs")
 ```
 
@@ -63,7 +63,7 @@ devtools::install_github("bwlewis/rthreejs")
 The following example illustrates the 3D scatterplot widget.
 ```r
 library("shiny")
-runApp(system.file("examples/scatterplot",package="threejs"))
+runApp(system.file("examples/scatterplot", package="threejs"))
 ```
 
 The next example illustrates the globe widget by plotting the relative
@@ -71,7 +71,7 @@ population of some cities using data from the R maps package on a globe. It's
 based on the JavaScript WebGL Globe Toolkit (https://github.com/dataarts) by
 the Google Creative Lab Data Arts Team.
 ```r
-runApp(system.file("examples/globe",package="threejs"))
+runApp(system.file("examples/globe", package="threejs"))
 ```
 
 For detailed help on the widgets and additional examples, see
@@ -110,5 +110,5 @@ That enables the library to work correctly with the shiny `renderUI` functions.
 <img src="https://travis-ci.org/bwlewis/rthreejs.svg?branch=master" alt="Travis CI status"></img>
 </a>
 [![codecov.io](https://codecov.io/github/bwlewis/rthreejs/coverage.svg?branch=master)](https://codecov.io/github/bwlewis/rthreejs?branch=master)
-[![CRAN version](http://www.r-pkg.org/badges/version/threejs)](http://cran.rstudio.com/web/packages/threejs/index.html)
+[![CRAN version](http://www.r-pkg.org/badges/version/threejs)](https://cran.r-project.org/packages=threejs)
 ![](http://cranlogs.r-pkg.org/badges/threejs)
