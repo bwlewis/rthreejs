@@ -32,4 +32,4 @@ Suggests:
     maps,
     igraph
 Enhances: knitr, shiny
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1

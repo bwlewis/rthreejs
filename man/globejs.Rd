@@ -165,8 +165,7 @@ The three.js project \url{http://threejs.org}.
 An excellent overview of available map coordinate reference systems (PDF):
 \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 
-Includes images adapted from the NASA Earth Observatory and NASA's Jet Propulsion Laboratory.
-World image: \url{http://goo.gl/GVjxJ}.
-Moon image: \url{http://maps.jpl.nasa.gov/textures/ear1ccc2.jpg}.
+Includes images adapted from the NASA Earth Observatory and NASA Jet Propulsion Laboratory.
+World image link: \url{http://goo.gl/GVjxJ}.
 }
 
