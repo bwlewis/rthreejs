@@ -1,13 +1,8 @@
-The threejs package as a whole is distributed under the MIT License:
 YEAR: 2015
 COPYRIGHT HOLDER: Bryan W. Lewis
 
--------------------------------------------------------------------------------
-three.js JavaScript library licese
-MIT License Copyright (C) 2010-2015 three.js authors
+YEAR: 2010-2015
+COPYRIGHT HOLDER:  Three.js authors
 
--------------------------------------------------------------------------------
-Includes software for graph visualization by David Piegza, see
-https://github.com/davidpiegza/Graph-Visualization.
-
-MIT License Copyright (c) 2011 David Piegza
+YEAR: 2011
+COPYRIGHT HOLDER: David Piegza

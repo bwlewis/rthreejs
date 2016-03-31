@@ -7,12 +7,10 @@ Version: 0.2.2
 Date: 2016-03-30
 Authors@R: c(
     person("B. W.", "Lewis", role=c("aut","cre"), email="blewis@illposed.net"),
-    person(family="Three.js authors", role="cph", comment="three.js JavaScript library"),
+    person(given="Three.js authors", role="cph", comment="three.js JavaScript library"),
     person("Alexey", "Stukalov", role=("ctb"), email="astukalov@gmail.com"),
     person("Yihui","Xie", role=("ctb"), email="xie@yihui.name"),
     person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de"),
-    person("Mark", "Lundin", role="cph"),
-    person("Eberhard", "Graether", role="cph"),
     person("David", "Piegza", role="cph")
     )
 URL: http://bwlewis.github.io/rthreejs
@@ -32,4 +30,4 @@ Suggests:
     maps,
     igraph
 Enhances: knitr, shiny
-RoxygenNote: 5.0.1
+RoxygenNote: 5.0.0

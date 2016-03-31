@@ -1,6 +1,9 @@
 /**
+ * From the three.js examples: https://github.com/mrdoob/three.js/blob/master/examples/js/controls/TrackballControls.js
  * @author Eberhard Graether / http://egraether.com/
- * @author Mark Lundin  / http://mark-lundin.com
+ * @author Mark Lundin 	/ http://mark-lundin.com
+ * @author Simone Manini / http://daron1337.github.io
+ * @author Luca Antiga 	/ http://lantiga.github.io
  */
 
 THREE.TrackballControls = function ( object, domElement ) {
