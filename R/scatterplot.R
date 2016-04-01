@@ -6,10 +6,13 @@
 #' @param x Either a vector of x-coordinate values or a  three-column
 #' data matrix with columns corresponding to the x,y,z
 #' coordinate axes. Column labels, if present, are used as axis labels.
+#' optionally the radius can be added as the fourth column. Points
+#' with radius equal to 0 will be plotted as dots.
 #' @param y (Optional) vector of y-coordinate values, not required if
 #' \code{x} is a matrix.
 #' @param z (Optional) vector of z-coordinate values, not required if
 #' \code{x} is a matrix.
+#' @param r (Optional) vector of radius values
 #' @param width The container div width.
 #' @param height The container div height.
 #' @param axis A logical value that when \code{TRUE} indicates that the
@@ -87,7 +90,7 @@
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
-#' 
+#'
 #' @examples
 #' # Gumball machine
 #' N <- 100
@@ -137,12 +140,13 @@
 #'   # A shiny example
 #'   shiny::runApp(system.file("examples/scatterplot",package="threejs"))
 #' }
-#' 
+#'
 #' @seealso scatterplot3d, rgl
 #' @importFrom stats na.omit
 #' @export
 scatterplot3js <- function(
   x, y, z,
+  r = NULL,
   height = NULL,
   width = NULL,
   axis = TRUE,
@@ -160,83 +164,75 @@ scatterplot3js <- function(
   renderer = c("auto","canvas","webgl"),
   signif = 8,
   bg = "#ffffff",
-  xlim, ylim, zlim, pch, ...)
-{
+  xlim, ylim, zlim, pch, ...) {
   # validate input
-  if(!missing(y) && !missing(z))
-  {
+  if (!missing(y) && !missing(z)) {
     if(is.matrix(x))
       stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
-    x = cbind(x=x,y=y,z=z)
+    if(missing(r))
+      x = cbind(x = x, y = y, z = z)
+    else
+      x = cbind(x = x, y = y, z = z, r = r)
   }
-  if(ncol(x) != 3) stop("x must be a three column matrix")
-  if(is.data.frame(x)) x = as.matrix(x)
-  if(!is.matrix(x)) stop("x must be a three column matrix")
+  if (ncol(x) != 3 && ncol(x) != 4) stop("x must be a three/four column matrix")
+  if (is.data.frame(x)) x = as.matrix(x)
+  if (!is.matrix(x)) stop("x must be a three/four column matrix")
   x = na.omit(x)
-  if(missing(pch)) pch = NULL
-  if(missing(renderer) && nrow(x) > 10000)
-  {
+  if (missing(pch)) pch = NULL
+  if (missing(renderer) && nrow(x) > 10000) {
     renderer = "webgl"
-  } else
-  {
+  } else {
     renderer = match.arg(renderer)
   }
 
+  # If the rad column is missing then use 0 as radius, then plot 0-rad points as dots
+  if (ncol(x) == 3)
+    x <- cbind(x, 0)
+
   # Strip alpha channel from colors
-  i = grep("^#", color)
-  if(length(i) > 0)
-  {
-    j = nchar(color[i]) > 7
-    if(any(j))
-    {
-      color[i][j] = substr(color[i][j],1,7)
-    }
-  }
-  i = grep("^#",bg)
-  if(length(i) > 0)
-  {
-    if(nchar(bg) > 7)
-    {
-      bg = substr(bg,1,7)
-    }
-  }
+  # REGEXP: Optional leading #, then takes first 6 hex characters and discards the rest. If it doesn match the string
+  # remains unaltered.
+  color <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", color, perl = T) # This should do the trick
+  bg <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", bg, perl = T) # This should do the trick
 
   # create options
   options = c(as.list(environment()), list(...))
   options = options[!(names(options) %in% c("x","y","z","i","j"))]
-  # javascript does not like dots in names
-  i = grep("\\.",names(options))
-  if(length(i) > 0) names(options)[i] = gsub("\\.", "", names(options)[i])
 
-  # set axis labels if they exist
-  if(length(colnames(x)) == 3 && is.null(options$axisLabels)) options$axisLabels = colnames(x)[c(1,3,2)]
+  # javascript does not like dots in names
+  names(options) <- gsub("\\.", "", names(options))
 
   # re-order so z points up as expected.
-  x = matrix(x[, c(1,3,2)], ncol=3)
+  #x = matrix(x[, c(1,3,2)], ncol=3)
+  x <- x[, c(1,3,2,4)]
+
+  # set axis labels if they exist
+  if (!is.null(colnames(x)) && is.null(options$axisLabels))
+    options$axisLabels <- colnames(x)[c(1,2,3)]
 
   # Our s3d.js Javascript code assumes a coordinate system in the unit box.
   # Scale x to fit in there.
   n = nrow(x)
-  mn = apply(x, 2, min)
-  mx = apply(x, 2, max)
-  if(!missing(xlim) && length(xlim) == 2)
-  {
+  mn = apply(x[,1:3], 2, min)
+  mx = apply(x[,1:3], 2, max)
+  if (!missing(xlim) && length(xlim) == 2) {
     mn[1] = xlim[1]
     mx[1] = xlim[2]
   }
-  if(!missing(ylim) && length(ylim) == 2)
-  {
+  if (!missing(ylim) && length(ylim) == 2) {
     mn[3] = ylim[1]
     mx[3] = ylim[2]
   }
-  if(!missing(zlim) && length(zlim) == 2)
-  {
+  if (!missing(zlim) && length(zlim) == 2) {
     mn[2] = zlim[1]
     mx[2] = zlim[2]
   }
   options$mn = mn
   options$mx = mx
-  x = (x - rep(mn, each=n)) / (rep(mx - mn, each=n))
+  x[,1:3] <- (x[,1:3] - rep(mn, each = n)) / (rep(mx - mn, each = n))
+  # Scale radius as well
+  x[,4] <- x[,4]/( max(mx - mn) )
+
   if (flip.y) x[,3] = 1 - x[,3]
 
   mdata = x # stash for return result
@@ -246,9 +242,9 @@ scatterplot3js <- function(
   x = as.vector(t(signif(x,signif)))
 
   # Ticks
-  if(!is.null(num.ticks))
+  if (!is.null(num.ticks))
   {
-    if(length(num.ticks) != 3) stop("num.ticks must have length 3")
+    if (length(num.ticks) != 3) stop("num.ticks must have length 3")
     num.ticks = num.ticks[c(1,3,2)]
 
     t1 = seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
@@ -284,13 +280,19 @@ scatterplot3js <- function(
   # create widget
   ans = htmlwidgets::createWidget(
           name = "scatterplotThree",
-          x = list(data=x, options=options, pch=pch, bg=bg),
+          x = list(data = x, options = options, pch = pch, bg = bg),
           width = width,
           height = height,
-          htmlwidgets::sizingPolicy(padding=0, browser.fill=TRUE),
+          htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           package = "threejs")
+
   # Add a reference to this call to support adding points
-  ans$points3d = points3d_generator(data=mdata, options=options, bg=bg, width=width, height=height, signif=signif)
+  ans$points3d = points3d_generator(data = mdata,
+                                    options = options,
+                                    bg = bg,
+                                    width = width,
+                                    height = height,
+                                    signif = signif)
   ans
 }
 
@@ -313,32 +315,30 @@ renderScatterplotThree = function(expr, env = parent.frame(), quoted = FALSE) {
 # Support for adding points to a plot
 points3d_generator = function(data, options, bg, width, height, signif)
 {
-  function(x, y, z, color="steelblue", size=1, labels=NULL, ...)
+  function(x, y, z, r = NULL, color="steelblue", size=1, labels=NULL, ...)
   {
-    if(!missing(y) && !missing(z))
-    {
+    if (!missing(y) && !missing(z)) {
       if(is.matrix(x))
         stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
-      x = cbind(x=x,y=y,z=z)
+      if(!missing(r))
+        x = cbind(x = x, y = y, z = z)
+      else
+        x = cbind(x = x, y = y, z = z, r = r)
     }
-    if(ncol(x) != 3) stop("x must be a three column matrix")
-    if(is.data.frame(x)) x = as.matrix(x)
-    if(!is.matrix(x)) stop("x must be a three column matrix")
+    if (ncol(x) != 3 && ncol(x) != 4) stop("x must be a three/four column matrix")
+    if (is.data.frame(x)) x = as.matrix(x)
+    if (!is.matrix(x)) stop("x must be a three/four column matrix")
     x = na.omit(x)
+
     # Strip alpha channel from colors
-    i = grep("^#", color)
-    if(length(i) > 0)
-    {
-      j = nchar(color[i]) > 7
-      if(any(j))
-      {
-        color[i][j] = substr(color[i][j],1,7)
-      }
-    }
+    color <- sub("^#([[:xdigit:]]{6}+).*$","\\1", color, perl = T) # This should do the trick
+
     # re-order so z points up as expected.
-    x = matrix(x[,c(1,3,2)], ncol=3)
+    x <- x[,c(1,3,2,4)]
     n = nrow(x)
-    x = (x - rep(options$mn, each=n)) / (rep(options$mx - options$mn, each=n))
+    x[, 1:3] = (x[,1:3] - rep(options$mn, each = n)) / (rep(options$mx - options$mn, each = n))
+    # Scale radius as well
+    x[,4] <- x[,4]/ max(options$mx - options$mn)
     if (options$flipy) x[,3] = 1 - x[,3]
 
     # Combine new data with old data
@@ -350,12 +350,11 @@ points3d_generator = function(data, options, bg, width, height, signif)
     # them (required by s3d.js)
     x = as.vector(t(signif(data,signif)))
     # size, color, and label settings for old and new points
-    if(length(options$size) + length(size) == nrow(data))
-    {
+    if (length(options$size) + length(size) == nrow(data)){
       local_options$size = c(options$size, size)
     } else
     {
-      local_options$size = c(rep(options$size,length.out=n_old), rep(size,length.out=n))
+      local_options$size = c(rep(options$size,length.out = n_old), rep(size,length.out=n))
     }
     if(length(options$color) + length(color) == nrow(data))
     {

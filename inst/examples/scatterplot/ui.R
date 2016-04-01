@@ -14,6 +14,7 @@ shinyUI(fluidPage(
          choices = list("Auto"="auto", "Canvas"="canvas", "WebGL"="webgl"),
          selected = 1),
       checkboxInput("grid", label = "Grid", value = TRUE),
+      checkboxInput("radius", label = "Radius", value = FALSE),
       p("Use the mouse zoom to zoom in/out.")
     ),
     mainPanel(

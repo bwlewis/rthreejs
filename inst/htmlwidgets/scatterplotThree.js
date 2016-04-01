@@ -71,7 +71,7 @@ function render_init(el, width, height, choice, labelmargin)
 // x.options.size (optional) either a single size or a vector of sizes
 // x.options.renderer, one of "auto" "canvas" "webgl" or "webgl-buffered"
 // x.options.labels (optional) vector of point labels
-// x.options 
+// x.options
 //   xtick:[0,0.5,1]
 //   xticklab:["1","2","3"]
 //   ytick:[0,0.5,1]
@@ -99,10 +99,10 @@ function scatter(el, x, obj)
   obj.scene.add( pointgroup );
   obj.raycaster = new THREE.Raycaster();
   obj.raycaster.params.PointCloud.threshold = 0.05; // XXX Investigate these units...
-HOMER=obj;
+  HOMER=obj;
 
 
-// program for drawing a Canvas point
+  // program for drawing a Canvas point
   var program = function ( context )
   {
     context.beginPath();
@@ -115,69 +115,102 @@ HOMER=obj;
     }
     context.fill();
   };
-// add the points
-  var j;
-  if(GL)
-  {
-    var geometry = new THREE.BufferGeometry();
-    var positions = new Float32Array( x.data.length );
-    var colors = new Float32Array( x.data.length );
-    var col = new THREE.Color("steelblue");
-    var scale = 0.07;
-    if(x.options.size && !Array.isArray(x.options.size)) scale = 0.07 * x.options.size;
-    for ( var i = 0; i < x.data.length; i++ )
-    {
-      positions[i] = x.data[i];
-    }
-    for(var i=0;i<x.data.length/3;i++)
-    {
-      j = i*3;
-      if(x.options.color)
-      {
+  // Compute number of points
+  var npoints = 0;
+  // add the spheres ( not very efficient, but we're using JS and R so...efficiency is not our best )
+  for ( var i = 0 ; i< x.data.length/4 ; i++) {
+    if(x.data[i*4 + 3] == 0) npoints = npoints + 1;
+    else {
+      // Create geometry
+      var sphereGeo =  new THREE.SphereGeometry(x.data[i*4 + 3], 20, 20);
+      sphereGeo.computeFaceNormals();
+
+      // Move to position
+      sphereGeo.applyMatrix ( new THREE.Matrix4().makeTranslation(x.data[i*4 ],x.data[i*4 + 1] , x.data[i*4 + 2]) );
+      // Color
+      if(x.options.color) {
         if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
         else col = new THREE.Color(x.options.color);
       }
-      colors[j] = col.r;
-      colors[j+1] = col.g;
-      colors[j+2] = col.b;
+      else col = new THREE.Color("steelblue");
+
+
+      // ADD
+      var mesh = new THREE.Mesh(
+        sphereGeo,
+        new THREE.MeshLambertMaterial( {color : col} ) );
+      mesh.index = i;
+      pointgroup.add( mesh );
     }
-    geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-    geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
-    geometry.computeBoundingSphere();
-    var pcmaterial = new THREE.PointCloudMaterial( { size: scale, vertexColors: THREE.VertexColors } );
-    var particleSystem = new THREE.PointCloud( geometry, pcmaterial );
-    pointgroup.add( particleSystem );
   }
-  else {
-    var col = new THREE.Color("steelblue");
-    var scale = 0.03;
-    for ( var i = 0; i < x.data.length/3; i++ )
+  // Add ambient light
+  obj.scene.add(new THREE.HemisphereLight( new THREE.Color("#888888") ,new THREE.Color("#111111")));
+  var dl  = new THREE.DirectionalLight( 0xffffff , 0.7);
+  dl.position.set(0,1,1);
+  obj.scene.add(dl);
+
+  // add the points
+  if(npoints > 0) {
+    var j;
+    if(GL)
     {
-      j = i*3;
-      if(x.options.color)
-      {
-        if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
-        else col = new THREE.Color(x.options.color);
+      var geometry = new THREE.BufferGeometry();
+      var positions = new Float32Array( npoints * 3 );
+      var colors = new Float32Array( npoints * 3 );
+      var col = new THREE.Color("steelblue");
+      var scale = 0.07;
+      if(x.options.size && !Array.isArray(x.options.size)) scale = 0.07 * x.options.size;
+      for ( var i = 0; i < x.data.length/4; i++ ) {
+        if(x.data[i*4 + 3] == 0){
+          // smthing like Memcpy? slice?
+          positions[i * 4 ] = x.data[i * 4];
+          positions[i * 4 + 1 ] = x.data[i * 4 + 1];
+          positions[i * 4 + 2 ] = x.data[i * 4 + 2];
+        }
       }
-      if(x.options.size)
-      {
-        if(Array.isArray(x.options.size)) scale = 0.03*x.options.size[i];
-        else scale = 0.03*x.options.size;
+      for(var i=0; i < x.data.length/4; i++) {
+        if(x.options.color) {
+          if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
+          else col = new THREE.Color(x.options.color);
+        }
+        colors[i * 3] = col.r;
+        colors[i * 3 + 1] = col.g;
+        colors[i * 3 + 2] = col.b;
       }
-      var material = new THREE.SpriteCanvasMaterial( {
-          color: col, program: program , opacity:0.9} );
-      var particle = new THREE.Sprite( material );
-      particle.position.x = x.data[j];
-      particle.position.y = x.data[j+1];
-      particle.position.z = x.data[j+2];
-      particle.scale.x = particle.scale.y = scale;
-// Label points.
-      if(x.options.labels)
-      {
-        if(Array.isArray(x.options.labels)) particle.name = x.options.labels[i];
-        else particle.name = x.options.labels;
+      geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+      geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
+      geometry.computeBoundingSphere();
+      var pcmaterial = new THREE.PointCloudMaterial( { size: scale, vertexColors: THREE.VertexColors } );
+      var particleSystem = new THREE.PointCloud( geometry, pcmaterial );
+      pointgroup.add( particleSystem );
+    }
+    else {
+      var col = new THREE.Color("steelblue");
+      var scale = 0.03;
+      for ( var i = 0; i < x.data.length/4; i++ ) {
+        if(x.options.color) {
+          if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
+          else col = new THREE.Color(x.options.color);
+        }
+        if(x.options.size) {
+          if(Array.isArray(x.options.size)) scale = 0.03 * x.options.size[i];
+          else scale = 0.03 * x.options.size;
+        }
+        var material = new THREE.SpriteCanvasMaterial( {
+            color: col, program: program , opacity:0.9} );
+        var particle = new THREE.Sprite( material );
+        particle.position.x = x.data[i * 4];
+        particle.position.y = x.data[i* 4 + 1];
+        particle.position.z = x.data[i * 4 + 2];
+        particle.scale.x = particle.scale.y = scale;
+        // Label points.
+        if(x.options.labels)
+        {
+          if(Array.isArray(x.options.labels)) particle.name = x.options.labels[i];
+          else particle.name = x.options.labels;
+        }
+        pointgroup.add( particle );
       }
-      pointgroup.add( particle );
     }
   }
 
@@ -314,7 +347,7 @@ HOMER=obj;
   el.addEventListener('mousewheel', mousewheel, true);
 
   el.onmousemove = function(ev)
-  { 
+  {
     ev.preventDefault();
 
     var canvasRect = this.getBoundingClientRect();
@@ -351,7 +384,12 @@ HOMER=obj;
       if(intersects.length > 0) {
         if(x.options.labels)
         {
-          if(Array.isArray(x.options.labels)) label = x.options.labels[intersects[0].index];
+          if(Array.isArray(x.options.labels)){
+            if(typeof intersects[0].index !== 'undefined' )
+              label = x.options.labels[intersects[0].index];
+            else
+              label = x.options.labels[intersects[0].object.index];
+          }
           else label = x.options.labels;
         }
       }
@@ -363,8 +401,8 @@ HOMER=obj;
         label = intersects[0].object.name;
       }
     }
-    //This actually synchronises all scatter plot labels, but I don't know how to 
-    //get a unique name 
+    //This actually synchronises all scatter plot labels, but I don't know how to
+    //get a unique name
     var labels = document.getElementsByName("coordinate_label");
     for(var i =0 ; i < labels.length ; i++){
       labels[i].innerHTML = label;
@@ -372,7 +410,7 @@ HOMER=obj;
   }
 
   function render()
-  { 
+  {
     obj.renderer.clear();
     obj.camera.lookAt(obj.scene.position);
     obj.renderer.render(obj.scene, obj.camera);

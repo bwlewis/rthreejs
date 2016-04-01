@@ -10,10 +10,13 @@ shinyServer(function(input, output)
     num.ticks <- input$nticks
     if(num.ticks == 0) num.ticks <- NULL
     else num.ticks <- rep(num.ticks,3)
-    color <- rep(rainbow(input$colors),length.out=nrow(example_data))
-    sizes <- rep(c(0.5, 1, 2)[1:input$sizes], length.out=nrow(example_data))
-    labs <- sprintf("x=%.2f, y=%.2f, z=%.2f", example_data[,1], example_data[,2], example_data[,3])
-    scatterplot3js(x=example_data,
+    if (input$radius) r <- rlnorm(50,meanlog = -3, sdlog = 0.5)
+    else r <- 0
+    data <- cbind(example_data,r)
+    color <- rep(rainbow(input$colors),length.out=nrow(data))
+    sizes <- rep(c(0.5, 1, 2)[1:input$sizes], length.out=nrow(data))
+    labs <- sprintf("x=%.2f, y=%.2f, z=%.2f r=%.2f", data[,1], data[,2], data[,3], data[,4])
+    scatterplot3js(x=data,
                     num.ticks=num.ticks,
                     color=color,
                     size=sizes,
