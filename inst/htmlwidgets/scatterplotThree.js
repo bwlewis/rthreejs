@@ -134,6 +134,9 @@ function scatter(el, x, obj)
       }
       else col = new THREE.Color("steelblue");
 
+      /** FIXME: Performance can be improved if the geometries are merged.
+       * http://learningthreejs.com/blog/2011/10/05/performance-merging-geometry/
+       */
 
       // ADD
       var mesh = new THREE.Mesh(
@@ -143,11 +146,16 @@ function scatter(el, x, obj)
       pointgroup.add( mesh );
     }
   }
-  // Add ambient light
-  obj.scene.add(new THREE.HemisphereLight( new THREE.Color("#888888") ,new THREE.Color("#111111")));
-  var dl  = new THREE.DirectionalLight( 0xffffff , 0.7);
-  dl.position.set(0,1,1);
-  obj.scene.add(dl);
+  // Add lights if npoints < data.length/4 (we have at least 1 sphere)
+  /** Again, another possible improvement: three point lighting
+   * http://learningthreejs.com/blog/2014/05/05/simple-and-efficient-3-point-lighting-to-get-your-game-started-with-threex-dot-basiclighting-game-extension-for-three-dot-js/
+   */
+  if( npoints < x.data.length/4 ){
+    obj.scene.add(new THREE.HemisphereLight( new THREE.Color("#888888") ,new THREE.Color("#111111")));
+    var dl  = new THREE.DirectionalLight( 0xffffff , 0.7);
+    dl.position.set(0,1,1);
+    obj.scene.add(dl);
+  }
 
   // add the points
   if(npoints > 0) {

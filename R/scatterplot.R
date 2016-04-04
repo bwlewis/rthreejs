@@ -12,7 +12,8 @@
 #' \code{x} is a matrix.
 #' @param z (Optional) vector of z-coordinate values, not required if
 #' \code{x} is a matrix.
-#' @param r (Optional) vector of radius values
+#' @param r (Optional) vector of radius values. Can be specified in the fourth
+#' column of the \code{x} matrix.
 #' @param width The container div width.
 #' @param height The container div height.
 #' @param axis A logical value that when \code{TRUE} indicates that the
@@ -169,7 +170,7 @@ scatterplot3js <- function(
   if (!missing(y) && !missing(z)) {
     if(is.matrix(x))
       stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
-    if(missing(r))
+    if (missing(r))
       x = cbind(x = x, y = y, z = z)
     else
       x = cbind(x = x, y = y, z = z, r = r)
@@ -186,14 +187,22 @@ scatterplot3js <- function(
   }
 
   # If the rad column is missing then use 0 as radius, then plot 0-rad points as dots
-  if (ncol(x) == 3)
-    x <- cbind(x, 0)
+  if (ncol(x) == 3) {
+    if (missing(r)) x <- cbind(x, 0)
+    else x <- cbind(x, r)
+  }
+
+  #Negative rad
+  if (any(x[,4] < 0)) {
+    warning("Negative values for sphere radius are not allowed")
+    x[,4] <- abs(x[,4])
+  }
 
   # Strip alpha channel from colors
   # REGEXP: Optional leading #, then takes first 6 hex characters and discards the rest. If it doesn match the string
   # remains unaltered.
-  color <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", color, perl = T) # This should do the trick
-  bg <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", bg, perl = T) # This should do the trick
+  color <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", color, perl = T)
+  bg <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", bg, perl = T)
 
   # create options
   options = c(as.list(environment()), list(...))
@@ -203,12 +212,14 @@ scatterplot3js <- function(
   names(options) <- gsub("\\.", "", names(options))
 
   # re-order so z points up as expected.
-  #x = matrix(x[, c(1,3,2)], ncol=3)
+  # x = matrix(x[, c(1,3,2)], ncol=3)
   x <- x[, c(1,3,2,4)]
 
   # set axis labels if they exist
   if (!is.null(colnames(x)) && is.null(options$axisLabels))
     options$axisLabels <- colnames(x)[c(1,2,3)]
+  # Avoid asJson named vector warning
+  colnames(x) <- NULL
 
   # Our s3d.js Javascript code assumes a coordinate system in the unit box.
   # Scale x to fit in there.
@@ -230,8 +241,12 @@ scatterplot3js <- function(
   options$mn = mn
   options$mx = mx
   x[,1:3] <- (x[,1:3] - rep(mn, each = n)) / (rep(mx - mn, each = n))
-  # Scale radius as well
-  x[,4] <- x[,4]/( max(mx - mn) )
+
+  # Scale radius as well.
+  # Important note: Since we want to use Spheres we are doing something
+  # wrong here. To be faithfull to the original scale the sphere should
+  # be transformed into a ellipsoid. (¿FIXME?)
+  x[,4] <- x[,4]/(max(mx - mn))
 
   if (flip.y) x[,3] = 1 - x[,3]
 
@@ -299,7 +314,7 @@ scatterplot3js <- function(
 #' @rdname threejs-shiny
 #' @export
 scatterplotThreeOutput = function(outputId, width="100%", height="500px") {
-    shinyWidgetOutput(outputId, "scatterplotThree", width, height, package="threejs")
+    shinyWidgetOutput(outputId, "scatterplotThree", width, height, package = "threejs")
 }
 
 #' @rdname threejs-shiny
@@ -330,6 +345,18 @@ points3d_generator = function(data, options, bg, width, height, signif)
     if (!is.matrix(x)) stop("x must be a three/four column matrix")
     x = na.omit(x)
 
+    # If the rad column is missing then use 0 as radius, then plot 0-rad points as dots
+    if (ncol(x) == 3) {
+      if (missing(r)) x <- cbind(x, 0)
+      else x <- cbind(x, r)
+    }
+
+    #Negative rad
+    if (any(x[,4] < 0)) {
+      warning("Negative values for sphere radius are not allowed")
+      x[,4] <- abs(x[,4])
+    }
+
     # Strip alpha channel from colors
     color <- sub("^#([[:xdigit:]]{6}+).*$","\\1", color, perl = T) # This should do the trick
 
@@ -337,7 +364,7 @@ points3d_generator = function(data, options, bg, width, height, signif)
     x <- x[,c(1,3,2,4)]
     n = nrow(x)
     x[, 1:3] = (x[,1:3] - rep(options$mn, each = n)) / (rep(options$mx - options$mn, each = n))
-    # Scale radius as well
+    # Scale radius as well. See previous note
     x[,4] <- x[,4]/ max(options$mx - options$mn)
     if (options$flipy) x[,3] = 1 - x[,3]
 
@@ -350,38 +377,34 @@ points3d_generator = function(data, options, bg, width, height, signif)
     # them (required by s3d.js)
     x = as.vector(t(signif(data,signif)))
     # size, color, and label settings for old and new points
-    if (length(options$size) + length(size) == nrow(data)){
+    if (length(options$size) + length(size) == nrow(data)) {
       local_options$size = c(options$size, size)
-    } else
-    {
+    } else {
       local_options$size = c(rep(options$size,length.out = n_old), rep(size,length.out=n))
     }
-    if(length(options$color) + length(color) == nrow(data))
-    {
+    if (length(options$color) + length(color) == nrow(data)) {
       local_options$color = c(options$color, color)
-    } else
-    {
+    } else {
       local_options$color = c(rep(options$color,length.out=n_old), rep(color,length.out=n))
     }
-    if(is.null(local_options$labels)) local_options$labels = ""
-    if(is.null(labels)) labels = ""
-    if(length(local_options$labels) + length(labels) == nrow(data))
-    {
+    if (is.null(local_options$labels)) local_options$labels = ""
+    if (is.null(labels)) labels = ""
+    if (length(local_options$labels) + length(labels) == nrow(data)) {
       local_options$labels = c(local_options$labels, labels)
-    } else
-    {
+    } else {
       local_options$labels = c(rep(local_options$labels,length.out=n_old), rep(labels,length.out=n))
     }
     options <<- local_options
     # create widget
     ans = htmlwidgets::createWidget(
       name = "scatterplotThree",
-      x = list(data=x, options=options, bg=bg),
+      x = list(data = x, options = options, bg = bg),
       width = width,
       height = height,
       htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
       package = "threejs")
-    ans$points3d = points3d_generator(data=data, options=options, bg=bg, width=width, height=height, signif=signif)
+    ans$points3d = points3d_generator(data = data, options = options, bg = bg,
+                                      width = width, height = height, signif = signif)
     ans
   }
 }
