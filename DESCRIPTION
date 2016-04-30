@@ -11,6 +11,7 @@ Authors@R: c(
     person("Alexey", "Stukalov", role=("ctb"), email="astukalov@gmail.com"),
     person("Yihui","Xie", role=("ctb"), email="xie@yihui.name"),
     person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de"),
+    person("B.",  "Thieurmel", role=("ctb"), email="bthieurmel@gmail.com"),
     person("David", "Piegza", role="cph")
     )
 URL: http://bwlewis.github.io/rthreejs
