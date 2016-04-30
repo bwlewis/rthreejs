@@ -171,9 +171,9 @@ function scatter(el, x, obj)
       for ( var i = 0; i < x.data.length/4; i++ ) {
         if(x.data[i*4 + 3] == 0){
           // smthing like Memcpy? slice?
-          positions[i * 4 ] = x.data[i * 4];
-          positions[i * 4 + 1 ] = x.data[i * 4 + 1];
-          positions[i * 4 + 2 ] = x.data[i * 4 + 2];
+          positions[i * 3 ] = x.data[i * 4];
+          positions[i * 3 + 1 ] = x.data[i * 4 + 1];
+          positions[i * 3 + 2 ] = x.data[i * 4 + 2];
         }
       }
       for(var i=0; i < x.data.length/4; i++) {
