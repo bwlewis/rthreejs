@@ -7,3 +7,8 @@ dependencies:
       - Detector.js
       - Projector.js
       - CanvasRenderer.js
+  - name: graph
+    version: 1
+    src: "htmlwidgets/lib/graph-1"
+    script:
+      - TrackballControls.js
