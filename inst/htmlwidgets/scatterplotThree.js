@@ -115,17 +115,15 @@ Widget.scatter = function()
       light = new THREE.AmbientLight( 0x222222 );
       scene.add( light );
       // Handle spheres (pch == 'o')
-      var npoints = 0;
-      for ( var i = 0 ; i< x.data.length / 3 ; i++)
+      if(x.options.pch == 'o')
       {
-        var scale = 0.02;
-        if(x.options.size) {
-          if(Array.isArray(x.options.size)) scale = 0.02 * x.options.size[i];
-          else scale = 0.02 * x.options.size;
-        }
-        if(x.options.pch[i] != 'o') npoints = npoints + 1;
-        else
+        for ( var i = 0; i < x.data.length / 3; i++)
         {
+          var scale = 0.02;
+          if(x.options.size) {
+            if(Array.isArray(x.options.size)) scale = 0.02 * x.options.size[i];
+            else scale = 0.02 * x.options.size;
+          }
           // Create geometry
           var sphereGeo =  new THREE.SphereGeometry(scale, 20, 20);
           sphereGeo.computeFaceNormals();
@@ -146,41 +144,54 @@ Widget.scatter = function()
              pointgroup.add(mesh);
         }
       }
-      if(npoints > 0) // add buffered geometry glyphs (pch != 'o')
+      else // add buffered geometry glyphs (pch != 'o')
       {
+        var npoints = x.data.length / 3;
+        var geometry = new THREE.BufferGeometry();
+        var positions = new Float32Array( npoints * 3 ); // need a typed array, forces a data copy
+        var colors = new Float32Array( npoints * 3 );
+        var col = new THREE.Color("steelblue");
+        var scale = 0.3;
 
-      var j = 0;
-      var geometry = new THREE.BufferGeometry();
-      var positions = new Float32Array( npoints * 3 ); // need a typed array, forces a data copy
-      var colors = new Float32Array( npoints * 3 );
-      var col = new THREE.Color("steelblue");
-      var scale = 0.07;
-      if(x.options.size && !Array.isArray(x.options.size)) scale = 0.07 * x.options.size;
-      for ( var i = 0; i < x.data.length / 3; i++ ) {
-        if(x.pch[i] == '.')
+        var canvas = document.createElement('canvas');
+        var csz = 64;
+        canvas.width = csz;
+        canvas.height = csz;
+        var context = canvas.getContext('2d');
+        context.fillStyle = "#ffffff";
+        context.textAlign = 'center';
+        context.font = '16px Arial';
+        context.fillText(x.options.pch, csz/2, csz/2);
+        var sprite = new THREE.Texture(canvas);
+        sprite.needsUpdate = true;
+
+        if(x.options.size && !Array.isArray(x.options.size)) scale = 0.3 * x.options.size;
+        for (var i = 0; i < x.data.length / 3; i++)
         {
-          // smthing like Memcpy? slice?
-          positions[j * 3 ] = x.data[i * 3];
-          positions[j * 3 + 1 ] = x.data[i * 3 + 1];
-          positions[j * 3 + 2 ] = x.data[i * 3 + 2];
+          positions[i * 3 ] = x.data[i * 3];
+          positions[i * 3 + 1 ] = x.data[i * 3 + 1];
+          positions[i * 3 + 2 ] = x.data[i * 3 + 2];
           if(x.options.color) {
             if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
             else col = new THREE.Color(x.options.color);
           }
-          colors[j * 3] = col.r;
-          colors[j * 3 + 1] = col.g;
-          colors[j * 3 + 2] = col.b;
-          j = j + 1;
+          colors[i * 3] = col.r;
+          colors[i * 3 + 1] = col.g;
+          colors[i * 3 + 2] = col.b;
         }
-      }
-      geometry.addAttribute( 'position', new THREE.BufferAttribute(positions, 3));
-      geometry.addAttribute( 'color', new THREE.BufferAttribute(colors, 3));
-      geometry.computeBoundingSphere();
-      var pcmaterial = new THREE.PointCloudMaterial( { size: scale, vertexColors: THREE.VertexColors } );
-      var particleSystem = new THREE.PointCloud( geometry, pcmaterial );
-      pointgroup.add( particleSystem );
-
-
+        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.computeBoundingSphere();
+        var material;
+        if(x.options.pch == '.')  // most efficient glyph
+        {
+          material = new THREE.PointsMaterial({size: scale / 20, transparent: true, alphaTest: 0.5, vertexColors: THREE.VertexColors});
+        } else
+        {
+          material = new THREE.PointsMaterial({size: scale, map: sprite, transparent: true, alphaTest: 0.5, vertexColors: THREE.VertexColors});
+        }
+        var particleSystem = new THREE.Points(geometry, material);
+        pointgroup.add(particleSystem);
       }
     } else { // canvas (not WebGL)
       var program = function ( context )

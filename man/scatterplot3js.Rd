@@ -6,15 +6,17 @@
 \usage{
 scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   num.ticks = c(6, 6, 6), x.ticklabs = NULL, y.ticklabs = NULL,
-  z.ticklabs = NULL, color = "steelblue", size = 1, labels = NULL,
-  label.margin = "10px", stroke = "black", flip.y = TRUE, grid = TRUE,
-  renderer = c("auto", "canvas", "webgl"), signif = 8, bg = "#ffffff",
-  xlim, ylim, zlim, pch, ...)
+  z.ticklabs = NULL, color = "steelblue", size = cex.symbols,
+  labels = NULL, label.margin = "10px", stroke = "black", flip.y = TRUE,
+  grid = TRUE, renderer = c("auto", "canvas"), signif = 8,
+  bg = "#ffffff", cex.symbols = 1, xlim, ylim, zlim, pch, ...)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
 data matrix with columns corresponding to the x,y,z
-coordinate axes. Column labels, if present, are used as axis labels.}
+coordinate axes. Column labels, if present, are used as axis labels.
+optionally the radius can be added as the fourth column. Points
+with radius equal to 0 will be plotted as dots.}
 
 \item{y}{(Optional) vector of y-coordinate values, not required if
 \code{x} is a matrix.}
@@ -49,7 +51,7 @@ points to plot.}
 \item{size}{The plot point radius, either as a single number or a
 vector of sizes of length \code{nrow(x)}. A vector of sizes is only
 supported by the \code{canvas} renderer. The \code{webgl} renderer accepts
-a single size value for all points.}
+a single size value for all points. Equivalent to \code{cex.symbols}.}
 
 \item{labels}{Either NULL (no labels), or a vector of labels as long as the
 number of data points displayed when the mouse hovers over each point.}
@@ -67,7 +69,8 @@ TRUE produces plots similar to those rendered by the R
 \item{grid}{Set FALSE to disable display of a grid.}
 
 \item{renderer}{Select from available plot rendering techniques of
-'auto', 'canvas', or 'webgl'.}
+'auto' or 'canvas'. Set to 'canvas' to explicitly use non-accelerated Canvas
+rendering, otherwise WebGL is used.}
 
 \item{signif}{Number of significant digits used to represent point
 coordinates. Larger numbers increase accuracy but slow plot generation
@@ -75,15 +78,20 @@ down.}
 
 \item{bg}{The color to be used for the background of the device region.}
 
+\item{cex.symbols}{Equivalent to the \code{size} parameter.}
+
 \item{xlim}{Optional two-element vector of x-axis limits. Default auto-scales to data.}
 
 \item{ylim}{Optional two-element vector of y-axis limits. Default auto-scales to data.}
 
 \item{zlim}{Optional two-element vector of z-axis limits. Default auto-scales to data.}
 
-\item{pch}{Not yet used but one day will support changing the point glyph.}
+\item{pch}{Optional single character point glyph, see notes.}
 
 \item{...}{Additional options (see note).}
+
+\item{r}{(Optional) vector of radius values. Can be specified in the fourth
+column of the \code{x} matrix.}
 }
 \value{
 An htmlwidget object that is displayed using the object's show or print method.
@@ -100,10 +108,10 @@ Points with missing values are omitted.
 
 Use the \code{renderer} option to manually select from the available
 rendering options.
-The \code{canvas} renderer is the fallback rendering option when \code{webgl}
+The \code{canvas} renderer is the fallback rendering option when WebGL
 is not available. Select \code{auto} to automatically choose between
 the two. The two renderers produce slightly different-looking output
-and have different available options (see above). Use the \code{webgl}
+and have different available options (see above). Use WebGL
 renderer for plotting large numbers of points (if available). Use the
 \code{canvas} renderer to excercise finer control of plotting of smaller
 numbers of points. See the examples.

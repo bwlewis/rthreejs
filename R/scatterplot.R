@@ -33,7 +33,8 @@
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}. A vector of sizes is only
 #' supported by the \code{canvas} renderer. The \code{webgl} renderer accepts
-#' a single size value for all points.
+#' a single size value for all points. Equivalent to \code{cex.symbols}.
+#' @param cex.symbols Equivalent to the \code{size} parameter.
 #' @param labels  Either NULL (no labels), or a vector of labels as long as the
 #' number of data points displayed when the mouse hovers over each point.
 #' @param label.margin A CSS-style margin string used to display the point
@@ -54,7 +55,7 @@
 #' @param xlim Optional two-element vector of x-axis limits. Default auto-scales to data.
 #' @param ylim Optional two-element vector of y-axis limits. Default auto-scales to data.
 #' @param zlim Optional two-element vector of z-axis limits. Default auto-scales to data.
-#' @param pch Not yet used but one day will support changing the point glyph.
+#' @param pch Optional single character point glyph, see notes.
 #' @param ... Additional options (see note).
 #'
 #' @return
@@ -69,12 +70,12 @@
 #' Use the \code{renderer} option to manually select from the available
 #' rendering options.
 #' The \code{canvas} renderer is the fallback rendering option when WebGL
-#' is not available. Select \code{auto} to automatically choose between
+#' is not available. The default setting \code{auto} automatically chooses
+#' between
 #' the two. The two renderers produce slightly different-looking output
 #' and have different available options (see above). Use WebGL
-#' renderer for plotting large numbers of points (if available). Use the
-#' \code{canvas} renderer to excercise finer control of plotting of smaller
-#' numbers of points. See the examples.
+#' renderer for plotting large numbers of points (if available).
+#' See the examples.
 #'
 #' Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 #' as a three-element character vector, see the examples below.
@@ -156,7 +157,7 @@ scatterplot3js <- function(
   y.ticklabs = NULL,
   z.ticklabs = NULL,
   color = "steelblue",
-  size = 1,
+  size = cex.symbols,
   labels = NULL,
   label.margin = "10px",
   stroke = "black",
@@ -165,6 +166,7 @@ scatterplot3js <- function(
   renderer = c("auto", "canvas"),
   signif = 8,
   bg = "#ffffff",
+  cex.symbols = 1,
   xlim, ylim, zlim, pch, ...) {
   # validate input
   if (!missing(y) && !missing(z)) {
@@ -176,8 +178,7 @@ scatterplot3js <- function(
   if (is.data.frame(x)) x <- as.matrix(x)
   if (!is.matrix(x)) stop("x must be a three column matrix")
   x <- na.omit(x)
-  if (missing(pch)) pch <- rep('o', nrow(x))
-  if (length(pch) != nrow(x)) pch <- rep(pch[1], nrow(x))
+  if(missing(pch)) pch <- 'o'
   if (missing(renderer) && nrow(x) > 10000) {
     renderer <- "webgl"
   } else {
