@@ -86,7 +86,7 @@ down.}
 
 \item{zlim}{Optional two-element vector of z-axis limits. Default auto-scales to data.}
 
-\item{pch}{Optional single character point glyph, see notes.}
+\item{pch}{Optional character glyphs, see notes.}
 
 \item{...}{Additional options (see note).}
 
@@ -109,12 +109,12 @@ Points with missing values are omitted.
 Use the \code{renderer} option to manually select from the available
 rendering options.
 The \code{canvas} renderer is the fallback rendering option when WebGL
-is not available. Select \code{auto} to automatically choose between
+is not available. The default setting \code{auto} automatically chooses
+between
 the two. The two renderers produce slightly different-looking output
 and have different available options (see above). Use WebGL
-renderer for plotting large numbers of points (if available). Use the
-\code{canvas} renderer to excercise finer control of plotting of smaller
-numbers of points. See the examples.
+renderer for plotting large numbers of points (if available).
+See the examples.
 
 Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below.

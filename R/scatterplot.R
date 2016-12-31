@@ -55,7 +55,7 @@
 #' @param xlim Optional two-element vector of x-axis limits. Default auto-scales to data.
 #' @param ylim Optional two-element vector of y-axis limits. Default auto-scales to data.
 #' @param zlim Optional two-element vector of z-axis limits. Default auto-scales to data.
-#' @param pch Optional single character point glyph, see notes.
+#' @param pch Optional character glyphs, see notes.
 #' @param ... Additional options (see note).
 #'
 #' @return
@@ -171,19 +171,16 @@ scatterplot3js <- function(
   # validate input
   if (!missing(y) && !missing(z)) {
     if(is.matrix(x))
-      stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
+      stop("Specify either: A three-column matrix x or, Three vectors x, y, and z. See ?scatterplot3js for help.")
     x <- cbind(x = x, y = y, z = z)
   }
   if (ncol(x) != 3) stop("x must be a three column matrix")
   if (is.data.frame(x)) x <- as.matrix(x)
   if (!is.matrix(x)) stop("x must be a three column matrix")
   x <- na.omit(x)
-  if(missing(pch)) pch <- 'o'
-  if (missing(renderer) && nrow(x) > 10000) {
-    renderer <- "webgl"
-  } else {
-    renderer = match.arg(renderer)
-  }
+  if(missing(pch)) pch <- rep("o", nrow(x))
+  if(length(pch) != nrow(x)) pch <- rep_len(pch, nrow(x))
+  renderer = match.arg(renderer)
 
   # Strip alpha channel from colors REGEXP: Optional leading #, then takes
   # first 6 hex characters and discards the rest. If it doesn't match the string
@@ -199,7 +196,7 @@ scatterplot3js <- function(
   names(options) <- gsub("\\.", "", names(options))
 
   # re-order so z points up as expected.
-  x <- x[, c(1, 3, 2)]
+  x <- x[, c(1, 3, 2), drop=FALSE]
 
   # set axis labels if they exist
   if (!is.null(colnames(x)) && is.null(options$axisLabels))
@@ -210,8 +207,8 @@ scatterplot3js <- function(
   # The Javascript code assumes a coordinate system in the unit box.  Scale x
   # to fit in there.
   n <- nrow(x)
-  mn <- apply(x[,1:3], 2, min)
-  mx <- apply(x[,1:3], 2, max)
+  mn <- apply(x[, 1:3, drop=FALSE], 2, min)
+  mx <- apply(x[, 1:3, drop=FALSE], 2, max)
   if (!missing(xlim) && length(xlim) == 2) {
     mn[1] <- xlim[1]
     mx[1] <- xlim[2]
@@ -226,7 +223,7 @@ scatterplot3js <- function(
   }
   options$mn <- mn
   options$mx <- mx
-  x[, 1:3] <- (x[, 1:3] - rep(mn, each = n)) / (rep(mx - mn, each = n))
+  x[, 1:3] <- (x[, 1:3, drop=FALSE] - rep(mn, each = n)) / (rep(mx - mn, each = n))
 
   if(flip.y) x[, 3] = 1 - x[, 3]
 
@@ -325,9 +322,9 @@ points3d_generator = function(data, options, bg, width, height, signif)
     color <- sub("^#([[:xdigit:]]{6}+).*$","\\1", color, perl = TRUE)
 
     # re-order so z points up as expected.
-    x <- x[, c(1, 3, 2)]
+    x <- x[, c(1, 3, 2), drop=FALSE]
     n <- nrow(x)
-    x[, 1:3] <- (x[, 1:3] - rep(options$mn, each = n)) / (rep(options$mx - options$mn, each = n))
+    x[, 1:3] <- (x[, 1:3, drop=FALSE] - rep(options$mn, each = n)) / (rep(options$mx - options$mn, each = n))
     if (options$flipy) x[, 3] <- 1 - x[, 3]
 
     # Combine new data with old data

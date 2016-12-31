@@ -114,12 +114,15 @@ Widget.scatter = function()
       scene.add( light );
       light = new THREE.AmbientLight( 0x222222 );
       scene.add( light );
-      // Handle spheres (pch == 'o')
-      if(x.options.pch == 'o')
+
+      // Handle mupltiple kinds of glyphs FIXME avoid multiple data scans here and below (pre-sort by pch, for instance)
+      var npoints = 0;
+      var scale = 0.02;
+      for ( var i = 0; i < x.data.length / 3; i++)
       {
-        for ( var i = 0; i < x.data.length / 3; i++)
+        if(x.options.pch[i] == 'o')    // special case: spheres
         {
-          var scale = 0.02;
+          npoints++;
           if(x.options.size) {
             if(Array.isArray(x.options.size)) scale = 0.02 * x.options.size[i];
             else scale = 0.02 * x.options.size;
@@ -144,57 +147,70 @@ Widget.scatter = function()
              pointgroup.add(mesh);
         }
       }
-      else // add buffered geometry glyphs (pch != 'o')
-      {
-        var npoints = x.data.length / 3;
-        var geometry = new THREE.BufferGeometry();
-        var positions = new Float32Array( npoints * 3 ); // need a typed array, forces a data copy
-        var colors = new Float32Array( npoints * 3 );
-        var col = new THREE.Color("steelblue");
-        var scale = 0.3;
-
-        var canvas = document.createElement('canvas');
-        var csz = 64;
-        canvas.width = csz;
-        canvas.height = csz;
-        var context = canvas.getContext('2d');
-        context.fillStyle = "#ffffff";
-        context.textAlign = 'center';
-        context.font = '16px Arial';
-        context.fillText(x.options.pch, csz/2, csz/2);
-        var sprite = new THREE.Texture(canvas);
-        sprite.needsUpdate = true;
-
-        if(x.options.size && !Array.isArray(x.options.size)) scale = 0.3 * x.options.size;
-        for (var i = 0; i < x.data.length / 3; i++)
+      if(npoints < x.data.length / 3)
+      { // more points to draw
+        var unique_pch = [...new Set(x.options.pch)];
+        for(var j=0; j < unique_pch.length; j++)
         {
-          positions[i * 3 ] = x.data[i * 3];
-          positions[i * 3 + 1 ] = x.data[i * 3 + 1];
-          positions[i * 3 + 2 ] = x.data[i * 3 + 2];
-          if(x.options.color) {
-            if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
-            else col = new THREE.Color(x.options.color);
+          npoints = 0;
+          for (var i = 0; i < x.data.length / 3; i++)
+          {
+            if(x.options.pch[i] == unique_pch[j]) npoints++;
           }
-          colors[i * 3] = col.r;
-          colors[i * 3 + 1] = col.g;
-          colors[i * 3 + 2] = col.b;
+          var geometry = new THREE.BufferGeometry();
+          var positions = new Float32Array( npoints * 3 ); // need a typed array, forces a data copy
+          var colors = new Float32Array( npoints * 3 );
+          var col = new THREE.Color("steelblue");
+          scale = 0.3;
+
+          var canvas = document.createElement('canvas');
+          var csz = 64;
+          canvas.width = csz;
+          canvas.height = csz;
+          var context = canvas.getContext('2d');
+          context.fillStyle = "#ffffff";
+          context.textAlign = 'center';
+          context.font = '16px Arial';
+          context.fillText(unique_pch[j], csz/2, csz/2);
+          var sprite = new THREE.Texture(canvas);
+          sprite.needsUpdate = true;
+
+          if(x.options.size && !Array.isArray(x.options.size)) scale = 0.3 * x.options.size;
+          var k = 0;
+          for (var i = 0; i < x.data.length / 3; i++)
+          {
+            if(x.options.pch[i] == unique_pch[j])
+            {
+              positions[k * 3 ] = x.data[i * 3];
+              positions[k * 3 + 1 ] = x.data[i * 3 + 1];
+              positions[k * 3 + 2 ] = x.data[i * 3 + 2];
+              if(x.options.color) {
+                if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
+                else col = new THREE.Color(x.options.color);
+              }
+              colors[k * 3] = col.r;
+              colors[k * 3 + 1] = col.g;
+              colors[k * 3 + 2] = col.b;
+              k++;
+            }
+          }
+          geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+          geometry.computeBoundingSphere();
+          var material;
+          if(unique_pch[j] == '.')  // most efficient glyph
+          {
+            material = new THREE.PointsMaterial({size: scale/10, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
+          } else
+          {
+            material = new THREE.PointsMaterial({size: scale, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
+          }
+          var particleSystem = new THREE.Points(geometry, material);
+          pointgroup.add(particleSystem);
         }
-        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.computeBoundingSphere();
-        var material;
-        if(x.options.pch == '.')  // most efficient glyph
-        {
-          material = new THREE.PointsMaterial({size: scale / 20, transparent: true, alphaTest: 0.5, vertexColors: THREE.VertexColors});
-        } else
-        {
-          material = new THREE.PointsMaterial({size: scale, map: sprite, transparent: true, alphaTest: 0.5, vertexColors: THREE.VertexColors});
-        }
-        var particleSystem = new THREE.Points(geometry, material);
-        pointgroup.add(particleSystem);
       }
     } else { // canvas (not WebGL)
-      var program = function ( context )
+      var program = function (context)
       {
         context.beginPath();
         context.arc(0, 0, 0.5, 0, Math.PI*2, true);
