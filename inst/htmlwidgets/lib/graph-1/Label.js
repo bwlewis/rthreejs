@@ -26,7 +26,7 @@ THREE.Label = function(text, color, scale, parameters)
     var mat = new THREE.SpriteMaterial({
       map: amap,
       transparent: true,
-      useScreenCoordinates: false,
+//      useScreenCoordinates: false, // removed somewhere between threejs-70 and -83
       color: 0xffffff });
     sp = new THREE.Sprite(mat);
     sp.scale.set(scale, scale/8, scale);

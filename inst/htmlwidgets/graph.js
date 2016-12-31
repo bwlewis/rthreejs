@@ -54,7 +54,7 @@ Widget.SimpleGraph = function()
   var camera, controls, scene, object_selection, sprite_map, scene2;
   var info_text = {};
   var graph = new Graph();
-geometries = []; // XXX HOMER
+  var geometries = [];
   var _this = this;
 
   _this.init = function (el, width, height)
