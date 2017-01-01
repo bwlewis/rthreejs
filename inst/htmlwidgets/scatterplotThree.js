@@ -102,6 +102,14 @@ Widget.scatter = function()
     scene.add( group );
     scene.add( pointgroup );
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
+    var cexaxis = 0.5;
+    var cexlab = 1;
+    var fontaxis = "48px Arial";
+    var fontsymbols = "32px Arial";
+    if(x.options.cexaxis) cexaxis = parseFloat(x.options.cexaxis);
+    if(x.options.cexlab) cexlab = parseFloat(x.options.cexlab);
+    if(x.options.fontaxis) fontaxis = x.options.fontaxis;
+    if(x.options.fontsymbols) fontsymbols = x.options.fontsymbols;
 
     if(_this.renderer.GL)
     {
@@ -169,7 +177,7 @@ Widget.scatter = function()
           context.fillStyle = "#ffffff";
           context.textAlign = 'center';
           context.textBaseline = 'middle';
-          context.font = '32px Arial';
+          context.font = fontsymbols;
           var pch_size = context.measureText(unique_pch[j]);
           var cwidth = Math.max(64, Math.pow(2, Math.ceil(Math.log2(pch_size.width))));
           var cheight = cwidth;
@@ -179,18 +187,18 @@ Widget.scatter = function()
           context.fillStyle = "#ffffff";
           context.textAlign = 'center';
           context.textBaseline = 'middle';
-          context.font = '32px Arial';
+          context.font = fontsymbols;
           context.fillText(unique_pch[j], cwidth/2, cheight/2);
           var sprite = new THREE.Texture(canvas);
           sprite.needsUpdate = true;
 
-          if(x.options.size && !Array.isArray(x.options.size)) scale = 0.3 * x.options.size;
+          if(x.options.size && !Array.isArray(x.options.size)) scale = 0.3 * x.options.size * (cwidth / 64);
           var k = 0;
           for (var i = 0; i < x.data.length / 3; i++)
           {
             if(x.options.pch[i] == unique_pch[j])
             {
-              if(x.options.size && Array.isArray(x.options.size)) scale = 0.3 * x.options.size[i];
+              if(x.options.size && Array.isArray(x.options.size)) scale = 0.3 * x.options.size[i] * (cwidth / 64);
               positions[k * 3 ] = x.data[i * 3];
               positions[k * 3 + 1 ] = x.data[i * 3 + 1];
               positions[k * 3 + 2 ] = x.data[i * 3 + 2];
@@ -264,13 +272,20 @@ Widget.scatter = function()
     function addText(object, string, scale, x, y, z, color)
     {
       var canvas = document.createElement('canvas');
-      var size = 256;
-      canvas.width = size;
-      canvas.height = size;
       var context = canvas.getContext('2d');
+      scale = scale / 4;
       context.fillStyle = "#" + color.getHexString();
       context.textAlign = 'center';
-      context.font = '24px Arial';
+      context.font = fontaxis;
+      var size = Math.max(64, Math.pow(2, Math.ceil(Math.log2(context.measureText(string).width))));
+      canvas.width = size;
+      canvas.height = size;
+      scale = scale * (size / 128);
+      context = canvas.getContext('2d');
+      context.fillStyle = "#" + color.getHexString();
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.font = fontaxis;
       context.fillText(string, size / 2, size / 2);
       var amap = new THREE.Texture(canvas);
       amap.needsUpdate = true;
@@ -297,8 +312,6 @@ Widget.scatter = function()
       axisColor.b = 1 - bgcolor.b;
     }
 
-    var fontSize = Math.max(Math.round(1/4), 8);
-    var fontOffset = Math.min(Math.round(fontSize/4), 8);
     var xAxisGeo = new THREE.Geometry();
     var yAxisGeo = new THREE.Geometry();
     var zAxisGeo = new THREE.Geometry();
@@ -317,9 +330,9 @@ Widget.scatter = function()
     group.add(zAxis);
     if(x.options.axisLabels)
     {
-      addText(group, x.options.axisLabels[0], 0.8, 1.1, 0, 0, axisColor)
-      addText(group, x.options.axisLabels[1], 0.8, 0, 1.1, 0, axisColor)
-      addText(group, x.options.axisLabels[2], 0.8, 0, 0, 1.1, axisColor)
+      addText(group, x.options.axisLabels[0], cexlab, 1.1, 0, 0, axisColor)
+      addText(group, x.options.axisLabels[1], cexlab, 0, 1.1, 0, axisColor)
+      addText(group, x.options.axisLabels[2], cexlab, 0, 0, 1.1, axisColor)
     }
 // Ticks and tick labels
     var tickColor = axisColor;
@@ -338,7 +351,7 @@ Widget.scatter = function()
         else if(axis==2){a1=0; b1=length; c1=ticks[j];a2=0;b2=-length;c2=ticks[j]; a3=-0.08; b3=-0.05; c3=ticks[j];}
         tick.vertices.push(v(a1,b1,c1),v(a2,b2,c2));
         if(ticklabels)
-          addText(group, ticklabels[j], 0.5, a3, b3, c3, tickColor);
+          addText(group, ticklabels[j], cexaxis, a3, b3, c3, tickColor);
         var tl = new THREE.Line(tick, new THREE.LineBasicMaterial({color: tickColor, linewidth: thickness}));
         tl.type=THREE.Lines;
         group.add(tl);

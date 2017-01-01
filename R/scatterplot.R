@@ -71,7 +71,16 @@
 #' can exhibit much better performance.
 #'
 #' Use the optional \code{...} argument to explicitly supply \code{axisLabels}
-#' as a three-element character vector, see the examples below.
+#' as a three-element character vector, see the examples below. A few additional
+#' standard plot options are also supported:
+#' \itemize{
+#'   \item{"cex.lab"}{ font size scale factor for the axis labels}
+#'   \item{"cex.axis"}{ font size scale factor for the axis tick labels }
+#'   \item{"font.axis"}{ CSS font string used for all axis labels}
+#'   \item{"font.symbols"}{ CSS font string used for plot symbols}
+#' }
+#' The default CSS font string is "48px Arial". Note that the format of this
+#' font string differs from, for instance, the usual `par(font.lab)`.
 #'
 #' The returned object includes a \code{points3d} function that can add points
 #' to a plot, returning a new htmlwidget plot object. The function signature
@@ -90,8 +99,8 @@
 #' character values are used literally ('+', 'x', '*', etc.) except for the
 #' following special cases:
 #' \itemize{
-#'   \item{"o"}{Plotted points appear as 3-d spheres.}
-#'   \item{"."}{Points appear as tiny squares and a very efficiently rendered; use this
+#'   \item{"o"}{ Plotted points appear as 3-d spheres.}
+#'   \item{"."}{ Points appear as tiny squares; use this
 #'              \code{pch} style for large numbers of points.}
 #' }
 #' Character strings of more than one character are supported.
