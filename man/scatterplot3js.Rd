@@ -81,9 +81,6 @@ down.}
 \item{pch}{Optional point glyphs, see notes.}
 
 \item{...}{Additional options (see note).}
-
-\item{r}{(Optional) vector of radius values. Can be specified in the fourth
-column of the \code{x} matrix.}
 }
 \value{
 An htmlwidget object that is displayed using the object's show or print method.

@@ -10,8 +10,6 @@
 #' \code{x} is a matrix.
 #' @param z (Optional) vector of z-coordinate values, not required if
 #' \code{x} is a matrix.
-#' @param r (Optional) vector of radius values. Can be specified in the fourth
-#' column of the \code{x} matrix.
 #' @param width The container div width.
 #' @param height The container div height.
 #' @param axis A logical value that when \code{TRUE} indicates that the

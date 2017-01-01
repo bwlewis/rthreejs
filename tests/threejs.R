@@ -1,25 +1,14 @@
-# Check for a specially modified three.js library that supports shiny's
-# renderUI:
-
-d = system.file("htmlwidgets",package="threejs")
-ok = length(grep("var THREE=window.THREE=",
-                 readLines(paste(d, grep("three.min.js", dir(d, recursive=TRUE), value=TRUE), sep="/"), n=5)) > 0)
-if(!ok) stop("The threejs package requires a modified version of the three.min.js JavaScript library. See the package README.md.")
-
 library(threejs)
 # scatterplots
 N <- 100
 i <- sample(3, N, replace=TRUE)
 x <- matrix(rnorm(N * 3), ncol=3)
-lab <- c("small", "bigger", "biggest")
-scatterplot3js(x, color=rainbow(N), labels=lab[i], size=i, renderer="canvas")
+scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
 
 z <- seq(-10, 10, 0.1)
 x <- cos(z)
 y <- sin(z)
-scatterplot3js(x,y,z, color=rainbow(length(z)),
-      labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
-
+scatterplot3js(x,y,z, color=rainbow(length(z)))
 scatterplot3js(x,y,z, color=rainbow(length(z)), axisLabels=c("a","b","c"))
 
 # globes
