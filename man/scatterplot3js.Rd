@@ -7,16 +7,14 @@
 scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   num.ticks = c(6, 6, 6), x.ticklabs = NULL, y.ticklabs = NULL,
   z.ticklabs = NULL, color = "steelblue", size = cex.symbols,
-  labels = NULL, label.margin = "10px", stroke = "black", flip.y = TRUE,
-  grid = TRUE, renderer = c("auto", "canvas"), signif = 8,
-  bg = "#ffffff", cex.symbols = 1, xlim, ylim, zlim, pch, ...)
+  stroke = "black", flip.y = TRUE, grid = TRUE, renderer = c("auto",
+  "canvas"), signif = 8, bg = "#ffffff", cex.symbols = 1, xlim, ylim,
+  zlim, pch, ...)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
 data matrix with columns corresponding to the x,y,z
-coordinate axes. Column labels, if present, are used as axis labels.
-optionally the radius can be added as the fourth column. Points
-with radius equal to 0 will be plotted as dots.}
+coordinate axes. Column labels, if present, are used as axis labels.}
 
 \item{y}{(Optional) vector of y-coordinate values, not required if
 \code{x} is a matrix.}
@@ -53,12 +51,6 @@ vector of sizes of length \code{nrow(x)}. A vector of sizes is only
 supported by the \code{canvas} renderer. The \code{webgl} renderer accepts
 a single size value for all points. Equivalent to \code{cex.symbols}.}
 
-\item{labels}{Either NULL (no labels), or a vector of labels as long as the
-number of data points displayed when the mouse hovers over each point.}
-
-\item{label.margin}{A CSS-style margin string used to display the point
-labels.}
-
 \item{stroke}{A single color stroke value (surrounding each point). Set to
 null to omit stroke (only available in the canvas renderer).}
 
@@ -70,7 +62,7 @@ TRUE produces plots similar to those rendered by the R
 
 \item{renderer}{Select from available plot rendering techniques of
 'auto' or 'canvas'. Set to 'canvas' to explicitly use non-accelerated Canvas
-rendering, otherwise WebGL is used.}
+rendering, otherwise WebGL is used if available.}
 
 \item{signif}{Number of significant digits used to represent point
 coordinates. Larger numbers increase accuracy but slow plot generation
@@ -86,7 +78,7 @@ down.}
 
 \item{zlim}{Optional two-element vector of z-axis limits. Default auto-scales to data.}
 
-\item{pch}{Optional character glyphs, see notes.}
+\item{pch}{Optional point glyphs, see notes.}
 
 \item{...}{Additional options (see note).}
 
@@ -112,9 +104,8 @@ The \code{canvas} renderer is the fallback rendering option when WebGL
 is not available. The default setting \code{auto} automatically chooses
 between
 the two. The two renderers produce slightly different-looking output
-and have different available options (see above). Use WebGL
-renderer for plotting large numbers of points (if available).
-See the examples.
+and have different available options (see above). The WebGL renderer
+can exhibit much better performance.
 
 Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below.
@@ -123,30 +114,47 @@ The returned object includes a \code{points3d} function that can add points
 to a plot, returning a new htmlwidget plot object. The function signature
 is a subset of the full \code{scatterplot3js} function:
 
- \code{points3d (x, y, z, color="steelblue", size=1, labels="")}
+ \code{points3d (x, y, z, color="steelblue", size=1)}
 
 It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
-with optionally specified color, size, and labels. New points are plotted in
+with optionally specified color, size. New points are plotted in
 the same scale as the existing plot. See the examples section below for an
 example.
+
+Use the \code{pch} option to specify points styles in WebGL-rendered plots.
+\code{pch} may either be a single character value that applies to all points,
+or a vector of character values of the same length as \code{x}. All
+character values are used literally ('+', 'x', '*', etc.) except for the
+following special cases:
+\itemize{
+  \item{"o"}{Plotted points appear as 3-d spheres.}
+  \item{"."}{Points appear as tiny squares and a very efficiently rendered; use this
+             \code{pch} style for large numbers of points.}
+}
+Character strings of more than one character are supported--in those cases,
+the first character appears centered on the point coordinates. You can use this
+to label points on the plot as shown in the examples.
 }
 \examples{
-# Gumball machine
+# Gumball machine using the Canvas renderer
 N <- 100
 i <- sample(3, N, replace=TRUE)
 x <- matrix(rnorm(N*3),ncol=3)
 lab <- c("small", "bigger", "biggest")
-scatterplot3js(x, color=rainbow(N), labels=lab[i], size=i, renderer="canvas")
+scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
 
 # Example 1 from the scatterplot3d package (cf.)
 z <- seq(-10, 10, 0.1)
 x <- cos(z)
 y <- sin(z)
-scatterplot3js(x,y,z, color=rainbow(length(z)),
-      labels=sprintf("x=\%.2f, y=\%.2f, z=\%.2f", x, y, z))
+scatterplot3js(x, y, z, color=rainbow(length(z)))
 
 # Same example with explicit axis labels
-scatterplot3js(x,y,z, color=rainbow(length(z)), axisLabels=c("a","b","c"))
+scatterplot3js(x, y, z, color=rainbow(length(z)), axisLabels=c("a", "b", "c"))
+
+# Same example showing multiple point styles with pch
+scatterplot3js(x, y, z, color=rainbow(length(z)),
+               pch=sample(c(".", "o", letters), length(x), replace=TRUE))
 
 # Pretty point cloud example, should run this with WebGL!
 N     <- 20000
@@ -174,7 +182,7 @@ scatterplot3js(M,size=0.25,color=col,bg="black")
 set.seed(1)
 lim <- c(-3,3)
 x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
-a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red", labels="NEW")
+a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red")
 \dontrun{
   # A shiny example
   shiny::runApp(system.file("examples/scatterplot",package="threejs"))

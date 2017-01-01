@@ -150,6 +150,7 @@ Widget.scatter = function()
       if(npoints < x.data.length / 3)
       { // more points to draw
         var unique_pch = [...new Set(x.options.pch)];
+        if(!Array.isArray(x.options.pch)) unique_pch = [...new Set([x.options.pch])];
         for(var j=0; j < unique_pch.length; j++)
         {
           npoints = 0;
@@ -164,14 +165,22 @@ Widget.scatter = function()
           scale = 0.3;
 
           var canvas = document.createElement('canvas');
-          var csz = 64;
-          canvas.width = csz;
-          canvas.height = csz;
           var context = canvas.getContext('2d');
           context.fillStyle = "#ffffff";
           context.textAlign = 'center';
-          context.font = '16px Arial';
-          context.fillText(unique_pch[j], csz/2, csz/2);
+          context.textBaseline = 'middle';
+          context.font = '32px Arial';
+          var pch_size = context.measureText(unique_pch[j]);
+          var cwidth =   Math.max(64, Math.pow(2, Math.ceil(Math.log2(pch_size.width))));
+          var cheight = cwidth;
+          canvas.width = cwidth;
+          canvas.height = cheight;
+          context = canvas.getContext('2d');
+          context.fillStyle = "#ffffff";
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.font = '32px Arial';
+          context.fillText(unique_pch[j], cwidth/2, cheight/2);
           var sprite = new THREE.Texture(canvas);
           sprite.needsUpdate = true;
 

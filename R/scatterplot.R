@@ -6,8 +6,6 @@
 #' @param x Either a vector of x-coordinate values or a  three-column
 #' data matrix with columns corresponding to the x,y,z
 #' coordinate axes. Column labels, if present, are used as axis labels.
-#' optionally the radius can be added as the fourth column. Points
-#' with radius equal to 0 will be plotted as dots.
 #' @param y (Optional) vector of y-coordinate values, not required if
 #' \code{x} is a matrix.
 #' @param z (Optional) vector of z-coordinate values, not required if
@@ -35,10 +33,6 @@
 #' supported by the \code{canvas} renderer. The \code{webgl} renderer accepts
 #' a single size value for all points. Equivalent to \code{cex.symbols}.
 #' @param cex.symbols Equivalent to the \code{size} parameter.
-#' @param labels  Either NULL (no labels), or a vector of labels as long as the
-#' number of data points displayed when the mouse hovers over each point.
-#' @param label.margin A CSS-style margin string used to display the point
-#' labels.
 #' @param flip.y Reverse the direction of the y-axis (the default value of
 #' TRUE produces plots similar to those rendered by the R
 #' \code{scatterplot3d} package).
@@ -47,7 +41,7 @@
 #' null to omit stroke (only available in the canvas renderer).
 #' @param renderer Select from available plot rendering techniques of
 #' 'auto' or 'canvas'. Set to 'canvas' to explicitly use non-accelerated Canvas
-#' rendering, otherwise WebGL is used.
+#' rendering, otherwise WebGL is used if available.
 #' @param signif Number of significant digits used to represent point
 #' coordinates. Larger numbers increase accuracy but slow plot generation
 #' down.
@@ -55,7 +49,7 @@
 #' @param xlim Optional two-element vector of x-axis limits. Default auto-scales to data.
 #' @param ylim Optional two-element vector of y-axis limits. Default auto-scales to data.
 #' @param zlim Optional two-element vector of z-axis limits. Default auto-scales to data.
-#' @param pch Optional character glyphs, see notes.
+#' @param pch Optional point glyphs, see notes.
 #' @param ... Additional options (see note).
 #'
 #' @return
@@ -73,9 +67,8 @@
 #' is not available. The default setting \code{auto} automatically chooses
 #' between
 #' the two. The two renderers produce slightly different-looking output
-#' and have different available options (see above). Use WebGL
-#' renderer for plotting large numbers of points (if available).
-#' See the examples.
+#' and have different available options (see above). The WebGL renderer
+#' can exhibit much better performance.
 #'
 #' Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 #' as a three-element character vector, see the examples below.
@@ -84,33 +77,50 @@
 #' to a plot, returning a new htmlwidget plot object. The function signature
 #' is a subset of the full \code{scatterplot3js} function:
 #'
-#'  \code{points3d (x, y, z, color="steelblue", size=1, labels="")}
+#'  \code{points3d (x, y, z, color="steelblue", size=1)}
 #'
 #' It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
-#' with optionally specified color, size, and labels. New points are plotted in
+#' with optionally specified color, size. New points are plotted in
 #' the same scale as the existing plot. See the examples section below for an
 #' example.
+#'
+#' Use the \code{pch} option to specify points styles in WebGL-rendered plots.
+#' \code{pch} may either be a single character value that applies to all points,
+#' or a vector of character values of the same length as \code{x}. All
+#' character values are used literally ('+', 'x', '*', etc.) except for the
+#' following special cases:
+#' \itemize{
+#'   \item{"o"}{Plotted points appear as 3-d spheres.}
+#'   \item{"."}{Points appear as tiny squares and a very efficiently rendered; use this
+#'              \code{pch} style for large numbers of points.}
+#' }
+#' Character strings of more than one character are supported--in those cases,
+#' the first character appears centered on the point coordinates. You can use this
+#' to label points on the plot as shown in the examples.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
 #'
 #' @examples
-#' # Gumball machine
+#' # Gumball machine using the Canvas renderer
 #' N <- 100
 #' i <- sample(3, N, replace=TRUE)
 #' x <- matrix(rnorm(N*3),ncol=3)
 #' lab <- c("small", "bigger", "biggest")
-#' scatterplot3js(x, color=rainbow(N), labels=lab[i], size=i, renderer="canvas")
+#' scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
 #'
 #' # Example 1 from the scatterplot3d package (cf.)
 #' z <- seq(-10, 10, 0.1)
 #' x <- cos(z)
 #' y <- sin(z)
-#' scatterplot3js(x,y,z, color=rainbow(length(z)),
-#'       labels=sprintf("x=%.2f, y=%.2f, z=%.2f", x, y, z))
+#' scatterplot3js(x, y, z, color=rainbow(length(z)))
 #'
 #' # Same example with explicit axis labels
-#' scatterplot3js(x,y,z, color=rainbow(length(z)), axisLabels=c("a","b","c"))
+#' scatterplot3js(x, y, z, color=rainbow(length(z)), axisLabels=c("a", "b", "c"))
+#'
+#' # Same example showing multiple point styles with pch
+#' scatterplot3js(x, y, z, color=rainbow(length(z)),
+#'                pch=sample(c(".", "o", letters), length(x), replace=TRUE))
 #'
 #' # Pretty point cloud example, should run this with WebGL!
 #' N     <- 20000
@@ -138,7 +148,7 @@
 #' set.seed(1)
 #' lim <- c(-3,3)
 #' x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
-#' a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red", labels="NEW")
+#' a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red")
 #' \dontrun{
 #'   # A shiny example
 #'   shiny::runApp(system.file("examples/scatterplot",package="threejs"))
@@ -158,8 +168,6 @@ scatterplot3js <- function(
   z.ticklabs = NULL,
   color = "steelblue",
   size = cex.symbols,
-  labels = NULL,
-  label.margin = "10px",
   stroke = "black",
   flip.y = TRUE,
   grid = TRUE,
@@ -306,7 +314,7 @@ renderScatterplotThree = function(expr, env = parent.frame(), quoted = FALSE) {
 # Support for adding points to a plot
 points3d_generator = function(data, options, bg, width, height, signif)
 {
-  function(x, y, z, r = NULL, color="steelblue", size=1, labels=NULL, ...)
+  function(x, y, z, r = NULL, color="steelblue", size=1, ...)
   {
     if (!missing(y) && !missing(z)) {
       if(is.matrix(x))
@@ -345,13 +353,6 @@ points3d_generator = function(data, options, bg, width, height, signif)
       local_options$color <- c(options$color, color)
     } else {
       local_options$color <- c(rep(options$color,length.out=n_old), rep(color,length.out=n))
-    }
-    if (is.null(local_options$labels)) local_options$labels <- ""
-    if (is.null(labels)) labels <- ""
-    if (length(local_options$labels) + length(labels) == nrow(data)) {
-      local_options$labels <- c(local_options$labels, labels)
-    } else {
-      local_options$labels <- c(rep(local_options$labels,length.out=n_old), rep(labels,length.out=n))
     }
     options <<- local_options
     # create widget
