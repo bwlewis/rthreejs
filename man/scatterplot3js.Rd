@@ -96,7 +96,9 @@ A 3D scatterplot widget using three.js. Many options
 follow the \code{scatterplot3d} function from the eponymous package.
 }
 \note{
-Points with missing values are omitted.
+Press and hold the left mouse button (or touch or trackpad equivalent) and move
+the mouse to rotate the plot. Press and hold the right mouse button (or touch
+equivalent) to pan. Use the mouse scroll wheel or touch equivalent to zoom.
 
 Use the \code{renderer} option to manually select from the available
 rendering options.
@@ -132,6 +134,8 @@ following special cases:
              \code{pch} style for large numbers of points.}
 }
 Character strings of more than one character are supported.
+
+Note that points with missing values are omitted from the plot.
 }
 \examples{
 # Gumball machine using the Canvas renderer

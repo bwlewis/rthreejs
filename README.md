@@ -23,17 +23,16 @@ This project is based on the new htmlwidgets package. See
 https://github.com/ramnathv/htmlwidgets for details and links to amazingly cool
 visualization widgets for R.
 
-## What's new
+## What's new in version 0.3.0 (December, 2016)
 
-Create force directed graphs the `graphjs` function.
+The `scatterplot3js` function was extensively re-written. The new `pch` option
+supports many point styles, and can also be used to label points as shown in
+the examples, see `?scatterplot3js`. Interactive rotation and zooming are
+greatly improved and panning is now supported: press and hold the right mouse
+button (or touch equivalent) and move the mouse to pan.  Mouse-over (hover)
+labels are no longer supported, but see the new label capabilities shown in the
+examples.
 
-The `scatterplot3js` function now supports `scatterplot3d`-like `xlim`, `ylim`
-and `zlim` options.
-
-The `globejs` function can draw arcs and bars.
-
-We include mouse-over labels for labeling scatterplot3js points, thanks to
-contributions from  Alexey Stukalov, https://github.com/alyst, thanks Alexey!
 
 
 ## NOTE!

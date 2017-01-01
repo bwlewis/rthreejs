@@ -59,7 +59,9 @@
 #' plot similar to \code{scatterplot3d}. See the note below and examples for details.
 #'
 #' @note
-#' Points with missing values are omitted.
+#' Press and hold the left mouse button (or touch or trackpad equivalent) and move
+#' the mouse to rotate the plot. Press and hold the right mouse button (or touch
+#' equivalent) to pan. Use the mouse scroll wheel or touch equivalent to zoom.
 #'
 #' Use the \code{renderer} option to manually select from the available
 #' rendering options.
@@ -95,6 +97,8 @@
 #'              \code{pch} style for large numbers of points.}
 #' }
 #' Character strings of more than one character are supported.
+#'
+#' Note that points with missing values are omitted from the plot.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
