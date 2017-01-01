@@ -311,11 +311,17 @@ Widget.scatter = function()
       axisColor.g = 1 - bgcolor.g;
       axisColor.b = 1 - bgcolor.b;
     }
+    function v(x,y,z){ return new THREE.Vector3(x,y,z); }
+    var tickColor = axisColor;
+    tickColor.r = Math.min(tickColor.r + 0.2, 1);
+    tickColor.g = Math.min(tickColor.g + 0.2, 1);
+    tickColor.b = Math.min(tickColor.b + 0.2, 1);
 
+if(x.options.axis)
+{
     var xAxisGeo = new THREE.Geometry();
     var yAxisGeo = new THREE.Geometry();
     var zAxisGeo = new THREE.Geometry();
-    function v(x,y,z){ return new THREE.Vector3(x,y,z); }
     xAxisGeo.vertices.push(v(0, 0, 0), v(1, 0, 0));
     yAxisGeo.vertices.push(v(0, 0, 0), v(0, 1, 0));
     zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, 1));
@@ -335,10 +341,6 @@ Widget.scatter = function()
       addText(group, x.options.axisLabels[2], cexlab, 0, 0, 1.1, axisColor)
     }
 // Ticks and tick labels
-    var tickColor = axisColor;
-    tickColor.r = Math.min(tickColor.r + 0.2, 1);
-    tickColor.g = Math.min(tickColor.g + 0.2, 1);
-    tickColor.b = Math.min(tickColor.b + 0.2, 1);
     function tick(length, thickness, axis, ticks, ticklabels)
     { 
       for(var j=0; j<ticks.length; j++)
@@ -360,6 +362,8 @@ Widget.scatter = function()
     if(x.options.xtick) tick(0.005,3,0,x.options.xtick,x.options.xticklab);
     if(x.options.ytick) tick(0.005,3,1,x.options.ytick,x.options.yticklab);
     if(x.options.ztick) tick(0.005,3,2,x.options.ztick,x.options.zticklab);
+}
+
 // Grid
     if(x.options.grid && x.options.xtick && x.options.ztick && x.options.xtick.length==x.options.ztick.length)
     { 

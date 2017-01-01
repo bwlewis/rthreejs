@@ -265,7 +265,7 @@ scatterplot3js <- function(
   if (!is.null(num.ticks))
   {
     if (length(num.ticks) != 3) stop("num.ticks must have length 3")
-    num.ticks = num.ticks[c(1,3,2)]
+    num.ticks = pmax(1, num.ticks[c(1,3,2)])
 
     t1 = seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
     p1 = (t1 - mn[1]) / (mx[1] - mn[1])
@@ -275,13 +275,13 @@ scatterplot3js <- function(
     p3 = (t3 - mn[3]) / (mx[3] - mn[3])
     if(flip.y) t3 = t3[length(t3):1]
 
-    pfmt = function(x,d=2)
+    pfmt = function(x, d=2)
     {
-      ans = sprintf("%.2f",x)
+      ans = sprintf("%.2f", x)
       i = (abs(x) < 0.01 && x != 0)
       if(any(i))
       {
-        ans[i] = sprintf("%.2e",x)
+        ans[i] = sprintf("%.2e", x)
       }
       ans
     }
