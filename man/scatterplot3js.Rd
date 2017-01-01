@@ -155,32 +155,33 @@ scatterplot3js(x, y, z, color=rainbow(length(z)),
                pch=sample(c(".", "o", letters), length(x), replace=TRUE))
 
 # Pretty point cloud example, should run this with WebGL!
+# Note the use of pch="." for the most efficient rendering.
 N     <- 20000
-theta <- runif(N)*2*pi
-phi   <- runif(N)*2*pi
+theta <- runif(N) * 2 * pi
+phi   <- runif(N) * 2 * pi
 R     <- 1.5
 r     <- 1.0
-x <- (R + r*cos(theta))*cos(phi)
-y <- (R + r*cos(theta))*sin(phi)
-z <- r*sin(theta)
+x <- (R + r * cos(theta)) * cos(phi)
+y <- (R + r * cos(theta)) * sin(phi)
+z <- r * sin(theta)
 d <- 6
 h <- 6
-t <- 2*runif(N) - 1
-w <- t^2*sqrt(1-t^2)
-x1 <- d*cos(theta)*sin(phi)*w
-y1 <- d*sin(theta)*sin(phi)*w
+t <- 2 * runif(N) - 1
+w <- t^2 * sqrt(1 - t^2)
+x1 <- d * cos(theta) * sin(phi) * w
+y1 <- d * sin(theta) * sin(phi) * w
 i <- order(phi)
 j <- order(t)
 col <- c( rainbow(length(phi))[order(i)],
-         rainbow(length(t),start=0, end=2/6)[order(j)])
-M <- cbind(x=c(x,x1),y=c(y,y1),z=c(z,h*t))
-scatterplot3js(M,size=0.25,color=col,bg="black")
+         rainbow(length(t), start=0, end=2/6)[order(j)])
+M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
+scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 
 # Adding points to a plot with points3d
 set.seed(1)
 lim <- c(-3, 3)
 x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
-a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red")
+a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red")
 
 # Adding labels using 'pch'
 set.seed(1)
