@@ -111,12 +111,15 @@
 #' The three.js project \url{http://threejs.org}.
 #'
 #' @examples
-#' # Gumball machine using the Canvas renderer
+#' # Explicitly using the Canvas renderer
 #' N <- 100
 #' i <- sample(3, N, replace=TRUE)
 #' x <- matrix(rnorm(N*3),ncol=3)
 #' lab <- c("small", "bigger", "biggest")
 #' scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
+#'
+#' # Same example, but with WebGL spheres (if available)
+#' scatterplot3js(x, color=rainbow(N), size=i)
 #'
 #' # Example 1 from the scatterplot3d package (cf.)
 #' z <- seq(-10, 10, 0.1)
