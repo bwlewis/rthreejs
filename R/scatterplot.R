@@ -81,7 +81,7 @@
 #'
 #' It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
 #' with optionally specified color, size. New points are plotted in
-#' the same scale as the existing plot. See the examples section below for an
+#' the same scale as the existing plot. See below for an
 #' example.
 #'
 #' Use the \code{pch} option to specify points styles in WebGL-rendered plots.
@@ -94,9 +94,7 @@
 #'   \item{"."}{Points appear as tiny squares and a very efficiently rendered; use this
 #'              \code{pch} style for large numbers of points.}
 #' }
-#' Character strings of more than one character are supported--in those cases,
-#' the first character appears centered on the point coordinates. You can use this
-#' to label points on the plot as shown in the examples.
+#' Character strings of more than one character are supported.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -146,9 +144,17 @@
 #'
 #' # Adding points to a plot with points3d
 #' set.seed(1)
-#' lim <- c(-3,3)
+#' lim <- c(-3, 3)
 #' x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
 #' a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red")
+#'
+#' # Adding labels using 'pch'
+#' set.seed(1)
+#' x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
+#' a <- scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim)
+#' b <- a$points3d(x + 0.3, y + 0.3, z, color="red", pch=paste("point", 1:5))
+#' print(b)
+#'
 #' \dontrun{
 #'   # A shiny example
 #'   shiny::runApp(system.file("examples/scatterplot",package="threejs"))
@@ -314,7 +320,7 @@ renderScatterplotThree = function(expr, env = parent.frame(), quoted = FALSE) {
 # Support for adding points to a plot
 points3d_generator = function(data, options, bg, width, height, signif)
 {
-  function(x, y, z, r = NULL, color="steelblue", size=1, ...)
+  function(x, y, z, r = NULL, color="steelblue", size=1, pch="o", ...)
   {
     if (!missing(y) && !missing(z)) {
       if(is.matrix(x))
@@ -337,24 +343,26 @@ points3d_generator = function(data, options, bg, width, height, signif)
 
     # Combine new data with old data
     n_old <- nrow(data)
-    data <<- rbind(data, x)
+    data <- rbind(data, x)
     local_options <- options
-    local_options$color = c(options$color, color)
-    # convert matrix to a JSON array required by scatterplotThree.js and strip
-    # them (required by s3d.js)
     x <- as.vector(t(signif(data,signif)))
     # size, color, and label settings for old and new points
     if (length(options$size) + length(size) == nrow(data)) {
       local_options$size <- c(options$size, size)
     } else {
-      local_options$size <- c(rep(options$size,length.out = n_old), rep(size,length.out=n))
+      local_options$size <- c(rep(options$size, length.out = n_old), rep(size, length.out=n))
     }
     if (length(options$color) + length(color) == nrow(data)) {
       local_options$color <- c(options$color, color)
     } else {
-      local_options$color <- c(rep(options$color,length.out=n_old), rep(color,length.out=n))
+      local_options$color <- c(rep(options$color, length.out=n_old), rep(color, length.out=n))
     }
-    options <<- local_options
+    if (length(options$pch) + length(pch) == nrow(data)) {
+      local_options$pch <- c(options$pch, pch)
+    } else {
+      local_options$pch <- c(rep(options$pch, length.out=n_old), rep(pch, length.out=n))
+    }
+    options <- local_options
     # create widget
     ans <- htmlwidgets::createWidget(
       name = "scatterplotThree",

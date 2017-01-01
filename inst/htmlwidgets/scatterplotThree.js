@@ -171,7 +171,7 @@ Widget.scatter = function()
           context.textBaseline = 'middle';
           context.font = '32px Arial';
           var pch_size = context.measureText(unique_pch[j]);
-          var cwidth =   Math.max(64, Math.pow(2, Math.ceil(Math.log2(pch_size.width))));
+          var cwidth = Math.max(64, Math.pow(2, Math.ceil(Math.log2(pch_size.width))));
           var cheight = cwidth;
           canvas.width = cwidth;
           canvas.height = cheight;
@@ -190,6 +190,7 @@ Widget.scatter = function()
           {
             if(x.options.pch[i] == unique_pch[j])
             {
+              if(x.options.size && Array.isArray(x.options.size)) scale = 0.3 * x.options.size[i];
               positions[k * 3 ] = x.data[i * 3];
               positions[k * 3 + 1 ] = x.data[i * 3 + 1];
               positions[k * 3 + 2 ] = x.data[i * 3 + 2];

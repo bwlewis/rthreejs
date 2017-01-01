@@ -118,7 +118,7 @@ is a subset of the full \code{scatterplot3js} function:
 
 It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
 with optionally specified color, size. New points are plotted in
-the same scale as the existing plot. See the examples section below for an
+the same scale as the existing plot. See below for an
 example.
 
 Use the \code{pch} option to specify points styles in WebGL-rendered plots.
@@ -131,9 +131,7 @@ following special cases:
   \item{"."}{Points appear as tiny squares and a very efficiently rendered; use this
              \code{pch} style for large numbers of points.}
 }
-Character strings of more than one character are supported--in those cases,
-the first character appears centered on the point coordinates. You can use this
-to label points on the plot as shown in the examples.
+Character strings of more than one character are supported.
 }
 \examples{
 # Gumball machine using the Canvas renderer
@@ -180,9 +178,17 @@ scatterplot3js(M,size=0.25,color=col,bg="black")
 
 # Adding points to a plot with points3d
 set.seed(1)
-lim <- c(-3,3)
+lim <- c(-3, 3)
 x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
 a <- x$points3d(rnorm(3),rnorm(3),rnorm(3)/2, color="red")
+
+# Adding labels using 'pch'
+set.seed(1)
+x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
+a <- scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim)
+b <- a$points3d(x + 0.3, y + 0.3, z, color="red", pch=paste("point", 1:5))
+print(b)
+
 \dontrun{
   # A shiny example
   shiny::runApp(system.file("examples/scatterplot",package="threejs"))
