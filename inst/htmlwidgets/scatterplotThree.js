@@ -382,6 +382,26 @@ if(x.options.axis)
       }
     }
 
+// Lines XXX FIXME switch to a buffered geometry for performance
+// (however, loose the individual line width)
+   if(x.options.from)
+   {
+      for(var j=0; j < x.options.from.length; j++)
+      {
+        var gridline = new THREE.Geometry();
+        gridline.vertices.push(
+          v(x.data[3 * x.options.from[j]],
+            x.data[3 * x.options.from[j] + 1],
+            x.data[3 * x.options.from[j] + 2]),
+          v(x.data[3 * x.options.to[j]],
+            x.data[3 * x.options.to[j] + 1],
+            x.data[3 * x.options.to[j] + 2]));
+        var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j]}));
+        gl.type = THREE.Lines;
+        group.add(gl);
+      }
+   }
+
     _this.idle = false;
     render();
   }

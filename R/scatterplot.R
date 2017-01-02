@@ -292,9 +292,28 @@ scatterplot3js <- function(
     if(!is.null(x.ticklabs)) options$xticklab = x.ticklabs
     if(!is.null(y.ticklabs)) options$zticklab = y.ticklabs
     if(!is.null(z.ticklabs)) options$yticklab = z.ticklabs
-    options$xtick = p1
-    options$ytick = p2
-    options$ztick = p3
+    options$xtick <- p1
+    options$ytick <- p2
+    options$ztick <- p3
+  }
+
+  # lines
+  if("from" %in% names(options))
+  {
+    if(is.matrix(options$from) && ncol(options$from) ==2)
+    {
+      options$to = options$from[, 2]
+      options$from = options$from[, 1]
+    }
+    nl <- length(options$from)
+    if(!("to" %in% names(options))) stop("both from and to must be specified")
+    options$from <- as.integer(options$from - 1)
+    options$to <- as.integer(options$to - 1)
+    if(nl != length(options$to)) stop("from and to must be the same length")
+    if(!("lwd" %in% names(options))) options$lwd <- rep(1L, nl)
+    if(!("lcol" %in% names(options))) options$lcol <- rep("black", nl)
+    if(length(options$lwd) != length(options$from)) options$lwd <- rep_len(options$lwd, nl)
+    if(length(options$lcol) != length(options$from)) options$lcol <- rep_len(options$lcol, nl)
   }
 
   # create widget
