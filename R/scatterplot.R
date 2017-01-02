@@ -310,9 +310,8 @@ scatterplot3js <- function(
     options$from <- as.integer(options$from - 1)
     options$to <- as.integer(options$to - 1)
     if(nl != length(options$to)) stop("from and to must be the same length")
-    if(!("lwd" %in% names(options))) options$lwd <- rep(1L, nl)
+    if(!("lwd" %in% names(options))) options$lwd <- 1L
     if(!("lcol" %in% names(options))) options$lcol <- rep("black", nl)
-    if(length(options$lwd) != length(options$from)) options$lwd <- rep_len(options$lwd, nl)
     if(length(options$lcol) != length(options$from)) options$lcol <- rep_len(options$lcol, nl)
   }
 

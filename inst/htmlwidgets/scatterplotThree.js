@@ -167,8 +167,8 @@ Widget.scatter = function()
             if(x.options.pch[i] == unique_pch[j]) npoints++;
           }
           var geometry = new THREE.BufferGeometry();
-          var positions = new Float32Array( npoints * 3 ); // need a typed array, forces a data copy
-          var colors = new Float32Array( npoints * 3 );
+          var positions = new Float32Array(npoints * 3);
+          var colors = new Float32Array(npoints * 3);
           var col = new THREE.Color("steelblue");
           scale = 0.3;
 
@@ -253,18 +253,12 @@ Widget.scatter = function()
         }
         var material = new THREE.SpriteCanvasMaterial( {
             color: col, program: program , opacity:0.9} );
-        var particle = new THREE.Sprite( material );
+        var particle = new THREE.Sprite(material);
         particle.position.x = x.data[i * 3];
         particle.position.y = x.data[i* 3 + 1];
         particle.position.z = x.data[i * 3 + 2];
         particle.scale.x = particle.scale.y = scale;
-        // Label points.
-        if(x.options.labels)
-        {
-          if(Array.isArray(x.options.labels)) particle.name = x.options.labels[i];
-          else particle.name = x.options.labels;
-        }
-        pointgroup.add( particle );
+        pointgroup.add(particle);
       }
     }
 
@@ -292,7 +286,6 @@ Widget.scatter = function()
       var mat = new THREE.SpriteMaterial({
         map: amap,
         transparent: true,
-//        useScreenCoordinates: false,
         color: 0xffffff });
       sp = new THREE.Sprite(mat);
       sp.scale.set( scale, scale, scale );
@@ -317,52 +310,52 @@ Widget.scatter = function()
     tickColor.g = Math.min(tickColor.g + 0.2, 1);
     tickColor.b = Math.min(tickColor.b + 0.2, 1);
 
-if(x.options.axis)
-{
-    var xAxisGeo = new THREE.Geometry();
-    var yAxisGeo = new THREE.Geometry();
-    var zAxisGeo = new THREE.Geometry();
-    xAxisGeo.vertices.push(v(0, 0, 0), v(1, 0, 0));
-    yAxisGeo.vertices.push(v(0, 0, 0), v(0, 1, 0));
-    zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, 1));
-    var xAxis = new THREE.Line(xAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
-    var yAxis = new THREE.Line(yAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
-    var zAxis = new THREE.Line(zAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
-    xAxis.type = THREE.Lines;
-    yAxis.type = THREE.Lines;
-    zAxis.type = THREE.Lines;
-    group.add(xAxis);
-    group.add(yAxis);
-    group.add(zAxis);
-    if(x.options.axisLabels)
+    if(x.options.axis)
     {
-      addText(group, x.options.axisLabels[0], cexlab, 1.1, 0, 0, axisColor)
-      addText(group, x.options.axisLabels[1], cexlab, 0, 1.1, 0, axisColor)
-      addText(group, x.options.axisLabels[2], cexlab, 0, 0, 1.1, axisColor)
-    }
-// Ticks and tick labels
-    function tick(length, thickness, axis, ticks, ticklabels)
-    { 
-      for(var j=0; j<ticks.length; j++)
+      var xAxisGeo = new THREE.Geometry();
+      var yAxisGeo = new THREE.Geometry();
+      var zAxisGeo = new THREE.Geometry();
+      xAxisGeo.vertices.push(v(0, 0, 0), v(1, 0, 0));
+      yAxisGeo.vertices.push(v(0, 0, 0), v(0, 1, 0));
+      zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, 1));
+      var xAxis = new THREE.Line(xAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
+      var yAxis = new THREE.Line(yAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
+      var zAxis = new THREE.Line(zAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
+      xAxis.type = THREE.Lines;
+      yAxis.type = THREE.Lines;
+      zAxis.type = THREE.Lines;
+      group.add(xAxis);
+      group.add(yAxis);
+      group.add(zAxis);
+      if(x.options.axisLabels)
       {
-        var tick = new THREE.Geometry();
-        var a1 = ticks[j]; var a2 = ticks[j]; var a3=ticks[j];
-        var b1 = length; var b2 = -length; var b3=-0.05;
-        var c1 = 0; var c2 = 0; var c3=-0.08;
-        if(axis==1){a1=length; b1=ticks[j]; c1=0; a2=-length; b2=ticks[j]; c2=0; a3=0.08; b3=ticks[j]; c3=-0.05;}
-        else if(axis==2){a1=0; b1=length; c1=ticks[j];a2=0;b2=-length;c2=ticks[j]; a3=-0.08; b3=-0.05; c3=ticks[j];}
-        tick.vertices.push(v(a1,b1,c1),v(a2,b2,c2));
-        if(ticklabels)
-          addText(group, ticklabels[j], cexaxis, a3, b3, c3, tickColor);
-        var tl = new THREE.Line(tick, new THREE.LineBasicMaterial({color: tickColor, linewidth: thickness}));
-        tl.type=THREE.Lines;
-        group.add(tl);
+        addText(group, x.options.axisLabels[0], cexlab, 1.1, 0, 0, axisColor)
+        addText(group, x.options.axisLabels[1], cexlab, 0, 1.1, 0, axisColor)
+        addText(group, x.options.axisLabels[2], cexlab, 0, 0, 1.1, axisColor)
       }
+// Ticks and tick labels
+      function tick(length, thickness, axis, ticks, ticklabels)
+      { 
+        for(var j=0; j<ticks.length; j++)
+        {
+          var tick = new THREE.Geometry();
+          var a1 = ticks[j]; var a2 = ticks[j]; var a3=ticks[j];
+          var b1 = length; var b2 = -length; var b3=-0.05;
+          var c1 = 0; var c2 = 0; var c3=-0.08;
+          if(axis==1){a1=length; b1=ticks[j]; c1=0; a2=-length; b2=ticks[j]; c2=0; a3=0.08; b3=ticks[j]; c3=-0.05;}
+          else if(axis==2){a1=0; b1=length; c1=ticks[j];a2=0;b2=-length;c2=ticks[j]; a3=-0.08; b3=-0.05; c3=ticks[j];}
+          tick.vertices.push(v(a1,b1,c1),v(a2,b2,c2));
+          if(ticklabels)
+            addText(group, ticklabels[j], cexaxis, a3, b3, c3, tickColor);
+          var tl = new THREE.Line(tick, new THREE.LineBasicMaterial({color: tickColor, linewidth: thickness}));
+          tl.type=THREE.Lines;
+          group.add(tl);
+        }
+      }
+      if(x.options.xtick) tick(0.005,3,0,x.options.xtick,x.options.xticklab);
+      if(x.options.ytick) tick(0.005,3,1,x.options.ytick,x.options.yticklab);
+      if(x.options.ztick) tick(0.005,3,2,x.options.ztick,x.options.zticklab);
     }
-    if(x.options.xtick) tick(0.005,3,0,x.options.xtick,x.options.xticklab);
-    if(x.options.ytick) tick(0.005,3,1,x.options.ytick,x.options.yticklab);
-    if(x.options.ztick) tick(0.005,3,2,x.options.ztick,x.options.zticklab);
-}
 
 // Grid
     if(x.options.grid && x.options.xtick && x.options.ztick && x.options.xtick.length==x.options.ztick.length)
@@ -382,25 +375,60 @@ if(x.options.axis)
       }
     }
 
-// Lines XXX FIXME switch to a buffered geometry for performance
-// (however, loose the individual line width)
+// Lines
+/* Custom line widths are not supported by buffered geometry, see
+ * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
+ * If lwd is an array, then need to use non-buffered geometry (slow).
+ */
    if(x.options.from)
    {
-      for(var j=0; j < x.options.from.length; j++)
+      if(Array.isArray(x.options.lwd))
       {
-        var gridline = new THREE.Geometry();
-        gridline.vertices.push(
-          v(x.data[3 * x.options.from[j]],
-            x.data[3 * x.options.from[j] + 1],
-            x.data[3 * x.options.from[j] + 2]),
-          v(x.data[3 * x.options.to[j]],
-            x.data[3 * x.options.to[j] + 1],
-            x.data[3 * x.options.to[j] + 2]));
-        var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j]}));
-        gl.type = THREE.Lines;
-        group.add(gl);
+        for(var j=0; j < x.options.from.length; j++)
+        {
+          var gridline = new THREE.Geometry();
+          gridline.vertices.push(
+            v(x.data[3 * x.options.from[j]],
+              x.data[3 * x.options.from[j] + 1],
+              x.data[3 * x.options.from[j] + 2]),
+            v(x.data[3 * x.options.to[j]],
+              x.data[3 * x.options.to[j] + 1],
+              x.data[3 * x.options.to[j] + 2]));
+          var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j]}));
+          group.add(gl);
+        }
+      } else // use buffered geometry
+      {
+        var segments = x.options.from.length;
+        var geometry = new THREE.BufferGeometry();
+        var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: x.options.lwd});
+        var positions = new Float32Array(segments * 6);
+        var colors = new Float32Array(segments * 6);
+        for(var j=0; j < segments; j++)
+        {
+          var c = new THREE.Color(x.options.lcol[j]);
+          var from = x.options.from[j];
+          var to = x.options.to[j];
+          positions[j * 6] = x.data[from * 3];
+          positions[j * 6 + 1] = x.data[from * 3 + 1];
+          positions[j * 6 + 2] = x.data[from * 3 + 2];
+          positions[j * 6 + 3] = x.data[to * 3];
+          positions[j * 6 + 4] = x.data[to * 3 + 1];
+          positions[j * 6 + 5] = x.data[to * 3 + 2];
+          colors[j * 6] = c.r;
+          colors[j * 6 + 1] = c.g;
+          colors[j * 6 + 2] = c.b;
+          colors[j * 6 + 3] = c.r;
+          colors[j * 6 + 4] = c.g;
+          colors[j * 6 + 5] = c.b;
+        }
+        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.computeBoundingSphere();
+        var lines = new THREE.LineSegments(geometry, material);
+        pointgroup.add(lines);
       }
-   }
+    }
 
     _this.idle = false;
     render();
