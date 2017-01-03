@@ -228,6 +228,7 @@ HOMER=this;
           context = canvas.getContext('2d');
           context.fillStyle = "#ffffff";
           context.textAlign = 'center';
+          context.fillText(unique_pch[j], cwidth / 2, cwidth / 2);
           var sprite = new THREE.Texture(canvas);
           sprite.needsUpdate = true;
 
