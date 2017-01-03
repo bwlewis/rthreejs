@@ -30,6 +30,7 @@ HTMLWidgets.widget(
  * init(el, width, height)
  * create_plot(options)
  * animate()
+ * update()
  */
 var Widget = Widget || {};
 Widget.scatter = function()
@@ -38,15 +39,16 @@ Widget.scatter = function()
   this.show_title = true;
   this.show_labels = false;
   this.idle = true;
+  this.frame = 1;
 
   var camera, controls, scene, scene2; // two scenes for fine control of displayed z order
   var _this = this;
+HOMER=this;
 
   _this.init = function (el, width, height)
   {
     if(Detector.webgl)
     {
-//      _this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
       _this.renderer = new THREE.WebGLRenderer({alpha: true});
       _this.renderer.GL = true;
     } else {
@@ -97,17 +99,16 @@ Widget.scatter = function()
       _this.el.appendChild(_this.renderer.domElement);
     }
     var group = new THREE.Object3D();      // contains non-point plot elements (axes, etc.)
-    var pointgroup = new THREE.Object3D(); // contains plot points and lines
-HOMER=pointgroup;
-// HOMER.children[0].geometry.attributes.position.array
-// HOMER.children[1].geometry.attributes.position.array
+    _this.pointgroup = new THREE.Object3D(); // contains plot points and lines
+// .children[0].geometry.attributes.position.array
+// .children[1].geometry.attributes.position.array
 // ... (up to length of unique pch)
 // last one is the lines
-// HOMER.children[0].geometry.attributes.position.needsUpdate = true
+// .children[0].geometry.attributes.position.needsUpdate = true
     group.name = "group";
-    pointgroup.name = "pointgroup";
+    _this.pointgroup.name = "pointgroup";
     scene2.add(group);
-    scene.add(pointgroup);
+    scene.add(_this.pointgroup);
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
     var cexaxis = 0.5;
     var cexlab = 1;
@@ -161,7 +162,7 @@ HOMER=pointgroup;
           // ADD
           var mesh = new THREE.Mesh(sphereGeo, new THREE.MeshLambertMaterial({color : col}));
              mesh.index = i;
-             pointgroup.add(mesh);
+             _this.pointgroup.add(mesh);
         }
       }
       if(npoints < x.data.length / 3)
@@ -265,7 +266,7 @@ HOMER=pointgroup;
             material = new THREE.PointsMaterial({size: scale, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
           }
           var particleSystem = new THREE.Points(geometry, material);
-          pointgroup.add(particleSystem);
+          _this.pointgroup.add(particleSystem);
         }
       }
     } else { // canvas (not WebGL)
@@ -299,7 +300,7 @@ HOMER=pointgroup;
         particle.position.y = x.data[i* 3 + 1];
         particle.position.z = x.data[i * 3 + 2];
         particle.scale.x = particle.scale.y = scale;
-        pointgroup.add(particle);
+        _this.pointgroup.add(particle);
       }
     }
 
@@ -421,10 +422,11 @@ HOMER=pointgroup;
  * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
  * If lwd is an array then need use non-buffered geometry (slow), otherwise buffer.
  */
-   if(x.options.from)
+   if(x.options.from && _this.renderer.GL)
    {
       if(Array.isArray(x.options.lwd))
       {
+        if(!x.options.lcol) x.options.lcol = "#aaaaaa";
         for(var j=0; j < x.options.from.length; j++)
         {
           var gridline = new THREE.Geometry();
@@ -435,7 +437,10 @@ HOMER=pointgroup;
             v(x.data[3 * x.options.to[j]],
               x.data[3 * x.options.to[j] + 1],
               x.data[3 * x.options.to[j] + 2]));
-          var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j]}));
+          if(Array.isArray(x.options.lcol))
+            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j]}));
+          else
+            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol, linewidth: x.options.lwd[j]}));
           group.add(gl);
         }
       } else // use buffered geometry
@@ -447,27 +452,46 @@ HOMER=pointgroup;
         var colors = new Float32Array(segments * 6);
         for(var j=0; j < segments; j++)
         {
-          var c = new THREE.Color(x.options.lcol[j]);
           var from = x.options.from[j];
           var to = x.options.to[j];
+          var c1, c2;
+          if(x.options.lcol)
+          {
+            if(Array.isArray(x.options.lcol))
+              c1 = new THREE.Color(x.options.lcol[j]);
+            else
+              c1 = new THREE.Color(x.options.lcol);
+            c2 = c1;
+          } else
+          {
+            if(Array.isArray(x.options.color))
+            {
+              c1 = new THREE.Color(x.options.color[from]);
+              c2 = new THREE.Color(x.options.color[to]);
+            } else
+            {
+              c1 = new THREE.Color(x.options.color);
+              c2 = c1;
+            }
+          }
           positions[j * 6] = x.data[from * 3];
           positions[j * 6 + 1] = x.data[from * 3 + 1];
           positions[j * 6 + 2] = x.data[from * 3 + 2];
           positions[j * 6 + 3] = x.data[to * 3];
           positions[j * 6 + 4] = x.data[to * 3 + 1];
           positions[j * 6 + 5] = x.data[to * 3 + 2];
-          colors[j * 6] = c.r;
-          colors[j * 6 + 1] = c.g;
-          colors[j * 6 + 2] = c.b;
-          colors[j * 6 + 3] = c.r;
-          colors[j * 6 + 4] = c.g;
-          colors[j * 6 + 5] = c.b;
+          colors[j * 6] = c1.r;
+          colors[j * 6 + 1] = c1.g;
+          colors[j * 6 + 2] = c1.b;
+          colors[j * 6 + 3] = c2.r;
+          colors[j * 6 + 4] = c2.g;
+          colors[j * 6 + 5] = c2.b;
         }
         geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.computeBoundingSphere();
         var lines = new THREE.LineSegments(geometry, material);
-        pointgroup.add(lines);
+        _this.pointgroup.add(lines);
       }
     }
 
@@ -475,16 +499,34 @@ HOMER=pointgroup;
     render();
   }
 
+  _this.update = function() // XXX TEST
+  {
+    if(_this.frame > 0) _this.frame = 0;
+    if(_this.frame > 0)
+    {_this.frame = _this.frame + 1;
+      for(var j = 0; j < _this.pointgroup.children[0].geometry.attributes.position.array.length; j++)
+      _this.pointgroup.children[0].geometry.attributes.position.array[j] =  _this.pointgroup.children[0].geometry.attributes.position.array[j]  + 0.0001;
+      _this.pointgroup.children[0].geometry.attributes.position.needsUpdate = true;
+    }
+
+// .children[0].geometry.attributes.position.array
+// .children[1].geometry.attributes.position.array
+// ... (up to length of unique pch)
+// last one is the lines
+// .children[0].geometry.attributes.position.needsUpdate = true
+  }
+
   _this.animate = function ()
   {
     controls.update();
     render();
+    _this.update();
     if(! _this.idle)  requestAnimationFrame(_this.animate); // (hogs CPU)
   };
 
   function render()
   {
-    if(controls.idle) _this.idle = true; // Conserve CPU by terminating render loop when not needed
+    if(controls.idle && _this.frame < 1) _this.idle = true; // Conserve CPU by terminating render loop when not needed
     // render scenes
     _this.renderer.clear();
     _this.renderer.render(scene2, camera); // non-point elements

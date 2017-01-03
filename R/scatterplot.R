@@ -256,6 +256,13 @@ scatterplot3js <- function(
 
   if(flip.y) x[, 3] = 1 - x[, 3]
 
+  if("center" %in% names(options) && options$center) # not yet documented, useful for graph
+  {
+    x <- x - 0.5
+    options$axis <- FALSE
+    options$grid <- FALSE
+  }
+
   mdata <- x # stash for return result
 
   # convert matrix to a JSON array required by scatterplotThree.js and strip
@@ -311,8 +318,6 @@ scatterplot3js <- function(
     options$to <- as.integer(options$to - 1)
     if(nl != length(options$to)) stop("from and to must be the same length")
     if(!("lwd" %in% names(options))) options$lwd <- 1L
-    if(!("lcol" %in% names(options))) options$lcol <- rep("black", nl)
-    if(length(options$lcol) != length(options$from)) options$lcol <- rep_len(options$lcol, nl)
   }
 
   # create widget
