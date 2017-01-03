@@ -29,7 +29,6 @@ HTMLWidgets.widget(
 /* Define a scatter object with methods
  * init(el, width, height)
  * create_plot(options)
- * reset()
  * animate()
  */
 var Widget = Widget || {};
@@ -40,13 +39,14 @@ Widget.scatter = function()
   this.show_labels = false;
   this.idle = true;
 
-  var camera, controls, scene;
+  var camera, controls, scene, scene2; // two scenes for fine control of displayed z order
   var _this = this;
 
   _this.init = function (el, width, height)
   {
     if(Detector.webgl)
     {
+//      _this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
       _this.renderer = new THREE.WebGLRenderer({alpha: true});
       _this.renderer.GL = true;
     } else {
@@ -79,10 +79,11 @@ Widget.scatter = function()
     controls.noZoom = false;
     controls.noPan = false;
     controls.staticMoving = false;
-    controls.dynamicDampingFactor = 0.3;
-    controls.addEventListener( 'change', render );
+    controls.dynamicDampingFactor = 0.2;
+    controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
+    scene2 = new THREE.Scene();
     el.appendChild(_this.renderer.domElement);
   }
 
@@ -95,12 +96,18 @@ Widget.scatter = function()
       _this.renderer.GL = false;
       _this.el.appendChild(_this.renderer.domElement);
     }
-    var group = new THREE.Object3D();      // contains non-point plot elements
-    var pointgroup = new THREE.Object3D(); // contains point elements
+    var group = new THREE.Object3D();      // contains non-point plot elements (axes, etc.)
+    var pointgroup = new THREE.Object3D(); // contains plot points and lines
+HOMER=pointgroup;
+// HOMER.children[0].geometry.attributes.position.array
+// HOMER.children[1].geometry.attributes.position.array
+// ... (up to length of unique pch)
+// last one is the lines
+// HOMER.children[0].geometry.attributes.position.needsUpdate = true
     group.name = "group";
     pointgroup.name = "pointgroup";
-    scene.add( group );
-    scene.add( pointgroup );
+    scene2.add(group);
+    scene.add(pointgroup);
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
     var cexaxis = 0.5;
     var cexlab = 1;
@@ -114,16 +121,18 @@ Widget.scatter = function()
     if(_this.renderer.GL)
     {
       // lights
-      light = new THREE.DirectionalLight( 0xffffff );
-      light.position.set( 1, 1, 1 );
-      scene.add( light );
-      light = new THREE.DirectionalLight( 0x002288 );
-      light.position.set( -1, -1, -1 );
-      scene.add( light );
-      light = new THREE.AmbientLight( 0x222222 );
-      scene.add( light );
+      /* FIXME add user-defined lights */
+      light = new THREE.DirectionalLight(0xffffff);
+      light.position.set(1, 1, 1);
+      scene.add(light);
+      light = new THREE.DirectionalLight(0x002255);
+      light.position.set(-1, -1, -1);
+      scene.add(light);
+      light = new THREE.AmbientLight(0x444444);
+      scene.add(light );
 
-      // Handle mupltiple kinds of glyphs FIXME avoid multiple data scans here and below (pre-sort by pch, for instance)
+      // Handle mupltiple kinds of glyphs
+      /* FIXME avoid multiple data scans here and below (pre-sort by pch, for instance) */
       var npoints = 0;
       var scale = 0.02;
       for ( var i = 0; i < x.data.length / 3; i++)
@@ -159,6 +168,37 @@ Widget.scatter = function()
       { // more points to draw
         var unique_pch = [...new Set(x.options.pch)];
         if(!Array.isArray(x.options.pch)) unique_pch = [...new Set([x.options.pch])];
+        // special sprite for pch='@'
+        var sz = 512;
+        var dataColor = new Uint8Array( sz * sz * 4 );
+        if(x.options.opacity) alpha = alpha * x.options.opacity;
+        for(var i = 0; i < sz * sz * 4; i++) dataColor[i] = 0;
+        for(var i = 0; i < sz; i++)
+        {
+          for(var j = 0; j < sz; j++)
+          {
+            var dx = 2*i/(sz-1) - 1;
+            var dy = 2*j/(sz-1) - 1;
+            var dz = dx*dx + dy*dy;
+            var k = i*sz + j;
+            if(dz <= 0.75)
+            {
+              dataColor[k*4] = 255;
+              dataColor[k*4 + 1] = 255;
+              dataColor[k*4 + 2] = 255;
+              dataColor[k*4 + 3] = 255;
+            } else if(dz < 1)
+            {
+              dataColor[k*4] = 0;
+              dataColor[k*4 + 1] = 0;
+              dataColor[k*4 + 2] = 0;
+              dataColor[k*4 + 3] = 255;
+            }
+          }
+        }
+        var special = new THREE.DataTexture(dataColor, sz, sz, THREE.RGBAFormat, THREE.UnsignedByteType );
+        special.needsUpdate = true;
+
         for(var j=0; j < unique_pch.length; j++)
         {
           npoints = 0;
@@ -172,6 +212,7 @@ Widget.scatter = function()
           var col = new THREE.Color("steelblue");
           scale = 0.3;
 
+          // generic pch sprite
           var canvas = document.createElement('canvas');
           var context = canvas.getContext('2d');
           context.fillStyle = "#ffffff";
@@ -186,9 +227,6 @@ Widget.scatter = function()
           context = canvas.getContext('2d');
           context.fillStyle = "#ffffff";
           context.textAlign = 'center';
-          context.textBaseline = 'middle';
-          context.font = fontsymbols;
-          context.fillText(unique_pch[j], cwidth/2, cheight/2);
           var sprite = new THREE.Texture(canvas);
           sprite.needsUpdate = true;
 
@@ -216,9 +254,12 @@ Widget.scatter = function()
           geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
           geometry.computeBoundingSphere();
           var material;
-          if(unique_pch[j] == '.')  // most efficient glyph
+          if(unique_pch[j] == '.')  // special case, no glyph -- very efficient
           {
             material = new THREE.PointsMaterial({size: scale/10, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
+          } else if(unique_pch[j] == '@') // another special case, billboard sprite
+          {
+            material = new THREE.PointsMaterial({size: scale / 2, map: special, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
           } else
           {
             material = new THREE.PointsMaterial({size: scale, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
@@ -376,9 +417,9 @@ Widget.scatter = function()
     }
 
 // Lines
-/* Custom line widths are not supported by buffered geometry, see
+/* Note that variable line widths are not supported by buffered geometry, see for instance:
  * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
- * If lwd is an array, then need to use non-buffered geometry (slow).
+ * If lwd is an array then need use non-buffered geometry (slow), otherwise buffer.
  */
    if(x.options.from)
    {
@@ -434,17 +475,6 @@ Widget.scatter = function()
     render();
   }
 
-  _this.reset = function()
-  {
-    controls.reset();
-    if(_this.idle)
-    { 
-      _this.idle = false;
-      _this.animate();
-    }
-
-  }
-
   _this.animate = function ()
   {
     controls.update();
@@ -457,7 +487,8 @@ Widget.scatter = function()
     if(controls.idle) _this.idle = true; // Conserve CPU by terminating render loop when not needed
     // render scenes
     _this.renderer.clear();
-    _this.renderer.render(scene, camera);
+    _this.renderer.render(scene2, camera); // non-point elements
+    _this.renderer.render(scene, camera);  // points
   }
 
 };
