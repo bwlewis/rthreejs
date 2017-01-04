@@ -33,6 +33,17 @@ button (or touch equivalent) and move the mouse to pan.  Mouse-over (hover)
 labels are no longer supported, but see the new label capabilities shown in the
 examples.
 
+I'm re-writing the `graphjs` function now; it will use `scatterplot3js` under
+the hood. Big changes are coming!
+
+- I wanted more flexible layout options and
+  decided to move layout computation out of the JavaScript code. Now you will be
+  able to, for instance, use the extensive layout options available in the igraph
+  pacakge. And more easily write new ones (please someone, we need a fast
+  multipole force-directed layout).
+- Basic graph animation will be supported.
+- Greater variety of WebGL rendering options, including spheres and a much
+  higher-performance option for lots of nodes and edges.
 
 
 ## NOTE!
