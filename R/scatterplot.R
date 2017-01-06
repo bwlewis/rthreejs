@@ -259,8 +259,16 @@ scatterplot3js <- function(
   if("center" %in% names(options) && options$center) # not yet documented, useful for graph
   {
     x <- x - 0.5
-    options$axis <- FALSE
-    options$grid <- FALSE
+  }
+  if("scenes" %in% names(options)) # XXX experimental
+  {
+    N = nrow(x) / options$scenes   # number of points per scene
+    if(N != floor(N)) stop("number of points must be a multiple of scenes")
+    if("fps" %in% names(options)) nframes = options$fps * (options$scenes - 1)
+    else nframes <- 10 * (options$scenes - 1)
+    options$nframes <- nframes
+    options$positions <- as.vector(t(signif(x[(N+1):nrow(x), ], signif)))
+    x <- x[1:N, ]
   }
 
   mdata <- x # stash for return result
@@ -309,8 +317,8 @@ scatterplot3js <- function(
   {
     if(is.matrix(options$from) && ncol(options$from) ==2)
     {
-      options$to = options$from[, 2]
-      options$from = options$from[, 1]
+      options$to <- options$from[, 2]
+      options$from <- options$from[, 1]
     }
     nl <- length(options$from)
     if(!("to" %in% names(options))) stop("both from and to must be specified")
@@ -323,7 +331,7 @@ scatterplot3js <- function(
   # create widget
   ans = htmlwidgets::createWidget(
           name = "scatterplotThree",
-          x = list(data = x, options = options, pch = pch, bg = bg),
+          x = list(data = x, options = options, bg = bg),
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),

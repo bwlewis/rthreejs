@@ -45,6 +45,8 @@ the hood. Big changes are coming!
 - Greater variety of WebGL rendering options, including spheres and a much
   higher-performance option for lots of nodes and edges.
 
+ETA on these substantial changes, 2nd week of January.
+
 
 ## NOTE!
 
@@ -55,9 +57,9 @@ Canvas (not WebGL) rendering, but works.  We try to maintain basic support for
 non-WebGL equipped browsers, but the performance and rendering quality will
 generally be inferior to WebGL visualizations.
 
-The examples run inside RStudio, acting similarly to normal R plots.  RStudio
-renders them using Canvas right now, but an upcoming version of
-RStudio will support WebGL.
+The examples run inside RStudio, acting similarly to normal R plots.  Older
+versions of RStudio render the examples using HTML5 Canvas right now; newer
+versions use fast WebGL rendering.
 
 ## Install
 

@@ -39,11 +39,11 @@ Widget.scatter = function()
   this.show_title = true;
   this.show_labels = false;
   this.idle = true;
-  this.frame = 1;
+  this.frame = -1;   // current animation frame
+  this.nframes = 0; // total frames
 
   var camera, controls, scene, scene2; // two scenes for fine control of displayed z order
   var _this = this;
-HOMER=this;
 
   _this.init = function (el, width, height)
   {
@@ -100,11 +100,6 @@ HOMER=this;
     }
     var group = new THREE.Object3D();      // contains non-point plot elements (axes, etc.)
     _this.pointgroup = new THREE.Object3D(); // contains plot points and lines
-// .children[0].geometry.attributes.position.array
-// .children[1].geometry.attributes.position.array
-// ... (up to length of unique pch)
-// last one is the lines
-// .children[0].geometry.attributes.position.needsUpdate = true
     group.name = "group";
     _this.pointgroup.name = "pointgroup";
     scene2.add(group);
@@ -121,6 +116,17 @@ HOMER=this;
 
     if(_this.renderer.GL)
     {
+      _this.N = x.data.length / 3;                                    // number of vertices
+      if(x.options.positions)
+      {
+        _this.positions = x.options.positions;  // vertex positions array, multiple of _this.N
+        _this.data = x.data;                    // copy of scene vertex positions
+      }
+      if(x.options.nframes)
+      {
+        _this.nframes = x.options.nframes;        // total frames
+        _this.frame = 0;
+      }
       // lights
       /* FIXME add user-defined lights */
       light = new THREE.DirectionalLight(0xffffff);
@@ -149,7 +155,7 @@ HOMER=this;
           var sphereGeo =  new THREE.SphereGeometry(scale, 20, 20);
           sphereGeo.computeFaceNormals();
           // Move to position
-          sphereGeo.applyMatrix ( new THREE.Matrix4().makeTranslation(x.data[i*3 ],x.data[i*3 + 1] , x.data[i*3 + 2]) );
+          sphereGeo.applyMatrix (new THREE.Matrix4().makeTranslation(x.data[i*3], x.data[i*3 + 1], x.data[i*3 + 2]));
           // Color
           if(x.options.color) {
             if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
@@ -446,6 +452,8 @@ HOMER=this;
         }
       } else // use buffered geometry
       {
+        _this.from = x.options.from; // store these for future use in animation, see update()
+        _this.to = x.options.to;
         var segments = x.options.from.length;
         var geometry = new THREE.BufferGeometry();
         var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: x.options.lwd});
@@ -500,21 +508,96 @@ HOMER=this;
     render();
   }
 
-  _this.update = function() // XXX TEST
+/** FIXME There is probably a better/more efficient threejs way to animate, help appreciated */
+  _this.update = function() // XXX TESTING
   {
-    if(_this.frame > 0) _this.frame = 0;
-    if(_this.frame > 0)
-    {_this.frame = _this.frame + 1;
-      for(var j = 0; j < _this.pointgroup.children[0].geometry.attributes.position.array.length; j++)
-      _this.pointgroup.children[0].geometry.attributes.position.array[j] =  _this.pointgroup.children[0].geometry.attributes.position.array[j]  + 0.0001;
-      _this.pointgroup.children[0].geometry.attributes.position.needsUpdate = true;
+    /* _this.N number of vertices
+     * _this.nframes total number of frames
+     * _this.positions vertex points in each scene
+     * For instance:
+     * _this.N = 50,
+     * _this.positions = 150 (three scenes after the initial one in x.data, total of four),
+     * _this.nframes = 30 (ten interpolated frames per scene)
+     */
+    if(_this.frame >= _this.nframes) _this.frame = -1;
+    if(_this.frame > -1)
+    {
+      var nscenes = _this.positions.length / (3 * _this.N);
+      var fps = _this.nframes / nscenes;
+      var scene = Math.floor(nscenes * (_this.frame  / _this.nframes));
+      var interp = fps - _this.frame % fps;
+      var k = 0; // vertex id
+      _this.frame = _this.frame + 1;
+      for(var j = 0; j < _this.pointgroup.children.length; j++)
+      {
+        var m = scene * _this.N * 3;
+        if(_this.pointgroup.children[j].type == "Mesh")
+        {
+          var x = _this.data[k * 3];
+          var y = _this.data[k * 3 + 1];
+          var z = _this.data[k * 3 + 2];
+          var x1 = _this.positions[m + k*3];
+          var y1 = _this.positions[m + k*3 + 1];
+          var z1 = _this.positions[m + k*3 + 2];
+          var dx = (x1 - x) / interp;
+          var dy = (y1 - y) / interp;
+          var dz = (z1 - z) / interp;
+          // update for convenient lookup in LinesSegments below
+          _this.data[k * 3] = _this.data[k * 3] + dx;
+          _this.data[k * 3 + 1] = _this.data[k * 3 + 1] + dy;
+          _this.data[k * 3 + 2] = _this.data[k * 3 + 2] + dz;
+          _this.pointgroup.children[j].geometry.translate(dx, dy, dz);
+          k++;
+        } else if(_this.pointgroup.children[j].type == "Points") // Buffered
+        {
+          for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
+          {
+            var x = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3];
+            var y = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1];
+            var z = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2];
+            var x1 = _this.positions[m + k*3];
+            var y1 = _this.positions[m + k*3 + 1];
+            var z1 = _this.positions[m + k*3 + 2];
+            _this.pointgroup.children[j].geometry.attributes.position.array[i * 3] = 
+              _this.pointgroup.children[j].geometry.attributes.position.array[i * 3] +
+              (x1 - x) / interp;
+            _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1] = 
+              _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1] +
+              (y1 - y) / interp;
+            _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2] = 
+              _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2] +
+              (z1 - z) / interp;
+            // update for convenient lookup in LinesSegments below
+            _this.data[k*3] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3];
+            _this.data[k*3 + 1] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1];
+            _this.data[k*3 + 2] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2];
+            k++;
+          }
+          _this.pointgroup.children[j].geometry.attributes.position.needsUpdate = true;
+        } else if(_this.pointgroup.children[j].type == "LineSegments") // Buffered line segments (replace)
+        {
+          var segments = _this.from.length;
+          var geometry = new THREE.BufferGeometry();
+          var positions = new Float32Array(segments * 6);
+          for(var i = 0; i < _this.from.length; i++)
+          {
+            var from = _this.from[i];
+            var to = _this.to[i];
+            positions[i * 6] = _this.data[from * 3];
+            positions[i * 6 + 1] = _this.data[from * 3 + 1];
+            positions[i * 6 + 2] = _this.data[from * 3 + 2];
+            positions[i * 6 + 3] = _this.data[to * 3];
+            positions[i * 6 + 4] = _this.data[to * 3 + 1];
+            positions[i * 6 + 5] = _this.data[to * 3 + 2];
+          }
+          geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geometry.addAttribute('color', _this.pointgroup.children[j].geometry.attributes.color);
+          geometry.computeBoundingSphere();
+          _this.pointgroup.children[j].geometry = geometry;
+          _this.pointgroup.children[j].geometry.attributes.position.needsUpdate = true;
+        }
+      }
     }
-
-// .children[0].geometry.attributes.position.array
-// .children[1].geometry.attributes.position.array
-// ... (up to length of unique pch)
-// last one is the lines
-// .children[0].geometry.attributes.position.needsUpdate = true
   }
 
   _this.animate = function ()
@@ -527,7 +610,7 @@ HOMER=this;
 
   function render()
   {
-    if(controls.idle && _this.frame < 1) _this.idle = true; // Conserve CPU by terminating render loop when not needed
+    if(controls.idle && _this.frame < 0) _this.idle = true; // Conserve CPU by terminating render loop when not needed
     // render scenes
     _this.renderer.clear();
     _this.renderer.render(scene2, camera); // non-point elements
