@@ -15,6 +15,7 @@ HTMLWidgets.widget(
     obj.width = parseInt(width);
     obj.height = parseInt(height);
     obj.widget.renderer.setSize(width, height);
+/** FIXME consider updating camera aspect ratio too? **/
   },
 
   renderValue: function(el, x, obj)
@@ -36,8 +37,6 @@ var Widget = Widget || {};
 Widget.scatter = function()
 {
 //  var options = options || {};
-  this.show_title = true;
-  this.show_labels = false;
   this.idle = true;
   this.frame = -1;   // current animation frame
   this.nframes = 0; // total frames
@@ -60,8 +59,44 @@ Widget.scatter = function()
     _this.renderer.setSize(el.innerWidth, el.innerHeight);
     _this.el = el;
 
+    // Info box for mouse-over labels and generic text
+    var info = document.createElement("div");
+    var id_attr = document.createAttribute("id");
+    id_attr.nodeValue = "graph-info";
+    info.setAttributeNode(id_attr);
+    info.style.textAlign = "center";
+    info.style.zIndex = 100;
+    info.style.fontFamily = "Sans";
+    info.style.fontSize = "x-large";
+    info.style.position = "absolute";
+    info.style.top = "10px";
+    info.style.left = "10px";
+    el.appendChild(info);
+    _this.infobox = info;
+    _this.fgcss = "#000000";
+    _this.main = ""; // default text in infobox
+
+
     el.onmousemove = function(ev)
     { 
+      var mouse = new THREE.Vector2();
+      var raycaster = new THREE.Raycaster();
+      raycaster.params.Points.threshold = 0.02;
+      var canvasRect = this.getBoundingClientRect();
+      mouse.x = 2 * (ev.clientX - canvasRect.left) / canvasRect.width - 1;
+      mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
+      raycaster.setFromCamera(mouse, camera);
+      var I = raycaster.intersectObject(_this.pointgroup, true);
+      if(I.length > 0)
+      {
+        if(I[0].object.type == "Points")
+        {
+          printInfo(I[0].object.geometry.labels[I[0].index]);
+        } else if(I[0].object.type == "Mesh")
+        {
+          printInfo(I[0].object.label);
+        }
+      } else printInfo(_this.main);
       if(_this.idle)
       {
         _this.idle = false;
@@ -87,6 +122,9 @@ Widget.scatter = function()
     scene = new THREE.Scene();
     scene2 = new THREE.Scene();
     el.appendChild(_this.renderer.domElement);
+
+
+
   }
 
   // create_plot
@@ -99,12 +137,18 @@ Widget.scatter = function()
       _this.el.appendChild(_this.renderer.domElement);
     }
     var group = new THREE.Object3D();      // contains non-point plot elements (axes, etc.)
-    _this.pointgroup = new THREE.Object3D(); // contains plot points and lines
+    _this.pointgroup = new THREE.Object3D(); // contains plot points
+    _this.linegroup = new THREE.Object3D(); // contains plot lines
     group.name = "group";
     _this.pointgroup.name = "pointgroup";
+    _this.linegroup.name = "linegroup";
     scene2.add(group);
+    scene.add(_this.linegroup);
     scene.add(_this.pointgroup);
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
+    if(x.options.top) _this.infobox.style.top = x.options.top;
+    if(x.options.left) _this.infobox.style.left = x.options.left;
+    if(x.options.main) _this.main = x.options.main;
     var cexaxis = 0.5;
     var cexlab = 1;
     var fontaxis = "48px Arial";
@@ -113,6 +157,7 @@ Widget.scatter = function()
     if(x.options.cexlab) cexlab = parseFloat(x.options.cexlab);
     if(x.options.fontaxis) fontaxis = x.options.fontaxis;
     if(x.options.fontsymbols) fontsymbols = x.options.fontsymbols;
+
 
     if(_this.renderer.GL)
     {
@@ -167,8 +212,10 @@ Widget.scatter = function()
          */
           // ADD
           var mesh = new THREE.Mesh(sphereGeo, new THREE.MeshLambertMaterial({color : col}));
-             mesh.index = i;
-             _this.pointgroup.add(mesh);
+          mesh.index = i;
+          if(x.options.labels) mesh.label = x.options.labels[i];
+          else mesh.label = "";
+          _this.pointgroup.add(mesh);
         }
       }
       if(npoints < x.data.length / 3)
@@ -237,6 +284,7 @@ Widget.scatter = function()
           context.fillText(unique_pch[j], cwidth / 2, cwidth / 2);
           var sprite = new THREE.Texture(canvas);
           sprite.needsUpdate = true;
+          geometry.labels = [];
 
           if(x.options.size && !Array.isArray(x.options.size)) scale = 0.3 * x.options.size * (cwidth / 64);
           var k = 0;
@@ -244,6 +292,8 @@ Widget.scatter = function()
           {
             if(x.options.pch[i] == unique_pch[j])
             {
+              if(x.options.labels) geometry.labels.push(x.options.labels[i]);
+              else geometry.labels.push("");
               if(x.options.size && Array.isArray(x.options.size)) scale = 0.3 * x.options.size[i] * (cwidth / 64);
               positions[k * 3 ] = x.data[i * 3];
               positions[k * 3 + 1 ] = x.data[i * 3 + 1];
@@ -352,6 +402,7 @@ Widget.scatter = function()
       axisColor.r = 1 - bgcolor.r;
       axisColor.g = 1 - bgcolor.g;
       axisColor.b = 1 - bgcolor.b;
+      _this.fgcss = "#" + axisColor.getHexString(); // mouse-over info box color
     }
     function v(x,y,z){ return new THREE.Vector3(x,y,z); }
     var tickColor = axisColor;
@@ -500,7 +551,7 @@ Widget.scatter = function()
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.computeBoundingSphere();
         var lines = new THREE.LineSegments(geometry, material);
-        _this.pointgroup.add(lines);
+        _this.linegroup.add(lines);
       }
     }
 
@@ -574,7 +625,9 @@ Widget.scatter = function()
             k++;
           }
           _this.pointgroup.children[j].geometry.attributes.position.needsUpdate = true;
-        } else if(_this.pointgroup.children[j].type == "LineSegments") // Buffered line segments (replace)
+        }
+      }
+      if(_this.linegroup.children.length > 0) // Buffered line segments (replace)
         {
           var segments = _this.from.length;
           var geometry = new THREE.BufferGeometry();
@@ -591,13 +644,18 @@ Widget.scatter = function()
             positions[i * 6 + 5] = _this.data[to * 3 + 2];
           }
           geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-          geometry.addAttribute('color', _this.pointgroup.children[j].geometry.attributes.color);
+          geometry.addAttribute('color', _this.linegroup.children[0].geometry.attributes.color);
           geometry.computeBoundingSphere();
-          _this.pointgroup.children[j].geometry = geometry;
-          _this.pointgroup.children[j].geometry.attributes.position.needsUpdate = true;
+          _this.linegroup.children[0].geometry = geometry;
+          _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
         }
-      }
     }
+  }
+
+  function printInfo(text)
+  {
+    _this.infobox.innerHTML = text;
+    _this.infobox.style.color = _this.fgcss;
   }
 
   _this.animate = function ()

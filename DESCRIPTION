@@ -11,8 +11,7 @@ Authors@R: c(
     person("Alexey", "Stukalov", role=("ctb"), email="astukalov@gmail.com"),
     person("Yihui","Xie", role=("ctb"), email="xie@yihui.name"),
     person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de"),
-    person("B.",  "Thieurmel", role=("ctb"), email="bthieurmel@gmail.com"),
-    person("David", "Piegza", role="cph")
+    person("B.",  "Thieurmel", role=("ctb"), email="bthieurmel@gmail.com")
     )
 URL: http://bwlewis.github.io/rthreejs
 BugReports: https://github.com/bwlewis/rthreejs/issues
@@ -22,7 +21,6 @@ Depends:
 Imports:
     htmlwidgets (>= 0.3.2),
     base64enc,
-    Matrix,
     stats,
     methods,
     jsonlite
