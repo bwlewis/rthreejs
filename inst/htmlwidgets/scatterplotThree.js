@@ -75,13 +75,14 @@ Widget.scatter = function()
     _this.infobox = info;
     _this.fgcss = "#000000";
     _this.main = ""; // default text in infobox
+    _this.mousethreshold = 0.02; // default mouse over id threshold
 
 
     el.onmousemove = function(ev)
     { 
       var mouse = new THREE.Vector2();
       var raycaster = new THREE.Raycaster();
-      raycaster.params.Points.threshold = 0.02;
+      raycaster.params.Points.threshold = _this.mousethreshold;
       var canvasRect = this.getBoundingClientRect();
       mouse.x = 2 * (ev.clientX - canvasRect.left) / canvasRect.width - 1;
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
@@ -91,12 +92,15 @@ Widget.scatter = function()
       {
         if(I[0].object.type == "Points")
         {
-          printInfo(I[0].object.geometry.labels[I[0].index]);
+          if(I[0].object.geometry.labels[I[0].index].length > 0) printInfo(I[0].object.geometry.labels[I[0].index]);
         } else if(I[0].object.type == "Mesh")
         {
-          printInfo(I[0].object.label);
+          if(I[0].object.label.length > 0) printInfo(I[0].object.label);
         }
-      } else printInfo(_this.main);
+      } else
+      {
+        printInfo(_this.main);
+      }
       if(_this.idle)
       {
         _this.idle = false;
@@ -148,11 +152,17 @@ Widget.scatter = function()
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
     if(x.options.top) _this.infobox.style.top = x.options.top;
     if(x.options.left) _this.infobox.style.left = x.options.left;
-    if(x.options.main) _this.main = x.options.main;
+    if(Array.isArray(x.options.main))
+    {
+      _this.main = x.options.main[0];
+      _this.mains = x.options.main;
+    } else _this.main = x.options.main;
+    printInfo(_this.main);
+    if(x.options.mousethreshold) _this.mousethreshold = x.options.mousethreshold;
     var cexaxis = 0.5;
     var cexlab = 1;
     var fontaxis = "48px Arial";
-    var fontsymbols = "40px Arial";
+    var fontsymbols = "24px Arial";
     if(x.options.cexaxis) cexaxis = parseFloat(x.options.cexaxis);
     if(x.options.cexlab) cexlab = parseFloat(x.options.cexlab);
     if(x.options.fontaxis) fontaxis = x.options.fontaxis;
@@ -169,7 +179,7 @@ Widget.scatter = function()
       }
       if(x.options.nframes)
       {
-        _this.nframes = x.options.nframes;        // total frames
+        _this.nframes = x.options.nframes;      // total frames
         _this.frame = 0;
       }
       // lights
@@ -578,6 +588,12 @@ Widget.scatter = function()
       var scene = Math.floor(nscenes * (_this.frame  / _this.nframes));
       var interp = fps - _this.frame % fps;
       var k = 0; // vertex id
+      if(_this.mains)
+      {
+        var i = Math.floor((1 + nscenes) * (_this.frame  / _this.nframes));
+        _this.main = _this.mains[i];
+        printInfo(_this.main);
+      }
       _this.frame = _this.frame + 1;
       for(var j = 0; j < _this.pointgroup.children.length; j++)
       {
@@ -654,8 +670,11 @@ Widget.scatter = function()
 
   function printInfo(text)
   {
-    _this.infobox.innerHTML = text;
-    _this.infobox.style.color = _this.fgcss;
+    if(_this.infobox.innerHTML != text)
+    {
+      _this.infobox.innerHTML = text;
+      _this.infobox.style.color = _this.fgcss;
+    }
   }
 
   _this.animate = function ()
