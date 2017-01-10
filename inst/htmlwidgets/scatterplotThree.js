@@ -76,7 +76,6 @@ Widget.scatter = function()
     _this.main = ""; // default text in infobox
     _this.mousethreshold = 0.02; // default mouse over id threshold
 
-
     el.onmousemove = function(ev)
     { 
       if(ev.preventDefault) ev.preventDefault();
@@ -160,7 +159,7 @@ Widget.scatter = function()
     var cexaxis = 0.5;
     var cexlab = 1;
     var fontaxis = "48px Arial";
-    var fontsymbols = "24px Arial";
+    var fontsymbols = "12px Arial";
     if(x.options.cexaxis) cexaxis = parseFloat(x.options.cexaxis);
     if(x.options.cexlab) cexlab = parseFloat(x.options.cexlab);
     if(x.options.fontaxis) fontaxis = x.options.fontaxis;
@@ -277,22 +276,18 @@ Widget.scatter = function()
 
           // generic pch sprite
           var canvas = document.createElement('canvas');
+          var cwidth = 128;
+          canvas.width = cwidth;
+          canvas.height = cwidth;
           var context = canvas.getContext('2d');
           context.fillStyle = "#ffffff";
           context.textAlign = 'center';
           context.textBaseline = 'middle';
           context.font = fontsymbols;
-          var pch_size = context.measureText(unique_pch[j]);
-          var cwidth = Math.max(64, Math.pow(2, Math.ceil(Math.log2(pch_size.width))));
-          var cheight = cwidth;
-          canvas.width = cwidth;
-          canvas.height = cheight;
-          context = canvas.getContext('2d');
-          context.fillStyle = "#ffffff";
-          context.textAlign = 'center';
           context.fillText(unique_pch[j], cwidth / 2, cwidth / 2);
           var sprite = new THREE.Texture(canvas);
           sprite.needsUpdate = true;
+
           geometry.labels = [];
 
           if(x.options.size && !Array.isArray(x.options.size)) scale = x.options.size;
@@ -335,11 +330,11 @@ Widget.scatter = function()
               },
               vertexShader: "attribute float size; attribute vec3 color; varying vec3 vColor; void main() { vColor = color; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_PointSize = size * ( 300.0 / -mvPosition.z ); gl_Position = projectionMatrix * mvPosition; }",
               fragmentShader: "uniform vec3 ucolor; uniform sampler2D texture; varying vec3 vColor; void main() { gl_FragColor = vec4( ucolor * vColor, 1.0 ); gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord ); if ( gl_FragColor.a < ALPHATEST ) discard; }",
-              alphaTest: 0.1    // becomes "ALPHATEST" in shader :(
+              alphaTest: 0.1    // mapped internally to "ALPHATEST" in shader :(
             } );
           } else // generic verbatim text in a custom shader
           {
-            material = new THREE.PointsMaterial({size: scale * cwidth / 64, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
+            material = new THREE.PointsMaterial({size: 3*scale, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
           }
           var particleSystem = new THREE.Points(geometry, material);
           _this.pointgroup.add(particleSystem);
