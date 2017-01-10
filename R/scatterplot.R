@@ -258,7 +258,7 @@ scatterplot3js <- function(
 
   if("center" %in% names(options) && options$center) # not yet documented, useful for graph
   {
-    x <- x - 0.5
+    x <- 2 * (x - 0.5)
   }
   if("scenes" %in% names(options)) # XXX experimental
   {

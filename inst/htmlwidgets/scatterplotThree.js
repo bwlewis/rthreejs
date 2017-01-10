@@ -15,7 +15,6 @@ HTMLWidgets.widget(
     obj.width = parseInt(width);
     obj.height = parseInt(height);
     obj.widget.renderer.setSize(width, height);
-/** FIXME consider updating camera aspect ratio too? **/
   },
 
   renderValue: function(el, x, obj)
@@ -80,6 +79,7 @@ Widget.scatter = function()
 
     el.onmousemove = function(ev)
     { 
+      if(ev.preventDefault) ev.preventDefault();
       var mouse = new THREE.Vector2();
       var raycaster = new THREE.Raycaster();
       raycaster.params.Points.threshold = _this.mousethreshold;
@@ -127,8 +127,6 @@ Widget.scatter = function()
     scene2 = new THREE.Scene();
     el.appendChild(_this.renderer.domElement);
 
-
-
   }
 
   // create_plot
@@ -156,7 +154,7 @@ Widget.scatter = function()
     {
       _this.main = x.options.main[0];
       _this.mains = x.options.main;
-    } else _this.main = x.options.main;
+    } else if(x.options.main) _this.main = x.options.main;
     printInfo(_this.main);
     if(x.options.mousethreshold) _this.mousethreshold = x.options.mousethreshold;
     var cexaxis = 0.5;
@@ -273,6 +271,7 @@ Widget.scatter = function()
           var geometry = new THREE.BufferGeometry();
           var positions = new Float32Array(npoints * 3);
           var colors = new Float32Array(npoints * 3);
+          var sizes = new Float32Array(npoints);
           var col = new THREE.Color("steelblue");
           scale = 0.3;
 
@@ -296,15 +295,16 @@ Widget.scatter = function()
           sprite.needsUpdate = true;
           geometry.labels = [];
 
-          if(x.options.size && !Array.isArray(x.options.size)) scale = 0.3 * x.options.size * (cwidth / 64);
+          if(x.options.size && !Array.isArray(x.options.size)) scale = x.options.size;
           var k = 0;
           for (var i = 0; i < x.data.length / 3; i++)
           {
+            if(Array.isArray(x.options.size)) sizes[i] = x.options.size[i] / 4; // sizes for '@' style
+            else sizes[i] = scale / 4;
             if(x.options.pch[i] == unique_pch[j])
             {
               if(x.options.labels) geometry.labels.push(x.options.labels[i]);
               else geometry.labels.push("");
-              if(x.options.size && Array.isArray(x.options.size)) scale = 0.3 * x.options.size[i] * (cwidth / 64);
               positions[k * 3 ] = x.data[i * 3];
               positions[k * 3 + 1 ] = x.data[i * 3 + 1];
               positions[k * 3 + 2 ] = x.data[i * 3 + 2];
@@ -320,17 +320,26 @@ Widget.scatter = function()
           }
           geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
           geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+          geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
           geometry.computeBoundingSphere();
           var material;
-          if(unique_pch[j] == '.')  // special case, no glyph -- very efficient
+          if(unique_pch[j] == '.')  // special case, no glyph, uniform sizes -- very efficient
           {
             material = new THREE.PointsMaterial({size: scale/10, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
-          } else if(unique_pch[j] == '@') // another special case, billboard sprite
+          } else if(unique_pch[j] == '@') // another special case, custom shader billboard sprite
           {
-            material = new THREE.PointsMaterial({size: scale / 2, map: special, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
-          } else
+            material = new THREE.ShaderMaterial({
+              uniforms: {
+                ucolor:   { value: new THREE.Color( 0xffffff ) },
+                texture: { value: special }
+              },
+              vertexShader: "attribute float size; attribute vec3 color; varying vec3 vColor; void main() { vColor = color; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_PointSize = size * ( 300.0 / -mvPosition.z ); gl_Position = projectionMatrix * mvPosition; }",
+              fragmentShader: "uniform vec3 ucolor; uniform sampler2D texture; varying vec3 vColor; void main() { gl_FragColor = vec4( ucolor * vColor, 1.0 ); gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord ); if ( gl_FragColor.a < ALPHATEST ) discard; }",
+              alphaTest: 0.1    // becomes "ALPHATEST" in shader :(
+            } );
+          } else // generic verbatim text in a custom shader
           {
-            material = new THREE.PointsMaterial({size: scale, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
+            material = new THREE.PointsMaterial({size: scale * cwidth / 64, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
           }
           var particleSystem = new THREE.Points(geometry, material);
           _this.pointgroup.add(particleSystem);
