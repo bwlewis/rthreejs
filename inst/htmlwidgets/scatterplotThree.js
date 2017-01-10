@@ -40,7 +40,7 @@ Widget.scatter = function()
   this.frame = -1;   // current animation frame
   this.nframes = 0; // total frames
 
-  var camera, controls, scene, scene2; // two scenes for fine control of displayed z order
+  var camera, controls, scene;
   var _this = this;
 
   _this.init = function (el, width, height)
@@ -75,6 +75,7 @@ Widget.scatter = function()
     _this.fgcss = "#000000";
     _this.main = ""; // default text in infobox
     _this.mousethreshold = 0.02; // default mouse over id threshold
+HOMER=_this;
 
     el.onmousemove = function(ev)
     { 
@@ -123,9 +124,7 @@ Widget.scatter = function()
     controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
-    scene2 = new THREE.Scene();
     el.appendChild(_this.renderer.domElement);
-
   }
 
   // create_plot
@@ -137,13 +136,13 @@ Widget.scatter = function()
       _this.renderer.GL = false;
       _this.el.appendChild(_this.renderer.domElement);
     }
-    var group = new THREE.Object3D();      // contains non-point plot elements (axes, etc.)
+    var group = new THREE.Object3D();        // contains non-point plot elements (axes, etc.)
     _this.pointgroup = new THREE.Object3D(); // contains plot points
-    _this.linegroup = new THREE.Object3D(); // contains plot lines
+    _this.linegroup = new THREE.Object3D();  // contains plot lines
     group.name = "group";
     _this.pointgroup.name = "pointgroup";
     _this.linegroup.name = "linegroup";
-    scene2.add(group);
+    scene.add(group);
     scene.add(_this.linegroup);
     scene.add(_this.pointgroup);
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
@@ -168,7 +167,7 @@ Widget.scatter = function()
 
     if(_this.renderer.GL)
     {
-      _this.N = x.data.length / 3;                                    // number of vertices
+      _this.N = x.data.length / 3;              // number of vertices
       if(x.options.positions)
       {
         _this.positions = x.options.positions;  // vertex positions array, multiple of _this.N
@@ -417,6 +416,7 @@ Widget.scatter = function()
       axisColor.g = 1 - bgcolor.g;
       axisColor.b = 1 - bgcolor.b;
       _this.fgcss = "#" + axisColor.getHexString(); // mouse-over info box color
+      _this.infobox.style.color = _this.fgcss;
     }
     function v(x,y,z){ return new THREE.Vector3(x,y,z); }
     var tickColor = axisColor;
@@ -479,10 +479,10 @@ Widget.scatter = function()
         var gridline = new THREE.Geometry();
         gridline.vertices.push(v(x.options.xtick[j],0,0),v(x.options.xtick[j],0,1));
         var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
-        gl.type=THREE.Lines;
+        gl.type = THREE.Lines;
         group.add(gl);
         gridline = new THREE.Geometry();
-        gridline.vertices.push(v(0,0,x.options.ztick[j]),v(1,0,x.options.ztick[j]));
+        gridline.vertices.push(v(0, 0, x.options.ztick[j]), v(1, 0, x.options.ztick[j]));
         gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
         gl.type=THREE.Lines;
         group.add(gl);
@@ -490,12 +490,13 @@ Widget.scatter = function()
     }
 
 // Lines
-/* Note that variable line widths are not supported by buffered geometry, see for instance:
+/* Note that variable line widths are not directly supported by buffered geometry, see for instance:
  * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
  * If lwd is an array then need use non-buffered geometry (slow), otherwise buffer.
+ *FIXME add custom shader to support this!
  */
-   if(x.options.from && _this.renderer.GL)
-   {
+    if(x.options.from && _this.renderer.GL)
+    {
       if(Array.isArray(x.options.lwd))
       {
         if(!x.options.lcol) x.options.lcol = "#aaaaaa";
@@ -648,27 +649,27 @@ Widget.scatter = function()
         }
       }
       if(_this.linegroup.children.length > 0) // Buffered line segments (replace)
+      {
+        var segments = _this.from.length;
+        var geometry = new THREE.BufferGeometry();
+        var positions = new Float32Array(segments * 6);
+        for(var i = 0; i < _this.from.length; i++)
         {
-          var segments = _this.from.length;
-          var geometry = new THREE.BufferGeometry();
-          var positions = new Float32Array(segments * 6);
-          for(var i = 0; i < _this.from.length; i++)
-          {
-            var from = _this.from[i];
-            var to = _this.to[i];
-            positions[i * 6] = _this.data[from * 3];
-            positions[i * 6 + 1] = _this.data[from * 3 + 1];
-            positions[i * 6 + 2] = _this.data[from * 3 + 2];
-            positions[i * 6 + 3] = _this.data[to * 3];
-            positions[i * 6 + 4] = _this.data[to * 3 + 1];
-            positions[i * 6 + 5] = _this.data[to * 3 + 2];
-          }
-          geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-          geometry.addAttribute('color', _this.linegroup.children[0].geometry.attributes.color);
-          geometry.computeBoundingSphere();
-          _this.linegroup.children[0].geometry = geometry;
-          _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
+          var from = _this.from[i];
+          var to = _this.to[i];
+          positions[i * 6] = _this.data[from * 3];
+          positions[i * 6 + 1] = _this.data[from * 3 + 1];
+          positions[i * 6 + 2] = _this.data[from * 3 + 2];
+          positions[i * 6 + 3] = _this.data[to * 3];
+          positions[i * 6 + 4] = _this.data[to * 3 + 1];
+          positions[i * 6 + 5] = _this.data[to * 3 + 2];
         }
+        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.addAttribute('color', _this.linegroup.children[0].geometry.attributes.color);
+        geometry.computeBoundingSphere();
+        _this.linegroup.children[0].geometry = geometry;
+        _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
+      }
     }
   }
 
@@ -694,8 +695,7 @@ Widget.scatter = function()
     if(controls.idle && _this.frame < 0) _this.idle = true; // Conserve CPU by terminating render loop when not needed
     // render scenes
     _this.renderer.clear();
-    _this.renderer.render(scene2, camera); // non-point elements
-    _this.renderer.render(scene, camera);  // points
+    _this.renderer.render(scene, camera);
   }
 
 };

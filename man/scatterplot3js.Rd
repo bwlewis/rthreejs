@@ -47,9 +47,7 @@ or a vector of #' hex or named color names as long as the number of data
 points to plot.}
 
 \item{size}{The plot point radius, either as a single number or a
-vector of sizes of length \code{nrow(x)}. A vector of sizes is only
-supported by the \code{canvas} renderer. The \code{webgl} renderer accepts
-a single size value for all points. Equivalent to \code{cex.symbols}.}
+vector of sizes of length \code{nrow(x)}.}
 
 \item{stroke}{A single color stroke value (surrounding each point). Set to
 null to omit stroke (only available in the canvas renderer).}
@@ -90,7 +88,7 @@ plot similar to \code{scatterplot3d}. See the note below and examples for detail
 }
 \description{
 A 3D scatterplot widget using three.js. Many options
-follow the \code{scatterplot3d} function from the eponymous package.
+follow the \code{scatterplot3d} package example.
 }
 \note{
 Press and hold the left mouse button (or touch or trackpad equivalent) and move
@@ -108,8 +106,9 @@ can exhibit much better performance.
 
 Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below. A few additional
-standard plot options are also supported:
+plot options are also supported:
 \itemize{
+  \item{"labels"}{ character vector of length \code{nrow(x)} of point labels displayed when the mouse moves over the points }
   \item{"cex.lab"}{ font size scale factor for the axis labels}
   \item{"cex.axis"}{ font size scale factor for the axis tick labels }
   \item{"font.axis"}{ CSS font string used for all axis labels}
@@ -136,12 +135,13 @@ character values are used literally ('+', 'x', '*', etc.) except for the
 following special cases:
 \itemize{
   \item{"o"}{ Plotted points appear as 3-d spheres.}
+  \item{"@"}{ Plotted points appear as nice circles.}
   \item{"."}{ Points appear as tiny squares; use this
              \code{pch} style for large numbers of points.}
 }
-Character strings of more than one character are supported.
+Character strings of more than one character are supported--see the examples.
 
-Note that points with missing values are omitted from the plot.
+Points with missing values are omitted from the plot.
 }
 \examples{
 # Explicitly using the Canvas renderer
@@ -196,11 +196,11 @@ lim <- c(-3, 3)
 x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
 a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red")
 
-# Adding labels using 'pch'
+# Plot text directly using 'pch'
 set.seed(1)
 x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
 a <- scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim)
-b <- a$points3d(x + 0.3, y + 0.3, z, color="red", pch=paste("point", 1:5))
+b <- a$points3d(x + 0.2, y + 0.2, z, color="red", pch=paste("point", 1:5))
 print(b)
 
 \dontrun{
