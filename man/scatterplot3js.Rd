@@ -141,7 +141,23 @@ following special cases:
 }
 Character strings of more than one character are supported--see the examples.
 
-Points with missing values are omitted from the plot.
+Points with missing values are omitted from the plot, please try to avoid missing values
+in \code{x,y,z}.
+}
+\section{Plotting lines}{
+
+A number of new experimental options plot lines between points. Lines are optionally drawn
+between points specified in \code{x, y, z}.
+\itemize{
+  \item{"from"}{ A numeric vector of indices of line starting vertices corresponding to entries in \code{x}.}
+  \item{"to"}{ A numeric vector exactly as long as \code{from} of indices of line ending vertices corresponding
+      to entries in \code{x}.}
+  \item{"lwd"}{ Either a single numeric value or vector of values as long as \code{from} of line widths, defaults to 1.}
+  \item{"lcol"}{ Either a single color value or vector of values as long as \code{from} of line widths; line colors
+     default to interpolating their vertex point colors.}
+  \item{"linealpha"}{ A single numeric value between 0 and 1 inclusive setting the transparency of all plot lines,
+     defaulting to 1.}
+}
 }
 \examples{
 # Explicitly using the Canvas renderer

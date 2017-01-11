@@ -511,9 +511,9 @@ HOMER=_this;
               x.data[3 * x.options.to[j] + 1],
               x.data[3 * x.options.to[j] + 2]));
           if(Array.isArray(x.options.lcol))
-            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j]}));
+            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j], opacity: x.options.linealpha, transparent: true}));
           else
-            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol, linewidth: x.options.lwd[j]}));
+            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol, linewidth: x.options.lwd[j], opacity: x.options.linealpha, transparent: true}));
           group.add(gl);
         }
       } else // use buffered geometry
@@ -522,7 +522,7 @@ HOMER=_this;
         _this.to = x.options.to;
         var segments = x.options.from.length;
         var geometry = new THREE.BufferGeometry();
-        var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: x.options.lwd});
+        var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: x.options.lwd, opacity: x.options.linealpha, transparent: true});
         var positions = new Float32Array(segments * 6);
         var colors = new Float32Array(segments * 6);
         for(var j=0; j < segments; j++)
