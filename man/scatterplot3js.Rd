@@ -91,9 +91,19 @@ A 3D scatterplot widget using three.js. Many options
 follow the \code{scatterplot3d} package.
 }
 \note{
+Points with missing values are omitted from the plot, please try to avoid missing values
+in \code{x,y,z}.
+}
+\section{Interacting with the plot}{
+
 Press and hold the left mouse button (or touch or trackpad equivalent) and move
 the mouse to rotate the plot. Press and hold the right mouse button (or touch
 equivalent) to pan. Use the mouse scroll wheel or touch equivalent to zoom.
+If \code{labels} are specified (see below), moving the mouse pointer over
+a point will display the label.
+}
+
+\section{Detailed plot options}{
 
 Use the \code{renderer} option to manually select from the available
 rendering options.
@@ -113,6 +123,7 @@ plot options are also supported:
   \item{"cex.axis"}{ font size scale factor for the axis tick labels }
   \item{"font.axis"}{ CSS font string used for all axis labels}
   \item{"font.symbols"}{ CSS font string used for plot symbols}
+  \item{"main"}{ Plot title}
 }
 The default CSS font string is "48px Arial". Note that the format of this
 font string differs from, for instance, the usual `par(font.lab)`.
@@ -140,10 +151,8 @@ following special cases:
              \code{pch} style for large numbers of points.}
 }
 Character strings of more than one character are supported--see the examples.
-
-Points with missing values are omitted from the plot, please try to avoid missing values
-in \code{x,y,z}.
 }
+
 \section{Plotting lines}{
 
 A number of new experimental options plot lines between points. Lines are optionally drawn
@@ -212,7 +221,7 @@ lim <- c(-3, 3)
 x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
 a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red")
 
-# Plot text directly using 'pch'
+# Plot text using 'pch' (we label some points in this example)
 set.seed(1)
 x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
 a <- scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim)

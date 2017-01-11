@@ -54,11 +54,14 @@
 #' returned object includes a special \code{points3d} function for adding points to the
 #' plot similar to \code{scatterplot3d}. See the note below and examples for details.
 #'
-#' @note
+#' @section Interacting with the plot:
 #' Press and hold the left mouse button (or touch or trackpad equivalent) and move
 #' the mouse to rotate the plot. Press and hold the right mouse button (or touch
 #' equivalent) to pan. Use the mouse scroll wheel or touch equivalent to zoom.
+#' If \code{labels} are specified (see below), moving the mouse pointer over
+#' a point will display the label.
 #'
+#' @section Detailed plot options:
 #' Use the \code{renderer} option to manually select from the available
 #' rendering options.
 #' The \code{canvas} renderer is the fallback rendering option when WebGL
@@ -72,11 +75,14 @@
 #' as a three-element character vector, see the examples below. A few additional
 #' plot options are also supported:
 #' \itemize{
-#'   \item{"labels"}{ character vector of length \code{nrow(x)} of point labels displayed when the mouse moves over the points }
 #'   \item{"cex.lab"}{ font size scale factor for the axis labels}
-#'   \item{"cex.axis"}{ font size scale factor for the axis tick labels }
+#'   \item{"cex.axis"}{ font size scale factor for the axis tick labels}
 #'   \item{"font.axis"}{ CSS font string used for all axis labels}
 #'   \item{"font.symbols"}{ CSS font string used for plot symbols}
+#'   \item{"labels"}{ character vector of length \code{x} of point labels displayed when the mouse moves over the points}
+#'   \item{"main"}{ Plot title text}
+#'   \item{"top"}{ Top location in pixels of the plot title text}
+#'   \item{"left"}{ Left location in pixels of the plot title text}
 #' }
 #' The default CSS font string is "48px Arial". Note that the format of this
 #' font string differs from, for instance, the usual `par(font.lab)`.
@@ -105,9 +111,6 @@
 #' }
 #' Character strings of more than one character are supported--see the examples.
 #'
-#' Points with missing values are omitted from the plot, please try to avoid missing values
-#' in \code{x,y,z}.
-#'
 #' @section Plotting lines:
 #' A number of new experimental options plot lines between points. Lines are optionally drawn
 #' between points specified in \code{x, y, z}.
@@ -122,6 +125,9 @@
 #'      defaulting to 1.}
 #' }
 #'
+#' @note
+#' Points with missing values are omitted from the plot, please try to avoid missing values
+#' in \code{x,y,z}.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -179,7 +185,7 @@
 #' x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
 #' a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red")
 #'
-#' # Plot text directly using 'pch'
+#' # Plot text using 'pch' (we label some points in this example)
 #' set.seed(1)
 #' x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
 #' a <- scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim)
