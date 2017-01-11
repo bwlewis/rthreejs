@@ -31,7 +31,7 @@ NULL
 
 #' Facebook social circles
 #'
-#' A acebook social network subgraph obtained from the Stanford SNAP repository.
+#' A facebook social network subgraph obtained from the Stanford SNAP repository.
 #'
 #' @docType data
 #' @name ego

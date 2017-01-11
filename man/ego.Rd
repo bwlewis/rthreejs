@@ -15,7 +15,7 @@ Stanford SNAP network repository
 data(ego)
 }
 \description{
-A acebook social network subgraph obtained from the Stanford SNAP repository.
+A facebook social network subgraph obtained from the Stanford SNAP repository.
 }
 \references{
 J. McAuley and J. Leskovec. Learning to Discover Social Circles in Ego Networks. NIPS, 2012.
