@@ -55,7 +55,7 @@
 #' An htmlwidget object that is displayed using the object's show or print method.
 #' (If you don't see your widget plot, try printing it with the \code{print}) function.
 #'
-#' @seealso \code{\link{LeMis}}, \code{\link{igraph.plotting}}
+#' @seealso \code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -84,11 +84,11 @@
 #'     layout_with_drl(LeMis, dim=3),  # note! somewhat slow...
 #'     layout_with_fr(LeMis, dim=3, niter=30)),
 #'   main=c("random layout", "sphere layout", "drl layout", "fr layout"),
-#'   fpl=200)
+#'   fpl=300)
 #' }
 #'
 #'
-#' @importFrom igraph layout_with_fr norm_coords
+#' @importFrom igraph layout_with_fr norm_coords V E as_edgelist
 #' @export
 graphjs <- function(g, layout,
                     vertex.color, vertex.size, vertex.shape, vertex.label,
@@ -113,7 +113,7 @@ graphjs <- function(g, layout,
 
   # transform to points and lines
   if(is.function(layout)) layout <- layout(g)
-  if(is.igraph(g)) g <- as_edgelist(g)
+  g <- as_edgelist(g)
 
   # animation
   scenes <- NA

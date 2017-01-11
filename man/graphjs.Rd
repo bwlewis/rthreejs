@@ -111,7 +111,7 @@ graphjs(LeMis,
     layout_with_drl(LeMis, dim=3),  # note! somewhat slow...
     layout_with_fr(LeMis, dim=3, niter=30)),
   main=c("random layout", "sphere layout", "drl layout", "fr layout"),
-  fpl=200)
+  fpl=300)
 }
 
 
@@ -120,6 +120,6 @@ graphjs(LeMis,
 The three.js project \url{http://threejs.org}.
 }
 \seealso{
-\code{\link{LeMis}}, \code{\link{igraph.plotting}}
+\code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 }
 
