@@ -160,65 +160,65 @@ globejs <- function(
 {
   if(missing(lat) || missing(long))
   {
-    lat = NULL
-    long = NULL
+    lat <- NULL
+    long <- NULL
   }
   # Strip alpha channel from colors
-  i = grep("^#", color)
+  i <- grep("^#", color)
   if(length(i) > 0)
   {
-    j = nchar(color[i]) > 7
+    j <- nchar(color[i]) > 7
     if(any(j))
     {
-      color[i][j] = substr(color[i][j], 1, 7)
+      color[i][j] <- substr(color[i][j], 1, 7)
     }
   }
-  i = grep("^#", arcsColor)
+  i <- grep("^#", arcsColor)
   if(length(i) > 0)
   {
-    j = nchar(arcsColor[i]) > 7
+    j <- nchar(arcsColor[i]) > 7
     if(any(j))
     {
-      arcsColor[i][j] = substr(arcsColor[i][j], 1, 7)
+      arcsColor[i][j] <- substr(arcsColor[i][j], 1, 7)
     }
   }
-  i = grep("^#", bg)
-  if(length(i) > 0) bg = substr(bg, 1, 7)
+  i <- grep("^#", bg)
+  if(length(i) > 0) bg <- substr(bg, 1, 7)
   if(missing(arcs))
-    arcs = NULL
+    arcs <- NULL
   else
   {
-    arcs = data.frame(arcs)
-    names(arcs) = c("fromlat", "fromlong", "tolat", "tolong")
+    arcs <- data.frame(arcs)
+    names(arcs) <- c("fromlat", "fromlong", "tolat", "tolong")
   }
-  arcsHeight = max(min(arcsHeight, 1), 0.2)
-  arcsOpacity = max(min(arcsOpacity, 1), 0)
+  arcsHeight <- max(min(arcsHeight, 1), 0.2)
+  arcsOpacity <- max(min(arcsOpacity, 1), 0)
 
-  options = list(lat=lat, long=long, color=color, arcsOpacity=arcsOpacity,
+  options <- list(lat=lat, long=long, color=color, arcsOpacity=arcsOpacity,
                  value=value, atmosphere=atmosphere, bg=bg, arcs=arcs,
                  arcsColor=arcsColor, arcsLwd=arcsLwd, arcsHeight=arcsHeight)
-  additional_args = list(...)
-  if(length(additional_args) > 0) options = c(options, additional_args)
+  additional_args <- list(...)
+  if(length(additional_args) > 0) options <- c(options, additional_args)
 # Clean up optional color arguments
   if("bodycolor" %in% names(options))
   {
-    i = grep("^#",options$bodycolor)
-    if(length(i) > 0) options$bodycolor = substr(options$bodycolor,1,7)
+    i <- grep("^#",options$bodycolor)
+    if(length(i) > 0) options$bodycolor <- substr(options$bodycolor, 1, 7)
   }
   if("emissive" %in% names(options))
   {
-    i = grep("^#",options$emissive)
-    if(length(i) > 0) options$emissive = substr(options$emissive,1,7)
+    i <- grep("^#", options$emissive)
+    if(length(i) > 0) options$emissive <- substr(options$emissive, 1, 7)
   }
   if("lightcolor" %in% names(options))
   {
-    i = grep("^#",options$lightcolor)
-    if(length(i) > 0) options$lightcolor = substr(options$lightcolor,1,7)
+    i <- grep("^#", options$lightcolor)
+    if(length(i) > 0) options$lightcolor <- substr(options$lightcolor, 1, 7)
   }
 
 # Convert image files to dataURI using the texture function
-  if (!is.list(img)) img = texture(img)
-  x = c(img, options)
+  if (!is.list(img)) img <- texture(img)
+  x <- c(img, options)
   htmlwidgets::createWidget(
       name = "globe",
       x = x,
@@ -239,7 +239,7 @@ globeOutput <- function(outputId, width = "100%", height = "600px") {
 #' @export
 renderGlobe <- function(expr, env = parent.frame(), quoted = FALSE) {
     if (!quoted) {
-      expr = substitute(expr)
+      expr <- substitute(expr)
     } # force quoted
     shinyRenderWidget(expr, globeOutput, env, quoted = TRUE)
 }

@@ -209,7 +209,7 @@ scatterplot3js <- function(
   x <- na.omit(x)
   if(missing(pch)) pch <- rep("o", nrow(x))
   if(length(pch) != nrow(x)) pch <- rep_len(pch, nrow(x))
-  renderer = match.arg(renderer)
+  renderer <- match.arg(renderer)
 
   # Strip alpha channel from colors REGEXP: Optional leading #, then takes
   # first 6 hex characters and discards the rest. If it doesn't match the string
@@ -254,7 +254,7 @@ scatterplot3js <- function(
   options$mx <- mx
   x[, 1:3] <- (x[, 1:3, drop=FALSE] - rep(mn, each = n)) / (rep(mx - mn, each = n))
 
-  if(flip.y) x[, 3] = 1 - x[, 3]
+  if (flip.y) x[, 3] <- 1 - x[, 3]
 
   if("center" %in% names(options) && options$center) # not yet documented, useful for graph
   {
@@ -262,12 +262,12 @@ scatterplot3js <- function(
   }
   if("scenes" %in% names(options)) # XXX experimental
   {
-    N = nrow(x) / options$scenes   # number of points per scene
+    N <- nrow(x) / options$scenes   # number of points per scene
     if(N != floor(N)) stop("number of points must be a multiple of scenes")
-    if("fps" %in% names(options)) nframes = options$fps * (options$scenes - 1)
+    if("fps" %in% names(options)) nframes <- options$fps * (options$scenes - 1)
     else nframes <- 10 * (options$scenes - 1)
     options$nframes <- nframes
-    options$positions <- as.vector(t(signif(x[(N+1):nrow(x), ], signif)))
+    options$positions <- as.vector(t(signif(x[(N + 1):nrow(x), ], signif)))
     x <- x[1:N, ]
   }
 
@@ -280,33 +280,33 @@ scatterplot3js <- function(
   if (!is.null(num.ticks))
   {
     if (length(num.ticks) != 3) stop("num.ticks must have length 3")
-    num.ticks = pmax(1, num.ticks[c(1,3,2)])
+    num.ticks <- pmax(1, num.ticks[c(1,3,2)])
 
-    t1 = seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
-    p1 = (t1 - mn[1]) / (mx[1] - mn[1])
-    t2 = seq(from=mn[2], to=mx[2], length.out=num.ticks[2])
-    p2 = (t2 - mn[2]) / (mx[2] - mn[2])
-    t3 = seq(from=mn[3], to=mx[3], length.out=num.ticks[3])
-    p3 = (t3 - mn[3]) / (mx[3] - mn[3])
-    if(flip.y) t3 = t3[length(t3):1]
+    t1 <- seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
+    p1 <- (t1 - mn[1]) / (mx[1] - mn[1])
+    t2 <- seq(from=mn[2], to=mx[2], length.out=num.ticks[2])
+    p2 <- (t2 - mn[2]) / (mx[2] - mn[2])
+    t3 <- seq(from=mn[3], to=mx[3], length.out=num.ticks[3])
+    p3 <- (t3 - mn[3]) / (mx[3] - mn[3])
+    if(flip.y) t3 <- t3[length(t3):1]
 
-    pfmt = function(x, d=2)
+    pfmt <- function(x, d=2)
     {
-      ans = sprintf("%.2f", x)
-      i = (abs(x) < 0.01 && x != 0)
+      ans <- sprintf("%.2f", x)
+      i <- (abs(x) < 0.01 && x != 0)
       if(any(i))
       {
-        ans[i] = sprintf("%.2e", x)
+        ans[i] <- sprintf("%.2e", x)
       }
       ans
     }
 
-    options$xticklab = pfmt(t1)
-    options$yticklab = pfmt(t2)
-    options$zticklab = pfmt(t3)
-    if(!is.null(x.ticklabs)) options$xticklab = x.ticklabs
-    if(!is.null(y.ticklabs)) options$zticklab = y.ticklabs
-    if(!is.null(z.ticklabs)) options$yticklab = z.ticklabs
+    options$xticklab <- pfmt(t1)
+    options$yticklab <- pfmt(t2)
+    options$zticklab <- pfmt(t3)
+    if(!is.null(x.ticklabs)) options$xticklab <- x.ticklabs
+    if(!is.null(y.ticklabs)) options$zticklab <- y.ticklabs
+    if(!is.null(z.ticklabs)) options$yticklab <- z.ticklabs
     options$xtick <- p1
     options$ytick <- p2
     options$ztick <- p3
@@ -315,7 +315,7 @@ scatterplot3js <- function(
   # lines
   if("from" %in% names(options))
   {
-    if(is.matrix(options$from) && ncol(options$from) ==2)
+    if(is.matrix(options$from) && ncol(options$from) == 2)
     {
       options$to <- options$from[, 2]
       options$from <- options$from[, 1]
@@ -329,7 +329,7 @@ scatterplot3js <- function(
   }
 
   # create widget
-  ans = htmlwidgets::createWidget(
+  ans <- htmlwidgets::createWidget(
           name = "scatterplotThree",
           x = list(data = x, options = options, bg = bg),
           width = width,
@@ -349,22 +349,20 @@ scatterplot3js <- function(
 
 #' @rdname threejs-shiny
 #' @export
-scatterplotThreeOutput = function(outputId, width="100%", height="500px") {
+scatterplotThreeOutput <- function(outputId, width="100%", height="500px") {
     shinyWidgetOutput(outputId, "scatterplotThree", width, height, package = "threejs")
 }
 
 #' @rdname threejs-shiny
 #' @export
-renderScatterplotThree = function(expr, env = parent.frame(), quoted = FALSE) {
-    if (!quoted) {
-      expr = substitute(expr)
-    } # force quoted
+renderScatterplotThree <- function(expr, env = parent.frame(), quoted = FALSE) {
+    if (!quoted) expr <- substitute(expr) # force quoted
     shinyRenderWidget(expr, scatterplotThreeOutput, env, quoted = TRUE)
 }
 
 
 # Support for adding points to a plot
-points3d_generator = function(data, options, bg, width, height, signif)
+points3d_generator <- function(data, options, bg, width, height, signif)
 {
   function(x, y, z, r = NULL, color="steelblue", size=1, pch="o", ...)
   {
@@ -374,7 +372,7 @@ points3d_generator = function(data, options, bg, width, height, signif)
       x <- cbind(x = x, y = y, z = z)
     }
     if (ncol(x) != 3) stop("x must be a three column matrix")
-    if (is.data.frame(x)) x = as.matrix(x)
+    if (is.data.frame(x)) x <- as.matrix(x)
     if (!is.matrix(x)) stop("x must be a three column matrix")
     x <- na.omit(x)
 

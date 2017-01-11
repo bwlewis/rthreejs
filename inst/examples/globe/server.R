@@ -2,7 +2,7 @@ library("shiny")
 library("threejs")
 data(world.cities, package="maps")
 
-earth_dark <- list(img=system.file("images/world.jpg",package="threejs"), 
+earth_dark <- list(img=system.file("images/world.jpg",package="threejs"),
                    bodycolor="#0011ff",
                    emissive="#0011ff",
                    lightcolor="#99ddff")

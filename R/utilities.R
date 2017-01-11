@@ -38,19 +38,19 @@
 #' 
 #' @importFrom base64enc dataURI
 #' @export
-texture = function(data)
+texture <- function(data)
 {
-  ext = gsub(".*\\.","", data)
+  ext <- gsub(".*\\.","", data)
   if(grepl("^http", data))
   {
-    u = url(data, open="rb")
-    data = tempfile()
+    u <- url(data, open="rb")
+    data <- tempfile()
     on.exit(unlink(data))
     writeBin(readBin(u, what="raw", n=10e6), data, useBytes=TRUE)
     close(u)
   }
 # Encode the file as a dataURI
-  if(nchar(ext) < 1) ext = "png"
-  img = dataURI(file=data, mime=sprintf("image/%s", ext))
+  if(nchar(ext) < 1) ext <- "png"
+  img <- dataURI(file=data, mime=sprintf("image/%s", ext))
   list(img=img, dataURI=TRUE)
 }
