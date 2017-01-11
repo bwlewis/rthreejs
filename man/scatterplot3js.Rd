@@ -88,7 +88,7 @@ plot similar to \code{scatterplot3d}. See the note below and examples for detail
 }
 \description{
 A 3D scatterplot widget using three.js. Many options
-follow the \code{scatterplot3d} package example.
+follow the \code{scatterplot3d} package.
 }
 \note{
 Press and hold the left mouse button (or touch or trackpad equivalent) and move

@@ -1,7 +1,7 @@
 #' Interactive 3D Scatterplots
 #'
 #' A 3D scatterplot widget using three.js. Many options
-#' follow the \code{scatterplot3d} package example.
+#' follow the \code{scatterplot3d} package.
 #'
 #' @param x Either a vector of x-coordinate values or a  three-column
 #' data matrix with columns corresponding to the x,y,z
