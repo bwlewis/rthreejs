@@ -23,7 +23,26 @@ This project is based on the htmlwidgets package. See
 https://github.com/ramnathv/htmlwidgets for details and links to amazingly cool
 visualization widgets for R.
 
-## What's new in version 0.3.0 (December, 2016)
+# New in version 0.3.0 (January, 2017)
+
+The new 0.3.0 package version includes major changes. The `scatterplot3js` function
+generally works as before but with many more capabilities, but the `graphjs` function
+is very different with a new API (sorry for the big breaking change!).
+
+`graphjs` is now much more tightly bound to the superb igraph package, and the
+threejs package now depends on that. Why igraph?
+
+1. If you're doing serious network analysis, you're probably already using igraph (or you should be).
+2. We now use external graph layouts (either from igraph or elsewhere). This gives much greater
+   graph layout flexibility, something I was looking for. But also removes the cute (but slow and
+   crude) force-directed JavaScript animation previously used. To partially make up for that, a
+   very basic but flexible graph animation scheme is now in place that's easy to use. See `?graphjs`
+   for examples.
+
+The good news is that performance is generally much improved, using custom
+WebGL shaders where needed.
+
+## What else is new in version 0.3.0
 
 The `scatterplot3js` function was substantially improved and updated.
 
@@ -40,7 +59,6 @@ under the hood.
 - Graph layout is now external; for instance use one of the many superb
   igraph package graph layout options.
 - Basic graph animation is supported.
-
 
 ## Install
 

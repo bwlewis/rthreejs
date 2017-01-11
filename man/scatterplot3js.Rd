@@ -118,12 +118,14 @@ Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below. A few additional
 plot options are also supported:
 \itemize{
-  \item{"labels"}{ character vector of length \code{nrow(x)} of point labels displayed when the mouse moves over the points }
   \item{"cex.lab"}{ font size scale factor for the axis labels}
-  \item{"cex.axis"}{ font size scale factor for the axis tick labels }
+  \item{"cex.axis"}{ font size scale factor for the axis tick labels}
   \item{"font.axis"}{ CSS font string used for all axis labels}
   \item{"font.symbols"}{ CSS font string used for plot symbols}
-  \item{"main"}{ Plot title}
+  \item{"labels"}{ character vector of length \code{x} of point labels displayed when the mouse moves over the points}
+  \item{"main"}{ Plot title text}
+  \item{"top"}{ Top location in pixels of the plot title text}
+  \item{"left"}{ Left location in pixels of the plot title text}
 }
 The default CSS font string is "48px Arial". Note that the format of this
 font string differs from, for instance, the usual `par(font.lab)`.

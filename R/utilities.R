@@ -54,3 +54,10 @@ texture <- function(data)
   img <- dataURI(file=data, mime=sprintf("image/%s", ext))
   list(img=img, dataURI=TRUE)
 }
+
+# internal non-braindead if-else
+ifel <- function(a, b, c)
+{
+  if(isTRUE(a)) return(b)
+  c
+}

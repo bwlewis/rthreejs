@@ -219,7 +219,7 @@ HOMER=_this;
           // ADD
           var mesh = new THREE.Mesh(sphereGeo, new THREE.MeshLambertMaterial({color : col}));
           mesh.index = i;
-          if(x.options.labels) mesh.label = x.options.labels[i];
+          if(x.options.labels && Array.isArray(x.options.labels)) mesh.label = x.options.labels[i];
           else mesh.label = "";
           _this.pointgroup.add(mesh);
         }
@@ -297,7 +297,7 @@ HOMER=_this;
             else sizes[i] = scale / 4;
             if(x.options.pch[i] == unique_pch[j])
             {
-              if(x.options.labels) geometry.labels.push(x.options.labels[i]);
+              if(x.options.labels && Array.isArray(x.options.labels)) geometry.labels.push(x.options.labels[i]);
               else geometry.labels.push("");
               positions[k * 3 ] = x.data[i * 3];
               positions[k * 3 + 1 ] = x.data[i * 3 + 1];

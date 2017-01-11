@@ -10,10 +10,7 @@
 #' Data based on character coappearence in Victor Hugo's Les Miserables, compiled by Donald Knuth
 #' (\url{http://www-cs-faculty.stanford.edu/~uno/sgb.html}).
 #' @usage data(LeMis)
-#' @format A list of two data frames: nodes with 77 observations (listing characters in the novel) of 4 variables
-#' (\code{id} a numeric identifier, \code{label} the character's name, \code{size} a node plot size, and
-#' \code{color} the node plot color); edges: with 254 observations of 4 variables (\code{from} and \code{to}
-#' listing connections between node ids, \code{size} the edge plot size, and \code{color} the edge plot color.
+#' @format An igraph package graph object.
 #'
 NULL
 
@@ -29,4 +26,22 @@ NULL
 #' \url{https://raw.githubusercontent.com/callumprentice/callumprentice.github.io/master/apps/flight_stream/js/flights_one.js}
 #' @usage data(flights)
 #' @format A data frame with 34,296 observations of 4 variables, origin_lat, origin_long, dest_lat, and dest_long.
+NULL
+
+
+#' Facebook social circles
+#'
+#' A acebook social network subgraph obtained from the Stanford SNAP repository.
+#'
+#' @docType data
+#' @name ego
+#' @keywords datasets
+#' @source Stanford SNAP network repository
+#' \url{http://snap.stanford.edu/data/facebook_combined.txt.gz}
+#' @references
+#' J. McAuley and J. Leskovec. Learning to Discover Social Circles in Ego Networks. NIPS, 2012.
+#' @usage data(ego)
+#' @format An igraph package undirected graph object with 4039 vertices and 88234 edges. The
+#' graph includes a force-directed layout with vertices colored by the \code{\link{cluster_fast_greedy}}
+#' algorithm from the igraph package.
 NULL

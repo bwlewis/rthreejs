@@ -287,6 +287,7 @@ scatterplot3js <- function(
     N <- nrow(x) / options$scenes   # number of points per scene
     if(N != floor(N)) stop("number of points must be a multiple of scenes")
     if("fps" %in% names(options)) nframes <- options$fps * (options$scenes - 1)
+    if("fpl" %in% names(options)) nframes <- options$fpl * (options$scenes - 1)
     else nframes <- 10 * (options$scenes - 1)
     options$nframes <- nframes
     options$positions <- as.vector(t(signif(x[(N + 1):nrow(x), ], signif)))
@@ -296,7 +297,7 @@ scatterplot3js <- function(
 
   mdata <- x # stash for return result
 
-  # convert matrix to a JSON array required by scatterplotThree.js and strip
+  # convert matrix to a array required by scatterplotThree.js and strip
   x <- as.vector(t(signif(x, signif)))
 
   # Ticks
@@ -350,6 +351,7 @@ scatterplot3js <- function(
     if(nl != length(options$to)) stop("from and to must be the same length")
     if(!("lwd" %in% names(options))) options$lwd <- 1L
   }
+
 
   # create widget
   ans <- htmlwidgets::createWidget(
