@@ -122,6 +122,7 @@ plot options are also supported:
   \item{"cex.axis"}{ font size scale factor for the axis tick labels}
   \item{"font.axis"}{ CSS font string used for all axis labels}
   \item{"font.symbols"}{ CSS font string used for plot symbols}
+  \item{"font.main"}{ CSS font string used for main title text box}
   \item{"labels"}{ character vector of length \code{x} of point labels displayed when the mouse moves over the points}
   \item{"main"}{ Plot title text}
   \item{"top"}{ Top location in pixels of the plot title text}

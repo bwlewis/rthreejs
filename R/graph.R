@@ -2,7 +2,7 @@
 #'
 #' Make interactive 3D plots of \code{\link{igraph}} objects.
 #'
-#' @param g an \code{igraph} graph object from the igraph package
+#' @param g an \code{\link{igraph}} graph object or a list of \code{igraph} objects (see notes)
 #' @param layout optional graph layout or list of layouts (see notes)
 #' @param vertex.color optional vertex color or vector of colors as long as the number of vertices in \code{g}
 #' @param vertex.size optional vertex size or vector of sizes
@@ -29,8 +29,7 @@
 #' either a three-column matrix of vertex \code{x, y, z} coordinates, or a function
 #' that returns such a layout. The igraph \code{\link{layout_with_fr}} force-directed
 #' layout is used by default (note that only 3D layouts are supported). Also see
-#' the animation section below. Alpha levels specified in colors are ignored, however
-#' you can set an overall transparency for edges with \code{edge.alpha}.
+#' the animation section below.
 #'
 #' @section Vertex options:
 #' Optional parameters beginning with \code{vertex.} represent a subset of the igraph package
@@ -46,10 +45,21 @@
 #' edge visualization options and work similarly as the \code{vertex.} options above.
 #'
 #' @section Graph animation:
-#' Specifying a list of three column layout matrices in \code{layout} displays
+#' Specifying a list of three-column layout matrices in \code{layout} displays
 #' a linear interpolation from one layout to the next, providing a simple mechanism
-#' for graph animation. Specify the optional \code{fpl} parameter to control the
+#' for graph animation. Each layout must have the same number of rows as the number
+#' of vertices in the graph.
+#' Specify the optional \code{fpl} (frames per layout) parameter to control the
 #' number of interpolating animation frames between layouts. See the examples.
+#'
+#' Optionally specify a list of graph objects in \code{g} to vary the displayed edges
+#' and edge colors from one layout to the next, with the restriction that each graph
+#' object must refer to a uniform number of vertices.
+#'
+#'
+#' @note
+#' Alpha levels specified in colors are ignored, however
+#' you can set an overall transparency for edges with \code{edge.alpha}.
 #'
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
@@ -85,8 +95,18 @@
 #'     layout_with_fr(LeMis, dim=3, niter=30)),
 #'   main=c("random layout", "sphere layout", "drl layout", "fr layout"),
 #'   fpl=300)
-#' }
 #'
+#' # A simple graph animation illustrating edge modification
+#' g <- make_ring(5) - edges(1:5)
+#' graph_list <- list(
+#'  g + edge(1, 2),
+#'  g + edge(1, 2) + edge(2, 3),
+#'  g + edge(1, 2) + edge(2, 3) + edge(3, 4),
+#'  g + edge(1, 2) + edge(2, 3) + edge(3, 4) + edge(4, 5),
+#'  g + edge(1, 2) + edge(2, 3) + edge(3, 4) + edge(4, 5) + edge(5, 1))
+#'  graphjs(graph_list, main=paste(1:5), fpl=200,
+#'    vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
+#' }
 #'
 #' @importFrom igraph layout_with_fr norm_coords V E as_edgelist
 #' @export
@@ -96,6 +116,18 @@ graphjs <- function(g, layout,
                     main="", bg="white",
                     width=NULL, height=NULL, ...)
 {
+  # check for list of graphs first
+  glist <- FALSE
+  if(is.list(g) && "igraph" %in% class(g[[1]]))
+  {
+    glist <- TRUE
+    fromlist <- lapply(g[-1], as_edgelist)
+    tolist <- lapply(fromlist, function(x) x[, 2])
+    fromlist <- lapply(fromlist, function(x) x[, 1])
+    lcollist <- lapply(g[-1], function(x) { ifel(is.null(E(x)$color), NA, E(x)$color) })
+    if(missing(layout)) layout <- lapply(g, function(x) {ifel(is.null(x$layout), layout_with_fr(x, dim=3, niter=50), x$layout)})
+    g <- g[[1]]
+  }
   if(!("igraph" %in% class(g))) stop("g must be an igraph object")
   # options
   if(missing(layout)) layout <- ifel(is.null(g$layout), function(g) layout_with_fr(g, dim=3, niter=50), g$layout)
@@ -139,5 +171,12 @@ graphjs <- function(g, layout,
   if(!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   if(!(length(edge.color) == 1 && is.na(edge.color))) options$lcol <- edge.color
   if(!is.na(scenes)) options$scenes <- scenes
+  if(glist)
+  {
+    if((length(fromlist) + 1) != scenes) stop("mismatching graph and layout lengths")
+    options$fromlist <- fromlist
+    options$tolist <- tolist
+    options$lcollist <- lcollist
+  }
   do.call("scatterplot3js", args=options)
 }

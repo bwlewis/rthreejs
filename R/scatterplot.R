@@ -79,6 +79,7 @@
 #'   \item{"cex.axis"}{ font size scale factor for the axis tick labels}
 #'   \item{"font.axis"}{ CSS font string used for all axis labels}
 #'   \item{"font.symbols"}{ CSS font string used for plot symbols}
+#'   \item{"font.main"}{ CSS font string used for main title text box}
 #'   \item{"labels"}{ character vector of length \code{x} of point labels displayed when the mouse moves over the points}
 #'   \item{"main"}{ Plot title text}
 #'   \item{"top"}{ Top location in pixels of the plot title text}
@@ -341,15 +342,29 @@ scatterplot3js <- function(
   {
     if(is.matrix(options$from) && ncol(options$from) == 2)
     {
-      options$to <- options$from[, 2]
-      options$from <- options$from[, 1]
+      options$to <- options$from[, 2] - 1    # zero-index
+      options$from <- options$from[, 1] - 1
+      if(length(options$from) == 1)
+      {
+        options$from <- list(options$from)
+        options$to <- list(options$to)
+      }
     }
-    nl <- length(options$from)
-    if(!("to" %in% names(options))) stop("both from and to must be specified")
-    options$from <- as.integer(options$from - 1)
-    options$to <- as.integer(options$to - 1)
-    if(nl != length(options$to)) stop("from and to must be the same length")
+    else
+    {
+      nl <- length(options$from)
+      if(!("to" %in% names(options))) stop("both from and to must be specified")
+      options$from <- as.integer(options$from - 1)
+      options$to <- as.integer(options$to - 1)
+      if(nl != length(options$to)) stop("from and to must be the same length")
+    }
     if(!("lwd" %in% names(options))) options$lwd <- 1L
+  }
+  if("fromlist" %in% names(options))
+  {
+    if(!("tolist" %in% names(options))) stop("both fromlist and tolist must be specified")
+    options$fromlist <- Map(function(x) x - 1, options$fromlist) # zero-index
+    options$tolist <- Map(function(x) x - 1, options$tolist)
   }
 
 

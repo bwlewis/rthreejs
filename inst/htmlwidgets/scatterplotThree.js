@@ -75,7 +75,6 @@ Widget.scatter = function()
     _this.fgcss = "#000000";
     _this.main = ""; // default text in infobox
     _this.mousethreshold = 0.02; // default mouse over id threshold
-HOMER=_this;
 
     el.onmousemove = function(ev)
     { 
@@ -148,6 +147,7 @@ HOMER=_this;
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
     if(x.options.top) _this.infobox.style.top = x.options.top;
     if(x.options.left) _this.infobox.style.left = x.options.left;
+    if(x.options.fontmain) _this.infobox.style.font = x.options.fontmain;
     if(Array.isArray(x.options.main))
     {
       _this.main = x.options.main[0];
@@ -164,6 +164,8 @@ HOMER=_this;
     if(x.options.fontaxis) fontaxis = x.options.fontaxis;
     if(x.options.fontsymbols) fontsymbols = x.options.fontsymbols;
 
+HOMER=_this;
+
 
     if(_this.renderer.GL)
     {
@@ -172,11 +174,17 @@ HOMER=_this;
       {
         _this.positions = x.options.positions;  // vertex positions array, multiple of _this.N
         _this.data = x.data;                    // copy of scene vertex positions
-      }
+      } else _this.positions = [];
       if(x.options.nframes)
       {
         _this.nframes = x.options.nframes;      // total frames
         _this.frame = 0;
+      }
+      if(x.options.fromlist)
+      {
+        _this.fromlist = x.options.fromlist;   // animated edges changing on each extra scene
+        _this.tolist = x.options.tolist;
+        if(x.options.lcollist) _this.lcollist = x.options.lcollist;
       }
       // lights
       /* FIXME add user-defined lights */
@@ -493,7 +501,7 @@ HOMER=_this;
 /* Note that variable line widths are not directly supported by buffered geometry, see for instance:
  * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
  * If lwd is an array then need use non-buffered geometry (slow), otherwise buffer.
- *FIXME add custom shader to support this!
+ **FIXME add custom shader to support this!
  */
     if(x.options.from && _this.renderer.GL)
     {
@@ -518,55 +526,14 @@ HOMER=_this;
         }
       } else // use buffered geometry
       {
+        _this.data = x.data;
         _this.from = x.options.from; // store these for future use in animation, see update()
         _this.to = x.options.to;
-        var segments = x.options.from.length;
-        var geometry = new THREE.BufferGeometry();
-        var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: x.options.lwd, opacity: x.options.linealpha, transparent: true});
-        var positions = new Float32Array(segments * 6);
-        var colors = new Float32Array(segments * 6);
-        for(var j=0; j < segments; j++)
-        {
-          var from = x.options.from[j];
-          var to = x.options.to[j];
-          var c1, c2;
-          if(x.options.lcol)
-          {
-            if(Array.isArray(x.options.lcol))
-              c1 = new THREE.Color(x.options.lcol[j]);
-            else
-              c1 = new THREE.Color(x.options.lcol);
-            c2 = c1;
-          } else
-          {
-            if(Array.isArray(x.options.color))
-            {
-              c1 = new THREE.Color(x.options.color[from]);
-              c2 = new THREE.Color(x.options.color[to]);
-            } else
-            {
-              c1 = new THREE.Color(x.options.color);
-              c2 = c1;
-            }
-          }
-          positions[j * 6] = x.data[from * 3];
-          positions[j * 6 + 1] = x.data[from * 3 + 1];
-          positions[j * 6 + 2] = x.data[from * 3 + 2];
-          positions[j * 6 + 3] = x.data[to * 3];
-          positions[j * 6 + 4] = x.data[to * 3 + 1];
-          positions[j * 6 + 5] = x.data[to * 3 + 2];
-          colors[j * 6] = c1.r;
-          colors[j * 6 + 1] = c1.g;
-          colors[j * 6 + 2] = c1.b;
-          colors[j * 6 + 3] = c2.r;
-          colors[j * 6 + 4] = c2.g;
-          colors[j * 6 + 5] = c2.b;
-        }
-        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.computeBoundingSphere();
-        var lines = new THREE.LineSegments(geometry, material);
-        _this.linegroup.add(lines);
+        _this.color = x.options.color;
+        if(x.options.lcol) _this.lcol = x.options.lcol;
+        _this.lwd = x.options.lwd;
+        _this.linealpha = x.options.linealpha;
+        update_lines(true);
       }
     }
 
@@ -585,20 +552,35 @@ HOMER=_this;
      * _this.positions = 150 (three scenes after the initial one in x.data, total of four),
      * _this.nframes = 30 (ten interpolated frames per scene)
      */
-    if(_this.frame >= _this.nframes) _this.frame = -1;
-    if(_this.frame > -1)
+    var nscenes = _this.positions.length / (3 * _this.N);    // number of scenes beyond initial scene
+    var idx = nscenes * (_this.frame  / _this.nframes);
+    var fidx = Math.floor(idx);
+    if(idx == fidx)
     {
-      var nscenes = _this.positions.length / (3 * _this.N);
-      var fps = _this.nframes / nscenes;
-      var scene = Math.floor(nscenes * (_this.frame  / _this.nframes));
-      var interp = fps - _this.frame % fps;
-      var k = 0; // vertex id
       if(_this.mains)
       {
-        var i = Math.floor((1 + nscenes) * (_this.frame  / _this.nframes));
-        _this.main = _this.mains[i];
+        _this.main = _this.mains[idx];  // update title
         printInfo(_this.main);
       }
+      if(_this.lcollist && idx > 0) _this.lcol = _this.lcollist[idx - 1]; // update edge colors maybe
+      if(_this.fromlist && idx > 0)
+      {
+        _this.from = _this.fromlist[idx - 1]; // update edges
+        _this.to = _this.tolist[idx - 1];     // update edges
+        update_lines(false);
+      }
+    }
+    if(_this.frame >= _this.nframes)
+    {
+       _this.frame = -1;
+    }
+    if(_this.frame > -1)
+    {
+      var fps = _this.nframes / nscenes;
+      var scene = Math.floor(nscenes * (_this.frame  / _this.nframes));
+      var edgeidx = (nscenes * (_this.frame + 1) / _this.nframes);
+      var interp = fps - _this.frame % fps;
+      var k = 0; // vertex id
       _this.frame = _this.frame + 1;
       for(var j = 0; j < _this.pointgroup.children.length; j++)
       {
@@ -648,25 +630,65 @@ HOMER=_this;
           _this.pointgroup.children[j].geometry.attributes.position.needsUpdate = true;
         }
       }
-      if(_this.linegroup.children.length > 0) // Buffered line segments (replace)
+      update_lines(false);
+    }
+  }
+
+  function update_lines(init)
+  {
+    if(init || _this.linegroup.children.length > 0) // Buffered line segments (replace)
+    {
+      var segments = _this.from.length;
+      var geometry = new THREE.BufferGeometry();
+      var positions = new Float32Array(segments * 6);
+      var colors = new Float32Array(segments * 6);
+      for(var i = 0; i < _this.from.length; i++)
       {
-        var segments = _this.from.length;
-        var geometry = new THREE.BufferGeometry();
-        var positions = new Float32Array(segments * 6);
-        for(var i = 0; i < _this.from.length; i++)
+        var from = _this.from[i];
+        var to = _this.to[i];
+        var c1, c2;
+        if(_this.lcol)
         {
-          var from = _this.from[i];
-          var to = _this.to[i];
-          positions[i * 6] = _this.data[from * 3];
-          positions[i * 6 + 1] = _this.data[from * 3 + 1];
-          positions[i * 6 + 2] = _this.data[from * 3 + 2];
-          positions[i * 6 + 3] = _this.data[to * 3];
-          positions[i * 6 + 4] = _this.data[to * 3 + 1];
-          positions[i * 6 + 5] = _this.data[to * 3 + 2];
+          if(Array.isArray(_this.lcol))
+            c1 = new THREE.Color(_this.lcol[i]);
+          else
+            c1 = new THREE.Color(_this.lcol);
+          c2 = c1;
+        } else
+        {
+          if(Array.isArray(_this.color))
+          {
+            c1 = new THREE.Color(_this.color[from]);
+            c2 = new THREE.Color(_this.color[to]);
+          } else
+          {
+            c1 = new THREE.Color(_this.color);
+            c2 = c1;
+          }
         }
-        geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.addAttribute('color', _this.linegroup.children[0].geometry.attributes.color);
-        geometry.computeBoundingSphere();
+        colors[i * 6] = c1.r;
+        colors[i * 6 + 1] = c1.g;
+        colors[i * 6 + 2] = c1.b;
+        colors[i * 6 + 3] = c2.r;
+        colors[i * 6 + 4] = c2.g;
+        colors[i * 6 + 5] = c2.b;
+        positions[i * 6] = _this.data[from * 3];
+        positions[i * 6 + 1] = _this.data[from * 3 + 1];
+        positions[i * 6 + 2] = _this.data[from * 3 + 2];
+        positions[i * 6 + 3] = _this.data[to * 3];
+        positions[i * 6 + 4] = _this.data[to * 3 + 1];
+        positions[i * 6 + 5] = _this.data[to * 3 + 2];
+      }
+      geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.computeBoundingSphere();
+      if(init)
+      {
+        var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.lwd, opacity: _this.linealpha, transparent: true});
+        var lines = new THREE.LineSegments(geometry, material);
+        _this.linegroup.add(lines);
+      } else
+      {
         _this.linegroup.children[0].geometry = geometry;
         _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
       }
