@@ -208,9 +208,9 @@ HTMLWidgets.widget(
         else
           colr = new THREE.Color(x.arcsColor);
         if(Array.isArray(x.arcsLwd))
-          size = parseInt(x.arcsLwd[i]);
+          size = parseFloat(x.arcsLwd[i]);
         else
-          size = parseInt(x.arcsLwd);
+          size = parseFloat(x.arcsLwd);
         phi1 = (90 - x.arcs.fromlat[i]) * Math.PI / 180;
         theta1 = - x.arcs.fromlong[i] * Math.PI / 180;
         phi2 = (90 - x.arcs.tolat[i]) * Math.PI / 180;
