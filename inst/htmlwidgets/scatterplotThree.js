@@ -158,13 +158,47 @@ Widget.scatter = function()
     var cexaxis = 0.5;
     var cexlab = 1;
     var fontaxis = "48px Arial";
-    var fontsymbols = "12px Arial";
+    var fontsymbols = "48px Arial";
     if(x.options.cexaxis) cexaxis = parseFloat(x.options.cexaxis);
     if(x.options.cexlab) cexlab = parseFloat(x.options.cexlab);
     if(x.options.fontaxis) fontaxis = x.options.fontaxis;
     if(x.options.fontsymbols) fontsymbols = x.options.fontsymbols;
 
-HOMER=_this;
+    // circle sprite for pch='@'
+    var sz = 512;
+    var dataColor = new Uint8Array( sz * sz * 4 );
+    for(var i = 0; i < sz * sz * 4; i++) dataColor[i] = 0;
+    for(var i = 0; i < sz; i++)
+    {
+      for(var j = 0; j < sz; j++)
+      {
+        var dx = 2*i/(sz-1) - 1;
+        var dy = 2*j/(sz-1) - 1;
+        var dz = dx*dx + dy*dy;
+        var k = i*sz + j;
+        if(dz <= 0.75)
+        {
+          dataColor[k*4] = 255;
+          dataColor[k*4 + 1] = 255;
+          dataColor[k*4 + 2] = 255;
+          dataColor[k*4 + 3] = 255;
+        } else if(dz < 1)
+        {
+          dataColor[k*4] = 0;
+          dataColor[k*4 + 1] = 0;
+          dataColor[k*4 + 2] = 0;
+          dataColor[k*4 + 3] = 255;
+        }
+      }
+    }
+    var circle = new THREE.DataTexture(dataColor, sz, sz, THREE.RGBAFormat, THREE.UnsignedByteType );
+    circle.needsUpdate = true;
+    // circle sprite for pch='.'
+    var sz = 16;
+    var dataColor = new Uint8Array( sz * sz * 4 );
+    for(var i = 0; i < sz * sz * 4; i++) dataColor[i] = 255;
+    var square = new THREE.DataTexture(dataColor, sz, sz, THREE.RGBAFormat, THREE.UnsignedByteType );
+    square.needsUpdate = true;
 
 
     if(_this.renderer.GL)
@@ -231,41 +265,11 @@ HOMER=_this;
           else mesh.label = "";
           _this.pointgroup.add(mesh);
         }
-      }
+      } // end of special sphere case
       if(npoints < x.data.length / 3)
       { // more points to draw
         var unique_pch = [...new Set(x.options.pch)];
         if(!Array.isArray(x.options.pch)) unique_pch = [...new Set([x.options.pch])];
-        // special sprite for pch='@'
-        var sz = 512;
-        var dataColor = new Uint8Array( sz * sz * 4 );
-        if(x.options.opacity) alpha = alpha * x.options.opacity;
-        for(var i = 0; i < sz * sz * 4; i++) dataColor[i] = 0;
-        for(var i = 0; i < sz; i++)
-        {
-          for(var j = 0; j < sz; j++)
-          {
-            var dx = 2*i/(sz-1) - 1;
-            var dy = 2*j/(sz-1) - 1;
-            var dz = dx*dx + dy*dy;
-            var k = i*sz + j;
-            if(dz <= 0.75)
-            {
-              dataColor[k*4] = 255;
-              dataColor[k*4 + 1] = 255;
-              dataColor[k*4 + 2] = 255;
-              dataColor[k*4 + 3] = 255;
-            } else if(dz < 1)
-            {
-              dataColor[k*4] = 0;
-              dataColor[k*4 + 1] = 0;
-              dataColor[k*4 + 2] = 0;
-              dataColor[k*4 + 3] = 255;
-            }
-          }
-        }
-        var special = new THREE.DataTexture(dataColor, sz, sz, THREE.RGBAFormat, THREE.UnsignedByteType );
-        special.needsUpdate = true;
 
         for(var j=0; j < unique_pch.length; j++)
         {
@@ -281,9 +285,9 @@ HOMER=_this;
           var col = new THREE.Color("steelblue");
           scale = 0.3;
 
-          // generic pch sprite
+          // generic pch sprite (text)
           var canvas = document.createElement('canvas');
-          var cwidth = 128;
+          var cwidth = 512;
           canvas.width = cwidth;
           canvas.height = cwidth;
           var context = canvas.getContext('2d');
@@ -293,16 +297,29 @@ HOMER=_this;
           context.font = fontsymbols;
           context.fillText(unique_pch[j], cwidth / 2, cwidth / 2);
           var sprite = new THREE.Texture(canvas);
+          sprite.flipY = false;
           sprite.needsUpdate = true;
 
           geometry.labels = [];
+
+          var txtur, scalefactor;
+          if(unique_pch[j] == '@') {
+            txtur = circle;
+            scalefactor = 0.25;
+          } else if(unique_pch[j] == '.') {
+            txtur = square;
+            scalefactor = 0.25;
+          } else {
+            txtur = sprite;
+            scalefactor = 10;
+          }
 
           if(x.options.size && !Array.isArray(x.options.size)) scale = x.options.size;
           var k = 0;
           for (var i = 0; i < x.data.length / 3; i++)
           {
-            if(Array.isArray(x.options.size)) sizes[i] = x.options.size[i] / 4; // sizes for '@' style
-            else sizes[i] = scale / 4;
+            if(Array.isArray(x.options.size)) sizes[i] = x.options.size[i] * scalefactor;
+            else sizes[i] = scale * scalefactor;
             if(x.options.pch[i] == unique_pch[j])
             {
               if(x.options.labels && Array.isArray(x.options.labels)) geometry.labels.push(x.options.labels[i]);
@@ -324,25 +341,15 @@ HOMER=_this;
           geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
           geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
           geometry.computeBoundingSphere();
-          var material;
-          if(unique_pch[j] == '.')  // special case, no glyph, uniform sizes -- very efficient
-          {
-            material = new THREE.PointsMaterial({size: scale/10, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
-          } else if(unique_pch[j] == '@') // another special case, custom shader billboard sprite
-          {
-            material = new THREE.ShaderMaterial({
+          var material = new THREE.ShaderMaterial({
               uniforms: {
                 ucolor:   { value: new THREE.Color( 0xffffff ) },
-                texture: { value: special }
+                texture: { value: txtur }
               },
               vertexShader: "attribute float size; attribute vec3 color; varying vec3 vColor; void main() { vColor = color; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_PointSize = size * ( 300.0 / -mvPosition.z ); gl_Position = projectionMatrix * mvPosition; }",
               fragmentShader: "uniform vec3 ucolor; uniform sampler2D texture; varying vec3 vColor; void main() { gl_FragColor = vec4( ucolor * vColor, 1.0 ); gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord ); if ( gl_FragColor.a < ALPHATEST ) discard; }",
-              alphaTest: 0.1    // mapped internally to "ALPHATEST" in shader :(
-            } );
-          } else // generic verbatim text in a custom shader
-          {
-            material = new THREE.PointsMaterial({size: 3*scale, map: sprite, transparent: true, alphaTest: 0.2, vertexColors: THREE.VertexColors});
-          }
+              alphaTest: 0.1    // mapped by threejs to "ALPHATEST" in shader :(
+          });
           var particleSystem = new THREE.Points(geometry, material);
           _this.pointgroup.add(particleSystem);
         }
