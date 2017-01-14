@@ -280,7 +280,7 @@ Widget.scatter = function()
           }
           var geometry = new THREE.BufferGeometry();
           var positions = new Float32Array(npoints * 3);
-          var colors = new Float32Array(npoints * 3);
+          var colors = new Float32Array(npoints * 4);
           var sizes = new Float32Array(npoints);
           var col = new THREE.Color("steelblue");
           scale = 0.3;
@@ -331,14 +331,16 @@ Widget.scatter = function()
                 if(Array.isArray(x.options.color)) col = new THREE.Color(x.options.color[i]);
                 else col = new THREE.Color(x.options.color);
               }
-              colors[k * 3] = col.r;
-              colors[k * 3 + 1] = col.g;
-              colors[k * 3 + 2] = col.b;
+              colors[k * 4] = col.r;
+              colors[k * 4 + 1] = col.g;
+              colors[k * 4 + 2] = col.b;
+              if(x.options.alpha && Array.isArray(x.options.alpha)) colors[k * 4 + 3] = x.options.alpha[k];
+              else colors[k * 4 + 3] = 1;
               k++;
             }
           }
           geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-          geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+          geometry.addAttribute('color', new THREE.BufferAttribute(colors, 4));
           geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
           geometry.computeBoundingSphere();
           var material = new THREE.ShaderMaterial({
@@ -346,8 +348,8 @@ Widget.scatter = function()
                 ucolor:   { value: new THREE.Color( 0xffffff ) },
                 texture: { value: txtur }
               },
-              vertexShader: "attribute float size; attribute vec3 color; varying vec3 vColor; void main() { vColor = color; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_PointSize = size * ( 300.0 / -mvPosition.z ); gl_Position = projectionMatrix * mvPosition; }",
-              fragmentShader: "uniform vec3 ucolor; uniform sampler2D texture; varying vec3 vColor; void main() { gl_FragColor = vec4( ucolor * vColor, 1.0 ); gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord ); if ( gl_FragColor.a < ALPHATEST ) discard; }",
+              vertexShader: "attribute float size; attribute vec4 color; varying vec4 vColor; void main() { vColor = color; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_PointSize = size * ( 300.0 / -mvPosition.z ); gl_Position = projectionMatrix * mvPosition; }",
+              fragmentShader: "uniform sampler2D texture; varying vec4 vColor; void main() { gl_FragColor = vec4( vColor ); gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord ); if ( gl_FragColor.a < ALPHATEST ) discard; }",
               alphaTest: 0.1    // mapped by threejs to "ALPHATEST" in shader :(
           });
           var particleSystem = new THREE.Points(geometry, material);
@@ -525,6 +527,11 @@ Widget.scatter = function()
             v(x.data[3 * x.options.to[j]],
               x.data[3 * x.options.to[j] + 1],
               x.data[3 * x.options.to[j] + 2]));
+
+
+// custom shader here for line width FIXME
+
+
           if(Array.isArray(x.options.lcol))
             var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j], opacity: x.options.linealpha, transparent: true}));
           else
