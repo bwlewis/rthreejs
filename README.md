@@ -11,9 +11,7 @@ Shiny applications, and from command-line R via a web browser.  They produce
 high-quality interactive visualizations with just a few lines of R code.
 
 Visualizations optionally use accelerated WebGL graphics, falling back to
-non-accelerated graphics for systems without WebGL when possible. When WebGL is
-available, the scatterplot3js function can produce fluid, interactive
-pointclouds with hundreds of thousands of points.
+non-accelerated graphics for systems without WebGL when possible.
 
 See http://threejs.org for details on three.js.
 
@@ -27,9 +25,9 @@ visualization widgets for R.
 
 The new 0.3.0 package version includes major changes. The `scatterplot3js` function
 generally works as before but with many more capabilities, but the `graphjs` function
-is very different with a new API (sorry for the big breaking change!).
+is very different with a new API that follows the igraph package.
 
-`graphjs` is now much more tightly bound to the superb igraph package, and the
+`graphjs` is now much more tightly bound to the igraph package, and the
 threejs package now depends on that. Why igraph?
 
 1. If you're doing serious network analysis, you're probably already using igraph (or you should be).

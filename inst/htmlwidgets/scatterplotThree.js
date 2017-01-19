@@ -681,7 +681,6 @@ Widget.scatter = function()
         var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.lwd, opacity: _this.linealpha, transparent: true});
 
 /* custom shader here for line width FIXME
-*/
           material = new THREE.ShaderMaterial({
               uniforms: {
                 ucolor:   { value: new THREE.Color( 0xffffff ) },
@@ -698,6 +697,7 @@ Widget.scatter = function()
                 "void main() { gl_FragColor = vec4( vColor ); if ( gl_FragColor.a < ALPHATEST ) discard; }"].join("\n"),
               alphaTest: 0.1    // mapped by threejs to "ALPHATEST" in shader :(
          });
+*/
 
         var lines = new THREE.LineSegments(geometry, material);
         _this.linegroup.add(lines);
