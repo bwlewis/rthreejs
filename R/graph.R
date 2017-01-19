@@ -76,9 +76,12 @@
 #' i <- cluster_optimal(g)
 #' (graphjs(g, vertex.color=c("orange", "green", "blue")[i$membership], vertex.shape="sphere"))
 #'
-#' # Les Miserables Character Coappearance Data
+#' # Les Miserables Character Co-appearance Data
 #' data("LeMis")
 #' (graphjs(LeMis))
+#'
+#' # ...plot Character names
+#' (graphjs(LeMis, vertex.shape=V(LeMis)$label))
 #'
 #' # Facebook ego network SNAP dataset (a nice medium-sized network)
 #' data("ego")

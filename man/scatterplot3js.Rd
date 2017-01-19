@@ -172,9 +172,6 @@ between points specified in \code{x, y, z}.
 }
 }
 \examples{
-# Same example, but with WebGL spheres (if available)
-scatterplot3js(x, color=rainbow(N), size=i)
-
 # Example 1 from the scatterplot3d package (cf.)
 z <- seq(-10, 10, 0.1)
 x <- cos(z)
@@ -230,6 +227,8 @@ i <- sample(3, N, replace=TRUE)
 x <- matrix(rnorm(N*3),ncol=3)
 lab <- c("small", "bigger", "biggest")
 scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
+# Same example, but with WebGL spheres (if available)
+scatterplot3js(x, color=rainbow(N), size=i)
 
 \dontrun{
   # A shiny example
