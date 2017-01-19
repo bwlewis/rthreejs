@@ -200,7 +200,6 @@ Widget.scatter = function()
     var square = new THREE.DataTexture(dataColor, sz, sz, THREE.RGBAFormat, THREE.UnsignedByteType );
     square.needsUpdate = true;
 
-
     if(_this.renderer.GL)
     {
       _this.N = x.data.length / 3;              // number of vertices
@@ -521,14 +520,14 @@ Widget.scatter = function()
         _this.lwd = x.options.lwd[0];
       } else // use buffered geometry
       {
-        _this.data = x.data;
-        _this.from = x.options.from; // store these for future use in animation, see update()
-        _this.to = x.options.to;
-        _this.color = x.options.color;
-        if(x.options.lcol) _this.lcol = x.options.lcol;
         _this.lwd = x.options.lwd;
-        _this.linealpha = x.options.linealpha;
       }
+      _this.data = x.data;
+      _this.from = x.options.from;
+      _this.to = x.options.to;
+      _this.color = x.options.color;
+      if(x.options.lcol) _this.lcol = x.options.lcol;
+      _this.linealpha = x.options.linealpha;
       update_lines(true);
     }
     _this.idle = false;
@@ -723,7 +722,7 @@ Widget.scatter = function()
   {
     controls.update();
     render();
-    _this.update();
+    if(_this.renderer.GL) _this.update();
     if(! _this.idle)  requestAnimationFrame(_this.animate); // (hogs CPU)
   };
 
