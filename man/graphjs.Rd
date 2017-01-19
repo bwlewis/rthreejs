@@ -108,7 +108,7 @@ data("LeMis")
 
 # Facebook ego network SNAP dataset (a nice medium-sized network)
 data("ego")
-(graphjs(ego, bg="black"))
+(graphjs(ego, bg="black", vertex.shape="circle"))
 
 \dontrun{
 # A graph amination that shows several layouts

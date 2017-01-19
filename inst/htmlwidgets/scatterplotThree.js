@@ -343,15 +343,17 @@ Widget.scatter = function()
           geometry.addAttribute('color', new THREE.BufferAttribute(colors, 4));
           geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
           geometry.computeBoundingSphere();
+
           var material = new THREE.ShaderMaterial({
               uniforms: {
-                ucolor:   { value: new THREE.Color( 0xffffff ) },
+//                ucolor:   { value: new THREE.Color( 0xffffff ) },
                 texture: { value: txtur }
               },
               vertexShader: "attribute float size; attribute vec4 color; varying vec4 vColor; void main() { vColor = color; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_PointSize = size * ( 300.0 / -mvPosition.z ); gl_Position = projectionMatrix * mvPosition; }",
               fragmentShader: "uniform sampler2D texture; varying vec4 vColor; void main() { gl_FragColor = vec4( vColor ); gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord ); if ( gl_FragColor.a < ALPHATEST ) discard; }",
               alphaTest: 0.1    // mapped by threejs to "ALPHATEST" in shader :(
           });
+
           var particleSystem = new THREE.Points(geometry, material);
           _this.pointgroup.add(particleSystem);
         }
@@ -516,28 +518,7 @@ Widget.scatter = function()
     {
       if(Array.isArray(x.options.lwd))
       {
-        if(!x.options.lcol) x.options.lcol = "#aaaaaa";
-        for(var j=0; j < x.options.from.length; j++)
-        {
-          var gridline = new THREE.Geometry();
-          gridline.vertices.push(
-            v(x.data[3 * x.options.from[j]],
-              x.data[3 * x.options.from[j] + 1],
-              x.data[3 * x.options.from[j] + 2]),
-            v(x.data[3 * x.options.to[j]],
-              x.data[3 * x.options.to[j] + 1],
-              x.data[3 * x.options.to[j] + 2]));
-
-
-// custom shader here for line width FIXME
-
-
-          if(Array.isArray(x.options.lcol))
-            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol[j], linewidth: x.options.lwd[j], opacity: x.options.linealpha, transparent: true}));
-          else
-            var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: x.options.lcol, linewidth: x.options.lwd[j], opacity: x.options.linealpha, transparent: true}));
-          group.add(gl);
-        }
+        _this.lwd = x.options.lwd[0];
       } else // use buffered geometry
       {
         _this.data = x.data;
@@ -547,10 +528,9 @@ Widget.scatter = function()
         if(x.options.lcol) _this.lcol = x.options.lcol;
         _this.lwd = x.options.lwd;
         _this.linealpha = x.options.linealpha;
-        update_lines(true);
       }
+      update_lines(true);
     }
-
     _this.idle = false;
     render();
   }
@@ -648,9 +628,10 @@ Widget.scatter = function()
     }
   }
 
+  /* buffered lines */
   function update_lines(init)
   {
-    if(init || _this.linegroup.children.length > 0) // Buffered line segments (replace)
+    if(init || _this.linegroup.children.length > 0)
     {
       var segments = _this.from.length;
       var geometry = new THREE.BufferGeometry();
@@ -699,6 +680,26 @@ Widget.scatter = function()
       if(init)
       {
         var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.lwd, opacity: _this.linealpha, transparent: true});
+
+/* custom shader here for line width FIXME
+*/
+          material = new THREE.ShaderMaterial({
+              uniforms: {
+                ucolor:   { value: new THREE.Color( 0xffffff ) },
+              },
+              vertexShader: [
+                "varying vec4 vColor; attribute vec3 color;",
+                "void main() {",
+                "vColor = vec4( color , 1);",
+                "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+                "gl_Position = projectionMatrix * mvPosition; }"].join("\n"),
+              fragmentShader: [
+                "uniform sampler2D;",
+                "varying vec4 vColor;",
+                "void main() { gl_FragColor = vec4( vColor ); if ( gl_FragColor.a < ALPHATEST ) discard; }"].join("\n"),
+              alphaTest: 0.1    // mapped by threejs to "ALPHATEST" in shader :(
+         });
+
         var lines = new THREE.LineSegments(geometry, material);
         _this.linegroup.add(lines);
       } else
