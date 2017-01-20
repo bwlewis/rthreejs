@@ -113,8 +113,14 @@ HTMLWidgets.widget(
     {
       img = document.createElement("img");
       img.src = x.img;
-      tex = new THREE.Texture();
-      tex.image = img;
+
+      var canvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' );
+      canvas.width = 8192;
+      canvas.height = 4096;
+      var context = canvas.getContext( '2d' );
+      context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      tex = new THREE.Texture(canvas);
       tex.needsUpdate = true;
     } else
     {

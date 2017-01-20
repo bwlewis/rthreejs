@@ -129,8 +129,7 @@ globejs(img=moon, bodycolor="#555555", lightcolor="#aaaaaa",
 \dontrun{
 # Plot a high-resolution NASA MODIS globe, setting colors to more closely reproduce
 # the natural image colors. Note that this example can can take a while to download!
-globejs("http://goo.gl/GVjxJ",
-        emmisive="#000000", bodycolor="#000000", lightcolor="#aaaa44")
+globejs("http://goo.gl/GVjxJ")
 
 # Using global plots from the maptools, rworldmap, or sp packages.
 
