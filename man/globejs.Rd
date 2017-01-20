@@ -12,21 +12,28 @@ globejs(img = system.file("images/world.jpg", package = "threejs"), lat, long,
 \arguments{
 \item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
 
-\item{lat}{Optional data point decimal latitudes, must be of same length as \code{long} (negative values indicate south, positive north).}
+\item{lat}{Optional data point decimal latitudes, must be of same length as \code{long}
+(negative values indicate south, positive north).}
 
-\item{long}{Optional data point decimal longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).}
+\item{long}{Optional data point decimal longitudes, must be of same length as \code{lat}
+(negative values indicate west, positive east).}
 
-\item{value}{Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.}
+\item{value}{Either a single value indicating the height of all data points, or a vector of
+values of the same length as \code{lat} indicating height of each point.}
 
-\item{color}{Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.}
+\item{color}{Either a single color value indicating the color of all data points, or a
+vector of values of the same length as \code{lat} indicating color of each point.}
 
-\item{arcs}{Optional four-column data frame specifying arcs to plot. The columns of the data frame, in order, must indicate the starting latitude, starting longitude, ending latitude, and ending longitude.}
+\item{arcs}{Optional four-column data frame specifying arcs to plot. The columns of the data frame,
+in order, must indicate the starting latitude, starting longitude, ending latitude, and ending longitude.}
 
-\item{arcsColor}{Either a single color value indicating the color of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.}
+\item{arcsColor}{Either a single color value indicating the color of all arcs, or a vector of values
+of the same length as the number of rows of \code{arcs}.}
 
 \item{arcsHeight}{A single value between 0 and 1 controlling the height above the globe of each arc.}
 
-\item{arcsLwd}{Either a single value indicating the line width of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.}
+\item{arcsLwd}{Either a single value indicating the line width of all arcs, or a vector of values of
+the same length as the number of rows of \code{arcs}.}
 
 \item{arcsOpacity}{A single value between 0 and 1 indicating the opacity of all arcs.}
 
@@ -115,9 +122,9 @@ globejs(lat=cities$lat, long=cities$long, value=value, color=col, atmosphere=TRU
 
 # Plot the data on the moon:
 moon <- system.file("images/moon.jpg", package="threejs")
-globejs(img=moon, bodycolor="#555555", emissive="#444444",
-         lightcolor="#555555", lat=cities$lat, long=cities$long,
-         value=value, color=col)
+globejs(img=moon, bodycolor="#555555", lightcolor="#aaaaaa",
+        lat=cities$lat, long=cities$long,
+        value=value, color=col)
 
 \dontrun{
 # Plot a high-resolution NASA MODIS globe, setting colors to more closely reproduce

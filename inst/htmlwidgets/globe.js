@@ -94,7 +94,7 @@ HTMLWidgets.widget(
     }
 
     if(!x.lightcolor) x.lightcolor = 0xaaeeff;
-    if(!x.emissive) x.emissive = 0x0011ff;
+    if(!x.emissive) x.emissive = 0x000000;
     if(!x.bodycolor) x.bodycolor = 0x0000ff;
     if(!x.diameter) x.diameter = 200;
     if(!x.segments) x.segments = 50;

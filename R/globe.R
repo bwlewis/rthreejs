@@ -4,13 +4,20 @@
 #' can be rotated and and zoomed.
 #'
 #' @param img A character string representing a file path or URI of an image to plot on the globe surface.
-#' @param lat Optional data point decimal latitudes, must be of same length as \code{long} (negative values indicate south, positive north).
-#' @param long Optional data point decimal longitudes, must be of same length as \code{lat} (negative values indicate west, positive east).
-#' @param color Either a single color value indicating the color of all data points, or a vector of values of the same length as \code{lat} indicating color of each point.
-#' @param value Either a single value indicating the height of all data points, or a vector of values of the same length as \code{lat} indicating height of each point.
-#' @param arcs Optional four-column data frame specifying arcs to plot. The columns of the data frame, in order, must indicate the starting latitude, starting longitude, ending latitude, and ending longitude.
-#' @param arcsColor Either a single color value indicating the color of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
-#' @param arcsLwd Either a single value indicating the line width of all arcs, or a vector of values of the same length as the number of rows of \code{arcs}.
+#' @param lat Optional data point decimal latitudes, must be of same length as \code{long}
+#'   (negative values indicate south, positive north).
+#' @param long Optional data point decimal longitudes, must be of same length as \code{lat}
+#'   (negative values indicate west, positive east).
+#' @param color Either a single color value indicating the color of all data points, or a
+#'   vector of values of the same length as \code{lat} indicating color of each point.
+#' @param value Either a single value indicating the height of all data points, or a vector of
+#'    values of the same length as \code{lat} indicating height of each point.
+#' @param arcs Optional four-column data frame specifying arcs to plot. The columns of the data frame,
+#'    in order, must indicate the starting latitude, starting longitude, ending latitude, and ending longitude.
+#' @param arcsColor Either a single color value indicating the color of all arcs, or a vector of values
+#'   of the same length as the number of rows of \code{arcs}.
+#' @param arcsLwd Either a single value indicating the line width of all arcs, or a vector of values of
+#'   the same length as the number of rows of \code{arcs}.
 #' @param arcsHeight A single value between 0 and 1 controlling the height above the globe of each arc.
 #' @param arcsOpacity A single value between 0 and 1 indicating the opacity of all arcs.
 #' @param atmosphere TRUE enables WebGL atmpsphere effect.
@@ -100,9 +107,9 @@
 #'
 #' # Plot the data on the moon:
 #' moon <- system.file("images/moon.jpg", package="threejs")
-#' globejs(img=moon, bodycolor="#555555", emissive="#444444",
-#'          lightcolor="#555555", lat=cities$lat, long=cities$long,
-#'          value=value, color=col)
+#' globejs(img=moon, bodycolor="#555555", lightcolor="#aaaaaa",
+#'         lat=cities$lat, long=cities$long,
+#'         value=value, color=col)
 #'
 #' \dontrun{
 #' # Plot a high-resolution NASA MODIS globe, setting colors to more closely reproduce
