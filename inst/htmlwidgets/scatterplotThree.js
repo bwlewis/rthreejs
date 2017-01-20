@@ -89,6 +89,8 @@ Widget.scatter = function()
       var I = raycaster.intersectObject(_this.pointgroup, true);
       if(I.length > 0)
       {
+/**FIXME ignore objects with tiny alpha */
+//console.log(I);
         if(I[0].object.type == "Points")
         {
           if(I[0].object.geometry.labels[I[0].index].length > 0) printInfo(I[0].object.geometry.labels[I[0].index]);
@@ -345,12 +347,26 @@ Widget.scatter = function()
 
           var material = new THREE.ShaderMaterial({
               uniforms: {
-//                ucolor:   { value: new THREE.Color( 0xffffff ) },
                 texture: { value: txtur }
               },
-              vertexShader: "attribute float size; attribute vec4 color; varying vec4 vColor; void main() { vColor = color; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_PointSize = size * ( 300.0 / -mvPosition.z ); gl_Position = projectionMatrix * mvPosition; }",
-              fragmentShader: "uniform sampler2D texture; varying vec4 vColor; void main() { gl_FragColor = vec4( vColor ); gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord ); if ( gl_FragColor.a < ALPHATEST ) discard; }",
-              alphaTest: 0.1    // mapped by threejs to "ALPHATEST" in shader :(
+              vertexShader: [
+                "attribute float size;",
+                "attribute vec4 color;",
+                "varying vec4 vColor;",
+                "void main() {",
+                  "vColor = color;",
+                  "vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);",
+                  "gl_PointSize = size * ( 300.0 / -mvPosition.z );",
+                  "gl_Position = projectionMatrix * mvPosition; }"].join("\n"),
+              fragmentShader: [
+                "uniform sampler2D texture;",
+                "varying vec4 vColor;",
+                "void main() {",
+                  "gl_FragColor = vec4( vColor );",
+                  "gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );",
+                  "if ( gl_FragColor.a < ALPHATEST ) discard; }"].join("\n"),
+              alphaTest: 0.1, // NB ALPHATEST in the shader :(
+              transparent: true
           });
 
           var particleSystem = new THREE.Points(geometry, material);

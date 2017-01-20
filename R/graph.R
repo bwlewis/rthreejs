@@ -142,8 +142,9 @@ graphjs <- function(g, layout,
   if(missing(edge.width)) edge.width <- ifel(is.null(E(g)$width), 1, E(g)$width)
   if(missing(edge.alpha))
   {
-    if(length(E(g)) > 1000) edge.alpha <- 0.4
+    if(length(E(g)) > 1000) edge.alpha <- 0.3
     else edge.alpha <- 1
+    if(!is.null(E(g)$alpha)) edge.alpha <- E(g)$alpha
   }
 
   # transform to points and lines
