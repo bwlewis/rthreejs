@@ -95,7 +95,7 @@ HTMLWidgets.widget(
 
     if(!x.lightcolor) x.lightcolor = 0xaaeeff;
     if(!x.emissive) x.emissive = 0x000000;
-    if(!x.bodycolor) x.bodycolor = 0x0000ff;
+    if(!x.bodycolor) x.bodycolor = 0xffffff;
     if(!x.diameter) x.diameter = 200;
     if(!x.segments) x.segments = 50;
     if(!x.pointsize) x.pointsize = 1;
@@ -190,7 +190,9 @@ HTMLWidgets.widget(
         for (j = 0; j<point.geometry.faces.length; j++) {
           point.geometry.faces[j].color = new THREE.Color(colr);
         }
-        THREE.GeometryUtils.merge(group,point);
+//        THREE.GeometryUtils.merge(group,point);
+        point.updateMatrix();
+        group.merge(point.geometry, point.matrix);
       }
     }
     var points = new THREE.Mesh(group, bm);

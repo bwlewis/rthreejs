@@ -4,7 +4,7 @@ data(world.cities, package="maps")
 
 earth_dark <- list(img=system.file("images/world.jpg",package="threejs"),
                    bodycolor="#0011ff",
-                   emissive="#0011ff",
+                   emissive="#000010",
                    lightcolor="#99ddff")
 
 shinyServer(function(input, output)

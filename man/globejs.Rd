@@ -83,7 +83,7 @@ solar system, and are also easily generated directly in R
 }
 Specify colors with standard color names or hex color representations.
 The default values (well-suited to many earth-like map images) are
-\code{lightcolor = "#aaeeff"}, \code{emissive = "#0000ff"}, and \code{bodycolor = "#0000ff"}.
+\code{lightcolor = "#aaeeff"}, \code{emissive = "#000000"}, and \code{bodycolor = "#ffffff"}.
 Larger \code{fov} values result in a smaller (zoomed out) globe.
 The latitude and longitude rotation values are relative to the center of
 the map image. Their default values of zero radians result in the front of the
@@ -107,7 +107,7 @@ frequent_flights <- flights[idx, ]
 ll <- unique(frequent_flights[,3:4])
 # Plot frequent destinations as bars, and the flights to and from
 # them as arcs. Adjust arc width and color by frequency.
-globejs(lat=ll[,1], long=ll[,2], arcs=frequent_flights,
+globejs(lat=ll[,1], long=ll[,2], arcs=frequent_flights, bodycolor="#aaaaff",
         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
 
