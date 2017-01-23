@@ -89,11 +89,13 @@ Widget.scatter = function()
       var I = raycaster.intersectObject(_this.pointgroup, true);
       if(I.length > 0)
       {
-/**FIXME ignore objects with tiny alpha */
-//console.log(I);
         if(I[0].object.type == "Points")
         {
-          if(I[0].object.geometry.labels[I[0].index].length > 0) printInfo(I[0].object.geometry.labels[I[0].index]);
+          /* discard vertices with tiny alpha */
+          var idx = I.map(function(x) {
+            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
+          }).findIndex(function(v) {return(v > 0.1);});
+          if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo(I[idx].object.geometry.labels[I[idx].index]);
         } else if(I[0].object.type == "Mesh")
         {
           if(I[0].object.label.length > 0) printInfo(I[0].object.label);
