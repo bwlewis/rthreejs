@@ -24,7 +24,7 @@
 #' @param z.ticklabs A vector of tick labels of length \code{num.ticks[3]}, or
 #' \code{NULL} to show numeric labels.
 #' @param color Either a single hex or named color name (all points same color),
-#' or a vector of #' hex or named color names as long as the number of data
+#' or a vector of  hex or named color names as long as the number of data
 #' points to plot.
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}.
@@ -233,15 +233,16 @@ scatterplot3js <- function(
   if(length(pch) != nrow(x)) pch <- rep_len(pch, nrow(x))
   renderer <- match.arg(renderer)
 
-  # Strip alpha channel from colors REGEXP: Optional leading #, then takes
-  # first 6 hex characters and discards the rest. If it doesn't match the string
-  # remains unaltered.
-  color <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", color, perl = TRUE)
+  # Strip alpha channel from colors and standardize color values
+  color <- col2rgb(color, alpha=TRUE)
+  a <- as.vector(color[4, ]) / 255
+  color <- apply(color, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
+
   bg <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", bg, perl = TRUE)
 
   # create options
   options <- c(as.list(environment()), list(...))
-  options <- options[!(names(options) %in% c("x", "y", "z", "i", "j"))]
+  options <- options[!(names(options) %in% c("x", "y", "z", "i", "j", "a"))]
 
   # javascript does not like dots in names
   names(options) <- gsub("\\.", "", names(options))
@@ -294,6 +295,7 @@ scatterplot3js <- function(
     x <- x[1:N, ]
   }
   if(!("linealpha" %in% names(options))) options$linealpha <- 1
+  if(!("alpha" %in% names(options))) options$alpha <- a
 
   mdata <- x # stash for return result
 
@@ -416,7 +418,9 @@ points3d_generator <- function(data, options, bg, width, height, signif)
     x <- na.omit(x)
 
     # Strip alpha channel from colors
-    color <- sub("^#([[:xdigit:]]{6}+).*$","\\1", color, perl = TRUE)
+    color <- col2rgb(color, alpha=TRUE)
+    a <- color[4, ] / 255
+    color <- apply(color, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
 
     # re-order so z points up as expected.
     x <- x[, c(1, 3, 2), drop=FALSE]

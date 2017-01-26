@@ -43,7 +43,7 @@ of ticks may be adjusted by the program.}
 \code{NULL} to show numeric labels.}
 
 \item{color}{Either a single hex or named color name (all points same color),
-or a vector of #' hex or named color names as long as the number of data
+or a vector of  hex or named color names as long as the number of data
 points to plot.}
 
 \item{size}{The plot point radius, either as a single number or a

@@ -111,6 +111,58 @@ Widget.scatter = function()
       }
     }
 
+    el.onclick = function(ev)
+    {
+/** FIXME WRITE ME
+ *  triggr vertex-specific animation sequence
+ */
+      if(ev.preventDefault) ev.preventDefault();
+      var mouse = new THREE.Vector2();
+      var raycaster = new THREE.Raycaster();
+      raycaster.params.Points.threshold = _this.mousethreshold;
+      var canvasRect = this.getBoundingClientRect();
+      mouse.x = 2 * (ev.clientX - canvasRect.left) / canvasRect.width - 1;
+      mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
+      raycaster.setFromCamera(mouse, camera);
+      var I = raycaster.intersectObject(_this.pointgroup, true);
+      if(I.length > 0 && I[0].object.type == "Points")
+        {
+          /* ignore vertices with tiny alpha */
+          var idx = I.map(function(x) {
+            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
+          }).findIndex(function(v) {return(v > 0.1);});
+// XXX DEBUG
+if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo("click " + I[idx].object.geometry.labels[I[idx].index]);
+console.log(I[idx].index);
+var i = "" + I[idx].index;
+if(_this.clickanimation[i])
+{
+  _this.positions = _this.clickanimation[i].layout;
+// convert from relative to absolute coordinates
+  for(var j = 0; j < _this.data.length; j++) _this.positions[j] += _this.data[j];
+  if(_this.clickanimation[i].color) _this.colors = [_this.clickanimation[i].color];
+// convert from relative to absolute alpha values
+  if(_this.clickanimation[i].alpha)
+  {
+    _this.alphas = _this.clickanimation[i].alpha;
+    for(var j = 0; j < _this.alpha.length; j++) {
+      _this.alphas[j] += _this.alpha[j];
+      if(_this.alphas[j] < 0) _this.alphas[j] = 0;
+      if(_this.alphas[j] > 1) _this.alphas[j] = 1;
+    }
+    _this.alphas = [_this.alphas];
+  }
+  _this.nframes = _this.fpl;
+  _this.frame = 0; // start animation rolling
+}
+      if(_this.idle)
+      {
+        _this.idle = false;
+        _this.animate();
+      }
+        }
+    }
+
     camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
     camera.position.z = 2.0;
     camera.position.x = 2.5;
@@ -133,6 +185,7 @@ Widget.scatter = function()
   // create_plot
   _this.create_plot = function(x)
   {
+HOMER=x;
     if(x.options.renderer == "canvas" && _this.renderer.GL)
     {
       _this.renderer = new THREE.CanvasRenderer();
@@ -152,6 +205,7 @@ Widget.scatter = function()
     if(x.options.top) _this.infobox.style.top = x.options.top;
     if(x.options.left) _this.infobox.style.left = x.options.left;
     if(x.options.fontmain) _this.infobox.style.font = x.options.fontmain;
+    _this.main = "";
     if(Array.isArray(x.options.main))
     {
       _this.main = x.options.main[0];
@@ -212,17 +266,22 @@ Widget.scatter = function()
         _this.positions = x.options.positions;  // vertex positions array, multiple of _this.N
         _this.data = x.data;                    // copy of scene vertex positions
       } else _this.positions = [];
+      if(x.options.fpl) _this.fpl = x.options.fpl
+      else _this.fpl = 200;
       if(x.options.nframes)
       {
         _this.nframes = x.options.nframes;      // total frames
         _this.frame = 0;
       }
+      if(x.options.colors) _this.colors = x.options.colors; // animated vertex colors, list
+      if(x.options.alphas) _this.alphas = x.options.alphas; // animated vertex colors, list
       if(x.options.fromlist)
       {
         _this.fromlist = x.options.fromlist;   // animated edges changing on each extra scene
         _this.tolist = x.options.tolist;
         if(x.options.lcollist) _this.lcollist = x.options.lcollist;
       }
+      if(x.options.clickanimation) _this.clickanimation = x.options.clickanimation;
       // lights
       /* FIXME add user-defined lights */
       light = new THREE.DirectionalLight(0xffffff);
@@ -528,14 +587,13 @@ Widget.scatter = function()
 // Lines
 /* Note that variable line widths are not directly supported by buffered geometry, see for instance:
  * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
- * If lwd is an array then need use non-buffered geometry (slow), otherwise buffer.
  **FIXME add custom shader to support this!
  */
     if(x.options.from && _this.renderer.GL)
     {
       if(Array.isArray(x.options.lwd))
       {
-        _this.lwd = x.options.lwd[0];
+        _this.lwd = x.options.lwd[0]; // variable line width not yet supported
       } else // use buffered geometry
       {
         _this.lwd = x.options.lwd;
@@ -553,11 +611,14 @@ Widget.scatter = function()
   }
 
 /** FIXME There is probably a better/more efficient threejs way to animate, help appreciated */
-  _this.update = function() // XXX TESTING
+  _this.update = function()
   {
     /* _this.N number of vertices
      * _this.nframes total number of frames
-     * _this.positions vertex points in each scene
+     * _this.positions required vertex points in each scene
+     * _this.colors optional vertex colors in each scene (list of arrays or scalars)
+     * _this.alphas optional vertex transparency in each scene (list of arrays or scalars)
+     * _this.fromlist, _this.tolist optional edge arrays
      * For instance:
      * _this.N = 50,
      * _this.positions = 150 (three scenes after the initial one in x.data, total of four),
@@ -566,20 +627,33 @@ Widget.scatter = function()
     var nscenes = _this.positions.length / (3 * _this.N);    // number of scenes beyond initial scene
     var idx = nscenes * (_this.frame  / _this.nframes);
     var fidx = Math.floor(idx);
+    var update_color = false;
     if(idx == fidx)
-    {
+    { // new scene
       if(_this.mains)
       {
         _this.main = _this.mains[idx];  // update title
         printInfo(_this.main);
       }
       if(_this.lcollist && idx > 0) _this.lcol = _this.lcollist[idx - 1]; // update edge colors maybe
+      if(_this.colors && idx > 0)
+      { // signal update vertex colors
+        _this.color = _this.colors[idx - 1];
+       if(_this.alphas)  _this.alpha = _this.alphas[idx - 1];
+        update_color = true;
+      }
       if(_this.fromlist && idx > 0)
       {
         _this.from = _this.fromlist[idx - 1]; // update edges
         _this.to = _this.tolist[idx - 1];     // update edges
         update_lines(false);
       }
+    }
+    if(_this.colors && _this.frame == _this.nframes - 1)
+    { // FIXME improve updating condition implementation; consider interpolating colors
+        _this.color = _this.colors[fidx];
+       if(_this.alphas)  _this.alpha = _this.alphas[fidx];
+        update_color = true;
     }
     if(_this.frame >= _this.nframes)
     {
@@ -595,8 +669,8 @@ Widget.scatter = function()
       _this.frame = _this.frame + 1;
       for(var j = 0; j < _this.pointgroup.children.length; j++)
       {
-        var m = scene * _this.N * 3;
-        if(_this.pointgroup.children[j].type == "Mesh")
+        var m = scene * _this.N * 3; // offset to start of positions array for scene
+        if(_this.pointgroup.children[j].type == "Mesh") // spheres
         {
           var x = _this.data[k * 3];
           var y = _this.data[k * 3 + 1];
@@ -607,13 +681,13 @@ Widget.scatter = function()
           var dx = (x1 - x) / interp;
           var dy = (y1 - y) / interp;
           var dz = (z1 - z) / interp;
-          // update for convenient lookup in LinesSegments below
+          // update for posterity
           _this.data[k * 3] = _this.data[k * 3] + dx;
           _this.data[k * 3 + 1] = _this.data[k * 3 + 1] + dy;
           _this.data[k * 3 + 2] = _this.data[k * 3 + 2] + dz;
           _this.pointgroup.children[j].geometry.translate(dx, dy, dz);
           k++;
-        } else if(_this.pointgroup.children[j].type == "Points") // Buffered
+        } else if(_this.pointgroup.children[j].type == "Points") // buffered
         {
           for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
           {
@@ -632,7 +706,22 @@ Widget.scatter = function()
             _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2] = 
               _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2] +
               (z1 - z) / interp;
-            // update for convenient lookup in LinesSegments below
+            if(update_color)
+            {
+              var col = new THREE.Color("steelblue");
+              if(_this.color) {
+                if(Array.isArray(_this.color)) col = new THREE.Color(_this.color[k]);
+                else col = new THREE.Color(_this.color);
+              }
+              _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] =  col.r;
+              _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] =  col.g;
+              _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] =  col.b;
+              if(_this.alpha && Array.isArray(_this.alpha)) {
+                _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 3] =  _this.alpha[k];
+              } else _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 3] =  1;
+              _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
+            }
+            // update current position for posterity
             _this.data[k*3] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3];
             _this.data[k*3 + 1] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1];
             _this.data[k*3 + 2] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2];
@@ -641,6 +730,7 @@ Widget.scatter = function()
           _this.pointgroup.children[j].geometry.attributes.position.needsUpdate = true;
         }
       }
+      update_color = false;
       update_lines(false);
     }
   }
@@ -698,7 +788,7 @@ Widget.scatter = function()
       {
         var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.lwd, opacity: _this.linealpha, transparent: true});
 
-/* custom shader here for line width FIXME
+/* custom shader material here for line width FIXME
           material = new THREE.ShaderMaterial({
               uniforms: {
                 ucolor:   { value: new THREE.Color( 0xffffff ) },
