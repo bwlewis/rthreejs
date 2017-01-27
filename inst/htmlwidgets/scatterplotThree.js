@@ -115,6 +115,7 @@ Widget.scatter = function()
     {
 /** FIXME WRITE ME
  *  triggr vertex-specific animation sequence
+XXX Wrap in if(_this.clickanimation) XXX
  */
       if(ev.preventDefault) ev.preventDefault();
       var mouse = new THREE.Vector2();
