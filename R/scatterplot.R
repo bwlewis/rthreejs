@@ -86,18 +86,7 @@
 #'   \item{"left"}{ Left location in pixels of the plot title text}
 #' }
 #' The default CSS font string is "48px Arial". Note that the format of this
-#' font string differs from, for instance, the usual `par(font.lab)`.
-#'
-#' The returned object includes a \code{points3d} function that can add points
-#' to a plot, returning a new htmlwidget plot object. The function signature
-#' is a subset of the full \code{scatterplot3js} function:
-#'
-#'  \code{points3d (x, y, z, color="steelblue", size=1)}
-#'
-#' It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
-#' with optionally specified color, size. New points are plotted in
-#' the same scale as the existing plot. See below for an
-#' example.
+#' font string differs from, for instance, the usual `par(font.axis)`.
 #'
 #' Use the \code{pch} option to specify points styles in WebGL-rendered plots.
 #' \code{pch} may either be a single character value that applies to all points,
@@ -107,28 +96,29 @@
 #' \itemize{
 #'   \item{"o"}{ Plotted points appear as 3-d spheres.}
 #'   \item{"@"}{ Plotted points appear as nice circles.}
-#'   \item{"."}{ Points appear as tiny squares; use this
-#'              \code{pch} style for large numbers of points.}
+#'   \item{"."}{ Points appear as tiny squares.}
 #' }
 #' Character strings of more than one character are supported--see the examples.
+#' The \code{@} and {.} option exhibit the best performance, consider using
+#' one of those to plot large numbers of points.
 #'
 #' @section Plotting lines:
-#' A number of new experimental options plot lines between points. Lines are optionally drawn
-#' between points specified in \code{x, y, z}.
+#' Lines are optionally drawn between points specified in \code{x, y, z} using
+#' the following new plot options.
 #' \itemize{
 #'   \item{"from"}{ A numeric vector of indices of line starting vertices corresponding to entries in \code{x}.}
 #'   \item{"to"}{ A numeric vector exactly as long as \code{from} of indices of line ending vertices corresponding
 #'       to entries in \code{x}.}
-#'   \item{"lwd"}{ Either a single numeric value or vector of values as long as \code{from} of line widths, defaults to 1.}
 #'   \item{"lcol"}{ Either a single color value or vector of values as long as \code{from} of line widths; line colors
 #'      default to interpolating their vertex point colors.}
+#'   \item{"lwd"}{ A single numeric value of line width (for all lines), defaults to 1.}
 #'   \item{"linealpha"}{ A single numeric value between 0 and 1 inclusive setting the transparency of all plot lines,
 #'      defaulting to 1.}
 #' }
 #'
 #' @note
 #' Points with missing values are omitted from the plot, please try to avoid missing values
-#' in \code{x,y,z}.
+#' in \code{x, y, z}.
 #'
 #' @references
 #' The three.js project \url{http://threejs.org}.
@@ -225,18 +215,30 @@ scatterplot3js <- function(
       stop("Specify either: A three-column matrix x or, Three vectors x, y, and z. See ?scatterplot3js for help.")
     x <- cbind(x = x, y = y, z = z)
   }
-  if (ncol(x) != 3) stop("x must be a three column matrix")
-  if (is.data.frame(x)) x <- as.matrix(x)
-  if (!is.matrix(x)) stop("x must be a three column matrix")
-  x <- na.omit(x)
-  if(missing(pch)) pch <- rep("o", nrow(x))
-  if(length(pch) != nrow(x)) pch <- rep_len(pch, nrow(x))
+  if(is.list(x))
+  {
+    if (!all(lapply(x, ncol) == 3)) stop("x must be a three column matrix")
+    x <- lapply(x, function(y) {
+        ans <- if(is.data.frame(y)) as.matrix(y) else y
+        na.omit(ans)
+      })
+  } else
+  {
+    if (ncol(x) != 3) stop("x must be a three column matrix")
+    if (is.data.frame(x)) x <- as.matrix(x)
+    if (!is.matrix(x)) stop("x must be a three column matrix")
+    x <- list(na.omit(x))
+  }
+  NROW <- nrow(x[[1]])
+  if(missing(pch)) pch <- rep("o", NROW)
+  if(length(pch) != NROW) pch <- rep_len(pch, NROW)
   renderer <- match.arg(renderer)
 
   # Strip alpha channel from colors and standardize color values
-  color <- col2rgb(color, alpha=TRUE)
-  a <- as.vector(color[4, ]) / 255
-  color <- apply(color, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
+  if(!is.list(color)) color <- list(color)
+  color <- lapply(color, function(x) col2rgb(x, alpha=TRUE))
+  a <- lapply(color, function(x) as.vector(x[4, ]) / 255)   # alpha values
+  color <- lapply(color, function(y) apply(y, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)))
 
   bg <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", bg, perl = TRUE)
 
@@ -248,19 +250,19 @@ scatterplot3js <- function(
   names(options) <- gsub("\\.", "", names(options))
 
   # re-order so z points up as expected.
-  x <- x[, c(1, 3, 2), drop=FALSE]
+  x <- lapply(x, function (y) y[, c(1, 3, 2), drop=FALSE])
 
   # set axis labels if they exist
-  if (!is.null(colnames(x)) && is.null(options$axisLabels))
-    options$axisLabels <- colnames(x)[1:3]
+  if (!is.null(colnames(x[[1]])) && is.null(options$axisLabels))
+    options$axisLabels <- colnames(x[[1]])[1:3]
   # Avoid asJson named vector warning
-  colnames(x) <- NULL
+  colnames(x[[1]]) <- NULL
 
   # The Javascript code assumes a coordinate system in the unit box.  Scale x
   # to fit in there.
-  n <- nrow(x)
-  mn <- apply(x[, 1:3, drop=FALSE], 2, min)
-  mx <- apply(x[, 1:3, drop=FALSE], 2, max)
+  n <- NROW
+  mn <- Reduce(pmin, lapply(x, function(y) apply(y[, 1:3, drop=FALSE], 2, min)))
+  mx <- Reduce(pmax, lapply(x, function(y) apply(y[, 1:3, drop=FALSE], 2, max)))
   if (!missing(xlim) && length(xlim) == 2) {
     mn[1] <- xlim[1]
     mx[1] <- xlim[2]
@@ -275,32 +277,27 @@ scatterplot3js <- function(
   }
   options$mn <- mn
   options$mx <- mx
-  x[, 1:3] <- (x[, 1:3, drop=FALSE] - rep(mn, each = n)) / (rep(mx - mn, each = n))
+  x <- lapply(x, function(x) (x[, 1:3, drop=FALSE] - rep(mn, each = n)) / (rep(mx - mn, each = n)))
 
-  if (flip.y) x[, 3] <- 1 - x[, 3]
+  if (flip.y)
+  {
+    x <- lapply(x, function(y)
+      {
+        y[, 3] <- 1 - y[, 3]
+        y
+      })
+  }
 
   if("center" %in% names(options) && options$center) # not yet documented, useful for graph
   {
-    x <- 2 * (x - 0.5)
-  }
-  if("scenes" %in% names(options)) # XXX experimental
-  {
-    N <- nrow(x) / options$scenes   # number of points per scene
-    if(N != floor(N)) stop("number of points must be a multiple of scenes")
-    if("fps" %in% names(options)) nframes <- options$fps * (options$scenes - 1)
-    if("fpl" %in% names(options)) nframes <- options$fpl * (options$scenes - 1)
-    else nframes <- 10 * (options$scenes - 1)
-    options$nframes <- nframes
-    options$positions <- as.vector(t(signif(x[(N + 1):nrow(x), ], signif)))
-    x <- x[1:N, ]
+    x <- lapply(x, function(y) 2 * (y - 0.5))
   }
   if(!("linealpha" %in% names(options))) options$linealpha <- 1
   if(!("alpha" %in% names(options))) options$alpha <- a
 
-  mdata <- x # stash for return result
-
   # convert matrix to a array required by scatterplotThree.js and strip
-  x <- as.vector(t(signif(x, signif)))
+  x <- lapply(x, function(y) as.vector(t(signif(y, signif))))
+  options$vertices <- x
 
   # Ticks
   if (!is.null(num.ticks))
@@ -341,51 +338,22 @@ scatterplot3js <- function(
   # lines
   if("from" %in% names(options))
   {
-    if(is.matrix(options$from) && ncol(options$from) == 2)
-    {
-      options$to <- options$from[, 2] - 1    # zero-index
-      options$from <- options$from[, 1] - 1
-      if(length(options$from) == 1)
-      {
-        options$from <- list(options$from)
-        options$to <- list(options$to)
-      }
-    }
-    else
-    {
-      nl <- length(options$from)
-      if(!("to" %in% names(options))) stop("both from and to must be specified")
-      options$from <- as.integer(options$from - 1)
-      options$to <- as.integer(options$to - 1)
-      if(nl != length(options$to)) stop("from and to must be the same length")
-    }
+    if(!("to" %in% names(options))) stop("both from and to must be specified")
+    if(!is.list(options$from)) options$from <- list(options$from)
+    if(!is.list(options$to)) options$to <- list(options$to)
+    options$from <- Map(function(x) as.integer(x) - 1, options$from) # zero-index
+    options$to <- Map(function(x) as.integer(x) - 1, options$to) # zero-index
     if(!("lwd" %in% names(options))) options$lwd <- 1L
   }
-  if("fromlist" %in% names(options))
-  {
-    if(!("tolist" %in% names(options))) stop("both fromlist and tolist must be specified")
-    options$fromlist <- Map(function(x) x - 1, options$fromlist) # zero-index
-    options$tolist <- Map(function(x) x - 1, options$tolist)
-  }
-
 
   # create widget
-  ans <- htmlwidgets::createWidget(
+  htmlwidgets::createWidget(
           name = "scatterplotThree",
-          x = list(data = x, options = options, bg = bg),
+          x = options,
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           package = "threejs")
-
-  # Add a reference to this call to support adding points
-  ans$points3d <- points3d_generator(data = mdata,
-                                    options = options,
-                                    bg = bg,
-                                    width = width,
-                                    height = height,
-                                    signif = signif)
-  ans
 }
 
 #' @rdname threejs-shiny
@@ -399,67 +367,4 @@ scatterplotThreeOutput <- function(outputId, width="100%", height="500px") {
 renderScatterplotThree <- function(expr, env = parent.frame(), quoted = FALSE) {
     if (!quoted) expr <- substitute(expr) # force quoted
     shinyRenderWidget(expr, scatterplotThreeOutput, env, quoted = TRUE)
-}
-
-
-# Support for adding points to a plot
-points3d_generator <- function(data, options, bg, width, height, signif)
-{
-  function(x, y, z, r = NULL, color="steelblue", size=1, pch="o", ...)
-  {
-    if (!missing(y) && !missing(z)) {
-      if(is.matrix(x))
-        stop("Specify either: 1) a three-column matrix x or, 2) three vectors x, y, and z. See ?scatterplot3js for help.")
-      x <- cbind(x = x, y = y, z = z)
-    }
-    if (ncol(x) != 3) stop("x must be a three column matrix")
-    if (is.data.frame(x)) x <- as.matrix(x)
-    if (!is.matrix(x)) stop("x must be a three column matrix")
-    x <- na.omit(x)
-
-    # Strip alpha channel from colors
-    color <- col2rgb(color, alpha=TRUE)
-    a <- color[4, ] / 255
-    color <- apply(color, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
-
-    # re-order so z points up as expected.
-    x <- x[, c(1, 3, 2), drop=FALSE]
-    n <- nrow(x)
-    x[, 1:3] <- (x[, 1:3, drop=FALSE] - rep(options$mn, each = n)) / (rep(options$mx - options$mn, each = n))
-    if (options$flipy) x[, 3] <- 1 - x[, 3]
-
-    # Combine new data with old data
-    n_old <- nrow(data)
-    data <- rbind(data, x)
-    local_options <- options
-    x <- as.vector(t(signif(data,signif)))
-    # size, color, and label settings for old and new points
-    if (length(options$size) + length(size) == nrow(data)) {
-      local_options$size <- c(options$size, size)
-    } else {
-      local_options$size <- c(rep(options$size, length.out = n_old), rep(size, length.out=n))
-    }
-    if (length(options$color) + length(color) == nrow(data)) {
-      local_options$color <- c(options$color, color)
-    } else {
-      local_options$color <- c(rep(options$color, length.out=n_old), rep(color, length.out=n))
-    }
-    if (length(options$pch) + length(pch) == nrow(data)) {
-      local_options$pch <- c(options$pch, pch)
-    } else {
-      local_options$pch <- c(rep(options$pch, length.out=n_old), rep(pch, length.out=n))
-    }
-    options <- local_options
-    # create widget
-    ans <- htmlwidgets::createWidget(
-      name = "scatterplotThree",
-      x = list(data = x, options = options, bg = bg),
-      width = width,
-      height = height,
-      htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
-      package = "threejs")
-    ans$points3d <- points3d_generator(data = data, options = options, bg = bg,
-                                      width = width, height = height, signif = signif)
-    ans
-  }
 }

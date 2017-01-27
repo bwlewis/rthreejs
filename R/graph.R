@@ -58,7 +58,7 @@
 #'
 #'
 #' @note
-#' Alpha levels specified in colors are ignored, however
+#' Edge transparency values specified as part of \code{edge.color} are ignored, however
 #' you can set an overall transparency for edges with \code{edge.alpha}.
 #'
 #' @return
@@ -96,7 +96,7 @@
 #'     layout_on_sphere(LeMis),
 #'     layout_with_drl(LeMis, dim=3),  # note! somewhat slow...
 #'     layout_with_fr(LeMis, dim=3, niter=30)),
-#'   main=c("random layout", "sphere layout", "drl layout", "fr layout"),
+#'   main=list("random layout", "sphere layout", "drl layout", "fr layout"),
 #'   fpl=300)
 #'
 #' # A simple graph animation illustrating edge modification
@@ -119,27 +119,40 @@ graphjs <- function(g, layout,
                     main="", bg="white",
                     width=NULL, height=NULL, ...)
 {
-  # check for list of graphs first
-  glist <- FALSE
+  # check for list of graphs (edge animation)
   if(is.list(g) && "igraph" %in% class(g[[1]]))
   {
-    glist <- TRUE
-    fromlist <- lapply(g[-1], as_edgelist)
-    tolist <- lapply(fromlist, function(x) x[, 2])
-    fromlist <- lapply(fromlist, function(x) x[, 1])
-    lcollist <- lapply(g[-1], function(x) { ifel(is.null(E(x)$color), NA, E(x)$color) })
+    from <- lapply(g, as_edgelist)
+    to   <- lapply(from, function(x) x[, 2])
+    from <- lapply(from, function(x) x[, 1])
+    if(missing(edge.color)) edge.color <- lapply(g, function(x) { ifel(is.null(E(x)$color), NA, E(x)$color) })
     if(missing(layout)) layout <- lapply(g, function(x) {ifel(is.null(x$layout), layout_with_fr(x, dim=3, niter=50), x$layout)})
+    else if(is.function(layout)) layout <- lapply(g, layout)
+    else if(!is.list(layout)) layout <- list(layout)
+    if(missing(vertex.color)) vertex.color <- lapply(g, ifel(is.null(V(g)$color), "orange", V(g)$color))
     g <- g[[1]]
+  } else # single plot
+  {
+    if(!("igraph" %in% class(g))) stop("g must be an igraph object")
+    from <- as_edgelist(g)
+    to   <- from[, 2]
+    from <- from[, 1]
+    if(missing(layout)) layout <- list(ifel(is.null(g$layout), layout_with_fr(g, dim=3, niter=50), g$layout))
+    else if(is.function(layout)) layout <- list(layout(g))
+    else if(!is.list(layout)) layout <- list(layout)
+    if(missing(vertex.color)) vertex.color <- list(ifel(is.null(V(g)$color), "orange", V(g)$color))
+    if(missing(edge.color)) edge.color <- ifel(is.null(E(g)$color), NA, E(g)$color)
   }
-  if(!("igraph" %in% class(g))) stop("g must be an igraph object")
-  # options
-  if(missing(layout)) layout <- ifel(is.null(g$layout), function(g) layout_with_fr(g, dim=3, niter=50), g$layout)
-  if(missing(vertex.color)) vertex.color <- ifel(is.null(V(g)$color), "orange", V(g)$color)
+  # other options
   if(missing(vertex.size)) vertex.size <- ifel(is.null(V(g)$size), 2, V(g)$size / 7)
   if(missing(vertex.shape)) vertex.shape <- ifel(is.null(V(g)$shape), "circle", V(g)$shape)
   if(missing(vertex.label)) vertex.label <- ifel(is.null(V(g)$label), NA, V(g)$label)
-  if(missing(edge.color)) edge.color <- ifel(is.null(E(g)$color), NA, E(g)$color)
   if(missing(edge.width)) edge.width <- ifel(is.null(E(g)$width), 1, E(g)$width)
+  if(length(edge.width) > 1)
+  {
+    warning("mulitple edge widths not yet supported")
+    edge.width <- edge.width[1]
+  }
   if(missing(edge.alpha))
   {
     if(length(E(g)) > 1000) edge.alpha <- 0.3
@@ -147,17 +160,12 @@ graphjs <- function(g, layout,
     if(!is.null(E(g)$alpha)) edge.alpha <- E(g)$alpha
   }
 
-  # transform to points and lines
-  if(is.function(layout)) layout <- layout(g)
-  g <- as_edgelist(g)
+  # normalize coordinates
+  layout <- Map(norm_coords, layout)
 
-  # animation
-  scenes <- NA
-  if(is.list(layout))
-  {
-    scenes <- length(layout)
-    layout <- Reduce(rbind, Map(norm_coords, layout))
-  }
+# XXX check for mismatch in from,to,layout lengths and adjust as required
+
+  if(!is.list(main)) main <- as.list(main)
 
   # map options to scatterplot3js options
   pch <- gsub("circle", "@", vertex.shape)
@@ -169,18 +177,10 @@ graphjs <- function(g, layout,
   if("rectangle" %in% u) pch <- gsub("rectangle", ".", pch)
   if("crectangle" %in% u) pch <- gsub("crectangle", ".", pch)
   if("vrectangle" %in% u) pch <- gsub("vrectangle", ".", pch)
-  options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color, from=g,
-                  lwd=edge.width, linealpha=edge.alpha, lcol=edge.color,
+  options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color,
+                  from=from, to=to, lwd=edge.width, linealpha=edge.alpha,
                   axis=FALSE, grid=FALSE, center=TRUE, bg=bg, main=main), list(...))
+  if(!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if(!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
-  if(!(length(edge.color) == 1 && is.na(edge.color))) options$lcol <- edge.color
-  if(!is.na(scenes)) options$scenes <- scenes
-  if(glist)
-  {
-    if((length(fromlist) + 1) != scenes) stop("mismatching graph and layout lengths")
-    options$fromlist <- fromlist
-    options$tolist <- tolist
-    options$lcollist <- lcollist
-  }
   do.call("scatterplot3js", args=options)
 }

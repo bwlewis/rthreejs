@@ -45,7 +45,7 @@ An htmlwidget object that is displayed using the object's show or print method.
 Make interactive 3D plots of \code{\link{igraph}} objects.
 }
 \note{
-Alpha levels specified in colors are ignored, however
+Edge transparency values specified as part of \code{edge.color} are ignored, however
 you can set an overall transparency for edges with \code{edge.alpha}.
 }
 \section{Interacting with the plot}{
@@ -122,7 +122,7 @@ graphjs(LeMis,
     layout_on_sphere(LeMis),
     layout_with_drl(LeMis, dim=3),  # note! somewhat slow...
     layout_with_fr(LeMis, dim=3, niter=30)),
-  main=c("random layout", "sphere layout", "drl layout", "fr layout"),
+  main=list("random layout", "sphere layout", "drl layout", "fr layout"),
   fpl=300)
 
 # A simple graph animation illustrating edge modification

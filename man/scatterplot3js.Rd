@@ -92,7 +92,7 @@ follow the \code{scatterplot3d} package.
 }
 \note{
 Points with missing values are omitted from the plot, please try to avoid missing values
-in \code{x,y,z}.
+in \code{x, y, z}.
 }
 \section{Interacting with the plot}{
 
@@ -129,18 +129,7 @@ plot options are also supported:
   \item{"left"}{ Left location in pixels of the plot title text}
 }
 The default CSS font string is "48px Arial". Note that the format of this
-font string differs from, for instance, the usual `par(font.lab)`.
-
-The returned object includes a \code{points3d} function that can add points
-to a plot, returning a new htmlwidget plot object. The function signature
-is a subset of the full \code{scatterplot3js} function:
-
- \code{points3d (x, y, z, color="steelblue", size=1)}
-
-It allows you to add points to a plot using the same syntax as \code{scatterplot3js}
-with optionally specified color, size. New points are plotted in
-the same scale as the existing plot. See below for an
-example.
+font string differs from, for instance, the usual `par(font.axis)`.
 
 Use the \code{pch} option to specify points styles in WebGL-rendered plots.
 \code{pch} may either be a single character value that applies to all points,
@@ -150,23 +139,24 @@ following special cases:
 \itemize{
   \item{"o"}{ Plotted points appear as 3-d spheres.}
   \item{"@"}{ Plotted points appear as nice circles.}
-  \item{"."}{ Points appear as tiny squares; use this
-             \code{pch} style for large numbers of points.}
+  \item{"."}{ Points appear as tiny squares.}
 }
 Character strings of more than one character are supported--see the examples.
+The \code{@} and {.} option exhibit the best performance, consider using
+one of those to plot large numbers of points.
 }
 
 \section{Plotting lines}{
 
-A number of new experimental options plot lines between points. Lines are optionally drawn
-between points specified in \code{x, y, z}.
+Lines are optionally drawn between points specified in \code{x, y, z} using
+the following new plot options.
 \itemize{
   \item{"from"}{ A numeric vector of indices of line starting vertices corresponding to entries in \code{x}.}
   \item{"to"}{ A numeric vector exactly as long as \code{from} of indices of line ending vertices corresponding
       to entries in \code{x}.}
-  \item{"lwd"}{ Either a single numeric value or vector of values as long as \code{from} of line widths, defaults to 1.}
   \item{"lcol"}{ Either a single color value or vector of values as long as \code{from} of line widths; line colors
      default to interpolating their vertex point colors.}
+  \item{"lwd"}{ A single numeric value of line width (for all lines), defaults to 1.}
   \item{"linealpha"}{ A single numeric value between 0 and 1 inclusive setting the transparency of all plot lines,
      defaulting to 1.}
 }
