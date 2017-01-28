@@ -141,7 +141,7 @@ Widget.scatter = function()
           var idx = I.map(function(x) {
             return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
           }).findIndex(function(v) {return(v > 0.1);});
-          if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo(I[idx].object.geometry.labels[I[idx].index]);
+          if(idx > -1 && I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo(I[idx].object.geometry.labels[I[idx].index]);
         } else if(I[0].object.type == "Mesh")
         {
           if(I[0].object.label.length > 0) printInfo(I[0].object.label);
@@ -156,6 +156,65 @@ Widget.scatter = function()
         _this.animate();
       }
     }
+
+
+    el.onclick = function(ev)
+    {
+/** FIXME WRITE ME
+ *  triggr vertex-specific animation sequence
+ */
+      if(_this.options.clickanimation)
+      {
+        if(ev.preventDefault) ev.preventDefault();
+        var mouse = new THREE.Vector2();
+        var raycaster = new THREE.Raycaster();
+        raycaster.params.Points.threshold = _this.mousethreshold;
+        var canvasRect = this.getBoundingClientRect();
+        mouse.x = 2 * (ev.clientX - canvasRect.left) / canvasRect.width - 1;
+        mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
+        raycaster.setFromCamera(mouse, camera);
+        var I = raycaster.intersectObject(_this.pointgroup, true);
+        if(I.length > 0 && I[0].object.type == "Points")
+        {
+          /* ignore vertices with tiny alpha */
+          var idx = I.map(function(x) {
+            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
+          }).findIndex(function(v) {return(v > 0.1);});
+          if(idx > -1)
+          {
+// XXX DEBUG
+if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo("click " + I[idx].object.geometry.labels[I[idx].index]);
+            var i = "" + I[idx].index;
+            if(_this.options.clickanimation[i])
+            {
+              _this.frame = -1;  // suspend animation
+              var N = _this.options.vertices.length - 1;
+              _this.options.vertices = [_this.options.vertices[N], _this.options.clickanimation[i].layout]; // new animation sequance
+              _this.options.alpha = [_this.options.alpha[N], _this.options.clickanimation[i].alpha]; // new alphas
+              _this.options.color = [_this.options.color[N], _this.options.clickanimation[i].color]; // new colors
+// XXX add lines
+              _this.scene = 0; // reset animation
+              _this.frame = 0; // start
+              if(_this.idle)
+              {
+                _this.idle = false;
+                _this.animate();
+              }
+            }
+          }
+        }
+      } 
+    }
+
+
+
+
+
+
+
+
+
+
 
     camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
     camera.position.z = 2.0;
