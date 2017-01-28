@@ -56,7 +56,6 @@
 #' and edge colors from one layout to the next, with the restriction that each graph
 #' object must refer to a uniform number of vertices.
 #'
-#'
 #' @note
 #' Edge transparency values specified as part of \code{edge.color} are ignored, however
 #' you can set an overall transparency for edges with \code{edge.alpha}.
@@ -85,7 +84,7 @@
 #'
 #' # Facebook ego network SNAP dataset (a nice medium-sized network)
 #' data("ego")
-#' (graphjs(ego, bg="black", vertex.shape="circle"))
+#' (graphjs(ego, bg="black"))
 #'
 #' \dontrun{
 #' # A graph amination that shows several layouts
