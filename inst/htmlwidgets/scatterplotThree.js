@@ -623,7 +623,7 @@ HOMER=_this;
  */
     if(x.from && _this.renderer.GL)
     {
-      update_lines(true);
+      update_lines();
     }
     if(x.vertices.length > 1) _this.frame = 0; // animate
     _this.idle = false;
@@ -723,12 +723,12 @@ HOMER=_this;
         if(_this.scene >= _this.options.vertices.length - 1) _this.frame = -1; // done!
         else _this.frame = 0; // more scenes to animate, reset frame counter
       }
-      if(_this.options.from) update_lines(false);
+      if(_this.options.from) update_lines();
     }
   }
 
   /* buffered lines */
-  function update_lines(init)
+  function update_lines()
   {
     var s = _this.scene;
     if(_this.options.from.length <= s)  s = 0;
@@ -777,15 +777,15 @@ HOMER=_this;
     geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.computeBoundingSphere();
-    if(init)
+    if(_this.linegroup.children && _this.linegroup.children[0])
     {
-      var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.options.lwd, opacity: _this.options.linealpha, transparent: true});
-      var lines = new THREE.LineSegments(geometry, material);
-      _this.linegroup.add(lines);
+      _this.linegroup.children[0].geometry = geometry;
       _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
       _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
     } else {
-      _this.linegroup.children[0].geometry = geometry;
+      var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.options.lwd, opacity: _this.options.linealpha, transparent: true});
+      var lines = new THREE.LineSegments(geometry, material);
+      _this.linegroup.add(lines);
       _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
       _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
     }
