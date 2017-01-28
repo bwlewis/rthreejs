@@ -314,7 +314,7 @@ HOMER=_this;
       _this.N = x.vertices[0].length / 3;       // number of vertices
       if(x.fpl) _this.fps = x.fpl;
       if(x.fps) _this.fps = x.fps;              // alternative notation
-      else _this.fps = 200;                     // default frames per scene
+      if(!_this.fps) _this.fps = 200;           // default frames per scene
 
       // lights
       /* FIXME add user-defined lights */

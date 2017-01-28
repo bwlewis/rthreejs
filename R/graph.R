@@ -128,7 +128,7 @@ graphjs <- function(g, layout,
     if(missing(layout)) layout <- lapply(g, function(x) {ifel(is.null(x$layout), layout_with_fr(x, dim=3, niter=50), x$layout)})
     else if(is.function(layout)) layout <- lapply(g, layout)
     else if(!is.list(layout)) layout <- list(layout)
-    if(missing(vertex.color)) vertex.color <- lapply(g, ifel(is.null(V(g)$color), "orange", V(g)$color))
+    if(missing(vertex.color)) vertex.color <- lapply(g, function(x) ifel(is.null(V(x)$color), "orange", V(x)$color))
     g <- g[[1]]
   } else # single plot
   {
