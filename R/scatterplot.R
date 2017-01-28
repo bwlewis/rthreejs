@@ -341,8 +341,14 @@ scatterplot3js <- function(
     if(!("to" %in% names(options))) stop("both from and to must be specified")
     if(!is.list(options$from)) options$from <- list(options$from)
     if(!is.list(options$to)) options$to <- list(options$to)
-    options$from <- Map(function(x) as.integer(x) - 1, options$from) # zero-index
-    options$to <- Map(function(x) as.integer(x) - 1, options$to) # zero-index
+    f <- function(x) # zero index and make sure each element is an array in JavaScript
+    {
+      a <- as.integer(x) - 1
+      if(length(a) == 1) a <- list(a)
+      a
+    }
+    options$from <- Map(f, options$from)
+    options$to <- Map(f, options$to)
     if(!("lwd" %in% names(options))) options$lwd <- 1L
   }
 

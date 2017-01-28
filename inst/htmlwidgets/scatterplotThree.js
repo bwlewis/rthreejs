@@ -1,3 +1,4 @@
+/* Standard HTML widgets interface */
 HTMLWidgets.widget(
 {
   name: "scatterplotThree",
@@ -19,7 +20,7 @@ HTMLWidgets.widget(
 
   renderValue: function(el, x, obj)
   {
-    obj.widget.create_plot(x);
+    obj.widget.create_plot(x); // see below
     obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate(); 
   }
@@ -29,14 +30,14 @@ HTMLWidgets.widget(
 /* Define a scatter object with methods
  * init(el, width, height)   create the widget
  * create_plot(options)      set up the plot options
- * animate()                 internal
- * update()                  internal vertex update
- * update_lines()            internal lines update
- * render()                  internal threejs draw
- * printinfo()               internal utility
+ * animate()                 internal threejs animation function
+ * render()                  internal threejs draw function
+ * update()                  internal vertex update function
+ * update_lines()            internal lines update function
+ * ...  other miscellaneous internal functions
  *
  * The htmlwidgets interface resides in the init() function.
- * The user plot interface is in create_plot() with options array:
+ * The user plot interface is in create_plot() with options JavaScript array:
  * [vertices]  an array of vectors, each vector length a multiple of 3 (flattened out coordinates)
  *             when vertices.length = 1 no animation, otherwise vertices.length = number of scenes
  * [color]     optional array of colors, one for each scene. each element can be scalar or vector
@@ -75,7 +76,6 @@ HTMLWidgets.widget(
  * fontsymbols  optional pch css font specification
  * cexaxis      optional axis scale size (float)
  * fontaxis    optional axis css font
- *
  */
 var Widget = Widget || {};
 Widget.scatter = function()
@@ -179,6 +179,7 @@ Widget.scatter = function()
   // create_plot
   _this.create_plot = function(x)
   {
+HOMER=_this;
     _this.options = x;
     if(x.renderer == "canvas" && _this.renderer.GL)
     {
@@ -660,12 +661,13 @@ Widget.scatter = function()
       if(_this.frame > _this.fps)
       {
         _this.scene++;
-        if(_this.scene >= _this.options.vertices.length - 1) _this.frame = -1; // done
-        else {
-          _this.frame = 0; // more scenes to animate
-         if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length >= scene + 1)
-           _this.main = _this.options.main[_this.scene];
+        if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length > _this.scene)
+        {
+          _this.main = _this.options.main[_this.scene];
+          printInfo(_this.main);
         }
+        if(_this.scene >= _this.options.vertices.length - 1) _this.frame = -1; // done!
+        else _this.frame = 0; // more scenes to animate, reset frame counter
       }
       if(_this.options.from) update_lines(false);
     }
@@ -726,6 +728,8 @@ Widget.scatter = function()
       var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.options.lwd, opacity: _this.options.linealpha, transparent: true});
       var lines = new THREE.LineSegments(geometry, material);
       _this.linegroup.add(lines);
+      _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
+      _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
     } else {
       _this.linegroup.children[0].geometry = geometry;
       _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
