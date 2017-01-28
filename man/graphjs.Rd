@@ -133,7 +133,7 @@ graph_list <- list(
  g + edge(1, 2) + edge(2, 3) + edge(3, 4),
  g + edge(1, 2) + edge(2, 3) + edge(3, 4) + edge(4, 5),
  g + edge(1, 2) + edge(2, 3) + edge(3, 4) + edge(4, 5) + edge(5, 1))
- graphjs(graph_list, main=paste(1:5), fpl=200,
+ graphjs(graph_list, main=paste(1:5),
    vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
 }
 
