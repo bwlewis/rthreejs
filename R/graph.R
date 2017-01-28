@@ -82,7 +82,7 @@
 #' # ...plot Character names
 #' (graphjs(LeMis, vertex.shape=V(LeMis)$label))
 #'
-#' # Facebook ego network SNAP dataset (a nice medium-sized network)
+#' # SNAP Facebook ego network dataset (a nice medium-sized network)
 #' data("ego")
 #' (graphjs(ego, bg="black"))
 #'
