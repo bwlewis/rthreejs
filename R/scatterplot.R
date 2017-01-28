@@ -275,8 +275,6 @@ scatterplot3js <- function(
     mn[2] <- zlim[1]
     mx[2] <- zlim[2]
   }
-  options$mn <- mn
-  options$mx <- mx
   x <- lapply(x, function(x) (x[, 1:3, drop=FALSE] - rep(mn, each = n)) / (rep(mx - mn, each = n)))
 
   if (flip.y)
@@ -350,6 +348,13 @@ scatterplot3js <- function(
     options$from <- Map(f, options$from)
     options$to <- Map(f, options$to)
     if(!("lwd" %in% names(options))) options$lwd <- 1L
+  }
+  # validate animation frames
+  if(length(options$from) != length(options$to)) stop("mismatched line from/to animation coordinates")
+  N <- length(options$from) - length(options$vertices)
+  if(N > 0) # not enough vertex positions, replicate as needed
+  {
+    options$vertices <- c(options$vertices, replicate(N, options$vertices[[length(options$vertices)]], FALSE))
   }
 
   # create widget

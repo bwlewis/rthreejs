@@ -703,7 +703,7 @@ HOMER=_this;
           c1 = new THREE.Color(_this.datacolor[from]);
           c2 = new THREE.Color(_this.datacolor[to]);
         } else {
-          c1 = new THREE.Color(_this.options.color[Math.min(s, _this.options.color.length)]);
+          c1 = new THREE.Color(_this.options.color[Math.min(s, _this.options.color.length - 1)]);
           c2 = c1;
         }
       }
