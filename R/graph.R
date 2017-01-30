@@ -162,8 +162,6 @@ graphjs <- function(g, layout,
   # normalize coordinates
   layout <- Map(norm_coords, layout)
 
-# XXX check for mismatch in from,to,layout lengths and adjust as required
-
   if(!is.list(main)) main <- as.list(main)
 
   # map options to scatterplot3js options

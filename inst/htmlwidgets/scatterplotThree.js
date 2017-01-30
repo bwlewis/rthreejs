@@ -159,11 +159,9 @@ Widget.scatter = function()
     }
 
 
+//  triggr vertex-specific animation sequence
     el.onclick = function(ev)
     {
-/** FIXME WRITE ME
- *  triggr vertex-specific animation sequence
- */
       if(ev.preventDefault) ev.preventDefault();
       if(!_this.options.click) return;
       var mouse = new THREE.Vector2();
@@ -190,7 +188,32 @@ if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo("click " + 
         _this.options.vertices = [_this.options.vertices[N], _this.options.click[i].layout]; // new animation sequance
         _this.options.alpha = [_this.options.alpha[N], _this.options.click[i].alpha]; // new alphas
         _this.options.color = [_this.options.color[N], _this.options.click[i].color]; // new colors
-// XXX add lines
+        if(_this.options.click[i].from)
+        {
+          if(_this.options.from)
+          {
+            N = _this.options.from.length - 1;
+            _this.options.from = [_this.options.from[N], _this.options.click[i].from]; // new lines
+            _this.options.to = [_this.options.to[N], _this.options.click[i].to];
+          } else
+          {
+            _this.options.from = [[], _this.options.click[i].from]; // new lines
+            _this.options.to = [[], _this.options.click[i].to];
+          }
+        } else {
+          if(_this.options.from)
+          {
+            N = _this.options.from.length - 1;
+            _this.options.from = [_this.options.from[N]];
+            _this.options.to = [_this.options.to[N]];
+          } else
+          {
+            _this.options.from = [[]];
+            _this.options.to = [[]];
+          }
+        }
+        if(_this.options.click[i].lcol) _this.options.lcol = _this.options.click[i].lcol;
+        
         _this.scene = 0; // reset animation
         _this.frame = 0; // start
         if(_this.idle)
@@ -233,7 +256,6 @@ if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo("click " + 
   // create_plot
   _this.create_plot = function(x)
   {
-HOMER=_this;
     _this.options = x;
     if(x.renderer == "canvas" && _this.renderer.GL)
     {
