@@ -348,6 +348,11 @@ scatterplot3js <- function(
     options$from <- Map(f, options$from)
     options$to <- Map(f, options$to)
     if(!("lwd" %in% names(options))) options$lwd <- 1L
+    if("lcol" %in% names(options)) # discard alpha, normalize line colors
+    {
+      lc <- col2rgb(lc, alpha=FALSE)
+      options$lcol <- apply(lc, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
+    }
   }
   # validate animation frames
   if(length(options$from) != length(options$to)) stop("mismatched line from/to animation coordinates")

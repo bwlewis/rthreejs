@@ -61,3 +61,50 @@ ifel <- function(a, b, c)
   if(isTRUE(a)) return(b)
   c
 }
+
+# parse graph options from a list
+# @param g
+# @return list
+# internal function
+gopts <- function(g)
+{
+  color <- NULL
+  lcol <- NULL
+  from <- g$from
+  to <- g$to
+  alpha <- NULL
+  if("igraph" %in% class(g[[1]]))
+  {
+    from <- as_edgelist(g[[1]])
+    to   <- from[, 2] - 1
+    from <- from[, 1] - 1
+    layout <- g[[1]]$layout
+    color <- gcol(V(g[[1]])$color)
+    alpha <- color$alpha
+    color <- color$color
+    lcol <- gcol(E(g[[1]])$color)$color
+  }
+  if("layout" %in% names(g)) layout <- g$layout
+  if("vertex.color" %in% names(g))
+  {
+    color <- gcol(g$vertex.color)
+    alpha <- color$alpha
+    color <- color$color
+  }
+  if("edge.color" %in% names(g)) lcol <- gcol(g$edge.color)$color
+  ans <- list(layout=layout, from=from, to=to, color=color, lcol=lcol, alpha=alpha)
+  ans <- ans[!vapply(ans, is.null, TRUE)]
+  if(!("layout" %in% names(ans))) stop("missing layout")
+  ans$layout <- signif(as.vector(t(norm_coords(ans$layout))), 8)
+  ans
+}
+
+# internal color format parser
+# return a list of 3-hex-digit color values and scalar numeric alpha values
+gcol <- function(x)
+{
+  if(is.null(x)) return(list(color=NULL, alpha=NULL))
+  c <- col2rgb(x, alpha=TRUE)
+  a <- as.vector(c[4, ] / 255)   # alpha values
+  list(color = apply(c, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), alpha = a)
+}

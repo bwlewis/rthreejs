@@ -208,7 +208,7 @@ if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo("click " + 
             _this.options.to = [_this.options.to[N]];
           } else
           {
-            _this.options.from = [[]];
+            _this.options.from = [[]];   // avoid delete here for run time optimization
             _this.options.to = [[]];
           }
         }

@@ -174,9 +174,19 @@ graphjs <- function(g, layout,
   if("rectangle" %in% u) pch <- gsub("rectangle", ".", pch)
   if("crectangle" %in% u) pch <- gsub("crectangle", ".", pch)
   if("vrectangle" %in% u) pch <- gsub("vrectangle", ".", pch)
+  opts <- list(...)
+  names(opts)[names(opts) == "vertex.alpha"] <- "alpha" # rename for scatterplot3js
+
+  # click animation
+  if("click" %in% names(opts))
+  {
+    opts$click <- lapply(opts$click, gopts)
+    names(opts$click) <- paste(as.integer(names(opts$click)) - 1)
+  }
+  
   options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color,
                   from=from, to=to, lwd=edge.width, linealpha=edge.alpha,
-                  axis=FALSE, grid=FALSE, center=TRUE, bg=bg, main=main), list(...))
+                  axis=FALSE, grid=FALSE, center=TRUE, bg=bg, main=main), opts)
   if(!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if(!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   do.call("scatterplot3js", args=options)
