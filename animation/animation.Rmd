@@ -1,0 +1,11 @@
+---
+title: "Basic graphjs animation"
+author: "bwlewis"
+date: "1/31/2017"
+output: html_document
+---
+
+The new `grapjhs` function makes it easy to plot interactive, animated 3-d graph
+objects from the igraph package.
+
+This vignette explores basic graph animation with `graphjs`.
