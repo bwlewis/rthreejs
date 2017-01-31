@@ -1,0 +1,11 @@
+<div style="position: absolute; top: 510px; margin: 20px;">
+<h2>R source code</h2>
+<pre>
+# Example 1 from the scatterplot3d package (cf.)
+z <- seq(-10, 10, 0.1)
+x <- cos(z)
+y <- sin(z)
+scatterplot3js(x,y,z, color=rainbow(length(z)),
+   labels=sprintf("x=\%.2f, y=\%.2f, z=\%.2f", x, y, z))
+</pre>
+</div>
