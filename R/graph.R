@@ -184,9 +184,9 @@ graphjs <- function(g, layout,
     names(opts$click) <- paste(as.integer(names(opts$click)) - 1)
   }
   
-  options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color,
-                  from=from, to=to, lwd=edge.width, linealpha=edge.alpha,
-                  axis=FALSE, grid=FALSE, center=TRUE, bg=bg, main=main), opts)
+  options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color, from=from, to=to,
+                    lwd=edge.width, linealpha=edge.alpha, axis=FALSE, grid=FALSE, center=TRUE,
+                    bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), opts)
   if(!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if(!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   do.call("scatterplot3js", args=options)

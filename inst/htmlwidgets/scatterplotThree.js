@@ -180,7 +180,7 @@ Widget.scatter = function()
         }).findIndex(function(v) {return(v > 0.1);});
         if(idx < 0) return;
 // XXX DEBUG
-if(I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo("click " + I[idx].object.geometry.labels[I[idx].index]);
+//if(I[idx].object.geometry.labels[I[idx].index].length > 0) console.log("click " +I[idx].index+" "+ I[idx].object.geometry.labels[I[idx].index]);
         var i = "" + I[idx].index;
         if(!_this.options.click[i]) return;
         _this.frame = -1;  // suspend animation

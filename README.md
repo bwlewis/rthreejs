@@ -3,7 +3,7 @@
 Three.js widgets for R and shiny. The package includes
 
 * graphjs: an interactive force directed graph widget
-* scatterplot3js:  a 3-d scatterplot widget similar to the scatterplot3d function
+* scatterplot3js: a 3-d scatterplot widget similar to, but more limited than, the scatterplot3d function
 * globejs:  a widget that plots data and images on a 3-d globe
 
 The widgets are easy to use and render directly in RStudio, in R markdown, in
@@ -23,9 +23,10 @@ visualization widgets for R.
 
 # New in version 0.3.0 (January, 2017)
 
-The new 0.3.0 package version includes major changes. The `scatterplot3js` function
-generally works as before but with many more capabilities, but the `graphjs` function
-is very different with a new API that follows the igraph package.
+The new 0.3.0 package version includes major changes. The `scatterplot3js`
+function generally works as before but with more capabilities.
+The `graphjs` function is very different with a new API that follows
+the igraph package.
 
 `graphjs` is now much more tightly bound to the igraph package, and the
 threejs package now depends on that. Why igraph?

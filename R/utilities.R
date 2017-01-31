@@ -95,7 +95,7 @@ gopts <- function(g)
   ans <- list(layout=layout, from=from, to=to, color=color, lcol=lcol, alpha=alpha)
   ans <- ans[!vapply(ans, is.null, TRUE)]
   if(!("layout" %in% names(ans))) stop("missing layout")
-  ans$layout <- signif(as.vector(t(norm_coords(ans$layout))), 8)
+  ans$layout <- signif(as.vector(t(ans$layout)), 8)
   ans
 }
 
