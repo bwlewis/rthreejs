@@ -74,7 +74,8 @@
 #' vertex is clicked. Note that the layouts specified in each animation entry are
 #' not automatically scaled in order to preserve coordinate positions.
 #' Vertex coordinates must be manually scaled so that each coordinate lies in the range
-#' \code{[-1, 1]}. For detailed examples,  see \code{demo("click_animation", package="threejs")}.
+#' \code{[-1, 1]}. For detailed examples,  see \code{demo("click_animation", package="threejs")}
+#' and \code{demo("click_animation2", package="threejs")}.
 #'
 #' @note
 #' Edge transparency values specified as part of \code{edge.color} are ignored, however
@@ -129,7 +130,7 @@
 #'  graphjs(graph_list, main=paste(1:5),
 #'    vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
 #'
-#' # see `demo("click_animation", package="threejs") for more animation demos.
+#' # see `demo(package="threejs") for more animation demos.
 #' }
 #'
 #' @importFrom igraph layout_with_fr norm_coords V E as_edgelist

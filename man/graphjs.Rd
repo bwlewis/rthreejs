@@ -116,7 +116,8 @@ enumeration in \code{g}. An animation sequence is triggered when a corresponding
 vertex is clicked. Note that the layouts specified in each animation entry are
 not automatically scaled in order to preserve coordinate positions.
 Vertex coordinates must be manually scaled so that each coordinate lies in the range
-\code{[-1, 1]}. For detailed examples,  see \code{demo("click_animation", package="threejs")}.
+\code{[-1, 1]}. For detailed examples,  see \code{demo("click_animation", package="threejs")}
+and \code{demo("click_animation2", package="threejs")}.
 }
 \examples{
 set.seed(1)
@@ -158,7 +159,7 @@ graph_list <- list(
  graphjs(graph_list, main=paste(1:5),
    vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
 
-# see `demo("click_animation", package="threejs") for more animation demos.
+# see `demo(package="threejs") for more animation demos.
 }
 
 }
