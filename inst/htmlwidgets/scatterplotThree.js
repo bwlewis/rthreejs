@@ -134,6 +134,7 @@ Widget.scatter = function()
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
       raycaster.setFromCamera(mouse, camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
+HOMER=I;
       if(I.length > 0)
       {
         if(I[0].object.type == "Points")
