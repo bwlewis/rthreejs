@@ -105,23 +105,36 @@ Widget.scatter = function()
 
     // Info box for mouse-over labels and generic text
     var info = document.createElement("div");
-/*
-    var id_attr = document.createAttribute("id");
-    id_attr.nodeValue = "graph-info";
-    info.setAttributeNode(id_attr);
-*/
     info.style.textAlign = "center";
     info.style.zIndex = 100;
     info.style.fontFamily = "Sans";
     info.style.fontSize = "x-large";
-    info.style.position = "absolute";
-    info.style.top = "10px";
-    info.style.left = "10px";
-    el.appendChild(info);
     _this.infobox = info;
     _this.fgcss = "#000000"; // default foreground css color
     _this.main = "";       // default text in infobox
     _this.mousethreshold = 0.02; // default mouse over id threshold
+
+    camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
+    camera.position.z = 2.0;
+    camera.position.x = 2.5;
+    camera.position.y = 1.2;
+
+    controls = new THREE.TrackballControls(camera, el);
+    controls.rotateSpeed = 0.5;
+    controls.zoomSpeed = 4.2;
+    controls.panSpeed = 1;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = false;
+    controls.dynamicDampingFactor = 0.2;
+    controls.addEventListener('change', render);
+
+    scene = new THREE.Scene();
+    el.appendChild(_this.renderer.domElement);
+    info.style.position = "relative";
+    info.style.top = "-" + el.getBoundingClientRect().height + "px";
+    info.style.left = "0px";
+    el.appendChild(info);
 
     el.onmousemove = function(ev)
     { 
@@ -134,7 +147,6 @@ Widget.scatter = function()
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
       raycaster.setFromCamera(mouse, camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
-HOMER=I;
       if(I.length > 0)
       {
         if(I[0].object.type == "Points")
@@ -250,34 +262,6 @@ HOMER=I;
         }
       }
     }
-
-
-
-
-
-
-
-
-
-
-
-    camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
-    camera.position.z = 2.0;
-    camera.position.x = 2.5;
-    camera.position.y = 1.2;
-
-    controls = new THREE.TrackballControls(camera, el);
-    controls.rotateSpeed = 0.5;
-    controls.zoomSpeed = 4.2;
-    controls.panSpeed = 1;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = false;
-    controls.dynamicDampingFactor = 0.2;
-    controls.addEventListener('change', render);
-
-    scene = new THREE.Scene();
-    el.appendChild(_this.renderer.domElement);
   }
 
   // create_plot
@@ -300,11 +284,12 @@ HOMER=I;
     scene.add(_this.linegroup);
     scene.add(_this.pointgroup);
     if(x.bg) _this.renderer.setClearColor(new THREE.Color(x.bg));
-    if(x.top) _this.infobox.style.top = x.top;
-    if(x.left) _this.infobox.style.left = x.left;
+    if(x.top) _this.infobox.style.top += x.top;
+    if(x.left) _this.infobox.style.left += x.left;
     if(x.fontmain) _this.infobox.style.font = x.fontmain;
     if(x.main && Array.isArray(x.main)) _this.main = x.main[0];
     else if(x.main) _this.main = x.main;
+
     printInfo(_this.main);
     if(x.mousethreshold) _this.mousethreshold = x.mousethreshold;
     var cexaxis = 0.5;
@@ -846,6 +831,10 @@ HOMER=I;
     {
       _this.infobox.innerHTML = text;
       _this.infobox.style.color = _this.fgcss;
+      _this.infobox.style.top = "-" + _this.el.getBoundingClientRect().height + "px";
+      _this.infobox.style.left = "0px";
+      if(_this.options.top) _this.infobox.style.top = (_this.options.top - _this.el.getBoundingClientRect().height) + "px";
+      if(_this.options.left) _this.infobox.style.left = _this.options.left + "px";
     }
   }
 

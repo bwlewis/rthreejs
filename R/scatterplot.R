@@ -82,8 +82,8 @@
 #'   \item{"font.main"}{ CSS font string used for main title text box}
 #'   \item{"labels"}{ character vector of length \code{x} of point labels displayed when the mouse moves over the points}
 #'   \item{"main"}{ Plot title text}
-#'   \item{"top"}{ Top location in pixels of the plot title text}
-#'   \item{"left"}{ Left location in pixels of the plot title text}
+#'   \item{"top"}{ Top location in pixels from top of the plot title text}
+#'   \item{"left"}{ Left location in pixels from center of the plot title text}
 #' }
 #' The default CSS font string is "48px Arial". Note that the format of this
 #' font string differs from, for instance, the usual `par(font.axis)`.
