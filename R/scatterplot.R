@@ -195,7 +195,7 @@ scatterplot3js <- function(
   height = NULL,
   width = NULL,
   axis = TRUE,
-  num.ticks = c(6,6,6),
+  num.ticks = c(6, 6, 6),
   x.ticklabs = NULL,
   y.ticklabs = NULL,
   z.ticklabs = NULL,
@@ -289,6 +289,7 @@ scatterplot3js <- function(
   if("center" %in% names(options) && options$center) # not yet documented, useful for graph
   {
     x <- lapply(x, function(y) 2 * (y - 0.5))
+# FIXME adjust scale/tick marks
   }
   if(!("linealpha" %in% names(options))) options$linealpha <- 1
   if(!("alpha" %in% names(options))) options$alpha <- a

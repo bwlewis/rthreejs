@@ -59,16 +59,22 @@
 #' @section Click animation:
 #' Specify the option \code{click=list} to animate the graph when specified vertices
 #' are clicked interactively, where \code{list} is a named list of animation entries.
-#' Each entry must itself be a list of a igraph object with the same number of
-#' vertices as \code{g} and optionally specifying \code{vertex.color}, \code{layout},
-#' and \code{edge.color} (either in the graph object or separately in the list).
+#' Each entry must itself be a list with the following entries
+#' \itemize{
+#' \item{}{ optional igraph object with the same number of vertices as \code{g} above (if specified this must be the first entry)}
+#' \item{layout}{ optional igraph layout}
+#' \item{vertex.color}{ optional vector of vertex colors}
+#' \item{edge.color}{ optional vector of edge colors}
+#' \item{cumulative}{ optional boolean entry, if \code{TRUE} then vertex positions are added to current plot, default is \code{FALSE}}
+#' }
+#' At least one of \code{g} or \code{layout} must be specified in each animation list entry.
+#' The layouts and colors can be optionally imbedded in the igraph object as described above.
 #' Each animation list entry must be named by a number corresponding to the vertex
 #' enumeration in \code{g}. An animation sequence is triggered when a corresponding
 #' vertex is clicked. Note that the layouts specified in each animation entry are
-#' not automatically scaled in order to preserve coordinate positions. That means
-#' that they must be manually scaled so that each coordinate lies in the range
-#' \code{[-1, 1]}. See the example below.
-#'
+#' not automatically scaled in order to preserve coordinate positions.
+#' Vertex coordinates must be manually scaled so that each coordinate lies in the range
+#' \code{[-1, 1]}. For detailed examples,  see \code{demo("click_animation", package="threejs")}.
 #'
 #' @note
 #' Edge transparency values specified as part of \code{edge.color} are ignored, however
@@ -123,36 +129,7 @@
 #'  graphjs(graph_list, main=paste(1:5),
 #'    vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
 #'
-#' # A graph with click-triggered animation (click on the main vertices).
-#' data(LeMis)
-#' N  <- length(V(LeMis))
-#' pr <- page_rank(LeMis)$vector
-#' # Vertex cluster membership
-#' cl <- unclass(membership(cluster_louvain(LeMis)))
-#' # order the page rank values
-#' i <- order(pr, decreasing=TRUE)
-#' # Find the index of the highest page rank vertex in each cluster
-#' idx <- aggregate(seq(1:N)[i], by=list(cl[i]), FUN=head, 1)$x
-#' # Create a default force-directed layout for the whole networl
-#' ld <- norm_coords(layout_with_fr(LeMis, dim=3))
-#' # Collapse the layout to just the idx vertices
-#' lo <- Reduce(rbind,Map(function(i) ld[idx[i],], cl))
-#' # Create grouped vertex colors, setting all but idx vertices transparent
-#' col <- rainbow(length(idx), alpha=0)[cl]
-#' col[idx] <- rainbow(length(idx), alpha=1)
-#' # animation layouts, one for each of the idx vertices
-#' # animation color schemes, one scheme for each idx vertex
-#' click <- Map(function(i)
-#' {
-#'   x <- lo
-#'   x[cl == i, ] <- ld[cl == i, ]
-#'   c <- col
-#'   c[cl == i] <- rainbow(length(idx), alpha=1)[i]
-#'   list(layout=x, vertex.color=c)
-#' }, seq(idx))
-#' names(click) <- paste(idx)
-#' graphjs(LeMis, layout=lo, click=click, vertex.color=col, fps=20, font.main="96px Arial")
-#'
+#' # see `demo("click_animation", package="threejs") for more animation demos.
 #' }
 #'
 #' @importFrom igraph layout_with_fr norm_coords V E as_edgelist

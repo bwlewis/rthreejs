@@ -92,9 +92,13 @@ gopts <- function(g)
     color <- color$color
   }
   if("edge.color" %in% names(g)) lcol <- gcol(g$edge.color)$color
-  ans <- list(layout=layout, from=from, to=to, color=color, lcol=lcol, alpha=alpha)
+  ans <- list(layout=layout, from=from, to=to, color=color, lcol=lcol, alpha=alpha, cumulative=g$cumulative)
+  if(!is.null(ans$cumulative) && !ans$cumulative) ans$cumulative <- NULL
   ans <- ans[!vapply(ans, is.null, TRUE)]
   if(!("layout" %in% names(ans))) stop("missing layout")
+  # re-order y, z, flip y, and center
+  ans$layout <- ans$layout[, c(1, 3, 2), drop=FALSE]
+  ans$layout[, 3] <- 1 - ans$layout[, 3]
   ans$layout <- signif(as.vector(t(ans$layout)), 8)
   ans
 }

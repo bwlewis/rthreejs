@@ -179,13 +179,39 @@ Widget.scatter = function()
           return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
         }).findIndex(function(v) {return(v > 0.1);});
         if(idx < 0) return;
-// XXX DEBUG
+// XXX DEBUG raycasting
 //if(I[idx].object.geometry.labels[I[idx].index].length > 0) console.log("click " +I[idx].index+" "+ I[idx].object.geometry.labels[I[idx].index]);
         var i = "" + I[idx].index;
         if(!_this.options.click[i]) return;
         _this.frame = -1;  // suspend animation
         var N = _this.options.vertices.length - 1;
-        _this.options.vertices = [_this.options.vertices[N], _this.options.click[i].layout]; // new animation sequance
+        if(_this.options.click[i].cumulative)
+        { // add to current plot, otherwise simply replace coordinates
+          // and make the alpha values sticky
+          for(var j=0;j < _this.options.click[i].layout.length; j++)
+          {
+            _this.options.click[i].layout[j] = _this.options.click[i].layout[j] + _this.options.vertices[N][j];
+            _this.options.click[i].alpha[j] = Math.min(1, _this.options.click[i].alpha[j] + _this.options.alpha[N][j]);
+          }
+        }
+        // re-center
+        var max_x = 0, min_x = 0, max_y = 0, min_y = 0, max_z = 0, min_z = 0;
+        for(var j = 0;j < _this.options.click[i].layout.length / 3; j++)
+        {
+          max_x = Math.max(_this.options.click[i].layout[j * 3], max_x);
+          min_x = Math.min(_this.options.click[i].layout[j * 3], min_x);
+          max_z = Math.max(_this.options.click[i].layout[j * 3 + 1], max_z);
+          min_z = Math.min(_this.options.click[i].layout[j * 3 + 1], min_z);
+          max_y = Math.max(_this.options.click[i].layout[j * 3 + 2], max_y);
+          min_y = Math.min(_this.options.click[i].layout[j * 3 + 2], min_y);
+        }
+        for(var j = 0;j < _this.options.click[i].layout.length / 3; j++)
+        {
+          if(max_x != min_x) _this.options.click[i].layout[j * 3] = 2 * ((_this.options.click[i].layout[j * 3] - min_x) / (max_x - min_x) - 0.5);
+          if(max_z != min_z) _this.options.click[i].layout[j * 3 + 1] = 2 * ((_this.options.click[i].layout[j * 3 + 1] - min_z) / (max_z - min_z) - 0.5);
+          if(max_y != min_y) _this.options.click[i].layout[j * 3 + 2] = 2 * ((_this.options.click[i].layout[j * 3 + 2] - min_y) / (max_y - min_y) - 0.5);
+        }
+        _this.options.vertices = [_this.options.vertices[N], _this.options.click[i].layout]; // new animation sequence
         _this.options.alpha = [_this.options.alpha[N], _this.options.click[i].alpha]; // new alphas
         _this.options.color = [_this.options.color[N], _this.options.click[i].color]; // new colors
         if(_this.options.click[i].from)
