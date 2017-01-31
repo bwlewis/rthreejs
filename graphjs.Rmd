@@ -45,6 +45,7 @@ data(LeMis)
 graphjs(LeMis, vertex.size = 1)
 ```
 
+<br/>
 
 ## Degree centrality
 
@@ -58,9 +59,10 @@ nodes accordingly. Bigger nodes are connected to more nodes than smaller ones.
 M = as_adjacency_matrix(LeMis)
 v = Matrix::colSums(M)
 v = v / max(v)    # normalize
-graphjs(LeMis, vertex.size = 4 * v)
+graphjs(LeMis, vertex.size = 3 * v)
 ```
 
+<br/>
 
 ## Eigen centrality
 
@@ -80,9 +82,10 @@ The next example adjusts the sizes of the nodes by eigen centrality.
 ```{r, fig.width=9}
 v = abs(eigen(M)$vector[,1])
 v = v / max(v)
-graphjs(LeMis, vertex.size = 4 * v)
+graphjs(LeMis, vertex.size = 3 * v)
 ```
 
+<br/>
 
 ## f-subgraph centrality
 
@@ -102,5 +105,5 @@ Matrix package.
 library(Matrix)
 v = diag(expm(M))
 v = v / max(v)
-graphjs(LeMis, vertex.size = 4 * v)
+graphjs(LeMis, vertex.size = 3 * v)
 ```
