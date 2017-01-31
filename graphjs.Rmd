@@ -1,12 +1,13 @@
 ---
 title: "graphjs"
 author: "bwlewis"
-date: "1/14/2016"
+date: "1/31/2017"
 output: html_document
 ---
 
-The new `grapjhs` function (an [html widget](http://htmlwidgets.org) and part of the [threejs](http://bwlewis.github.io/rthreejs) package), makes it easy to plot
-interactive 3-d force directed graphs.
+The new `grapjhs` function (an [html widget](http://htmlwidgets.org) and part
+of the [threejs](http://bwlewis.github.io/rthreejs) package), makes it easy to
+plot interactive 3-d graphs.
 
 This vignette explores the `graphjs` function using the `LeMis` data included in
 the `threejs` package. The `LeMis` data contain character coappearance data for
@@ -38,9 +39,9 @@ indicates that the corresponding characters interacted in the novel. The colors
 are taken from http://bl.ocks.org/mbostock/4062045.
 
 ```{r, fig.width=9}
-library(threejs)
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
 data(LeMis)
-graphjs(LeMis, bg="#fbfbfb")
+graphjs(LeMis, vertex.size = 1)
 ```
 
 
@@ -50,21 +51,13 @@ Perhaps most intuitive measure of graph
 centrality, degree centrality of a node simply counts the number of other nodes
 it's connected to.
 
-It turns out that many graph measurements are most easily computed using an
-adjacency matrix representation of the graph. We can use the `graph2Matrix`
-function to convert our node/edge list graph representation to a sparse matrix.
-Degree centrality, for instance, is just a sum along columns of our adjacency
-matrix. Note that the graph used here is undirected, resulting in a symmetric
-adjacency matrix.
-
 The following example computes degree centrality and adjusts the sizes of the
 nodes accordingly. Bigger nodes are connected to more nodes than smaller ones.
 ```{r, fig.width=9}
-M = graph2Matrix(LeMis$edges, LeMis$nodes)
+M = as_adjacency_matrix(LeMis)
 v = Matrix::colSums(M)
-v = v/max(v)    # normalize
-LeMis$nodes$size = 4*v
-graphjs(LeMis, bg="#fbfbfb")
+v = v / max(v)    # normalize
+graphjs(LeMis, vertex.size = 4 * v)
 ```
 
 
@@ -85,9 +78,8 @@ in linear algebra.
 The next example adjusts the sizes of the nodes by eigen centrality.
 ```{r, fig.width=9}
 v = abs(eigen(M)$vector[,1])
-v = v/max(v)
-LeMis$nodes$size = 4*v
-graphjs(LeMis, bg="#fbfbfb")
+v = v / max(v)
+graphjs(LeMis, vertex.size = 4 * v)
 ```
 
 
@@ -108,40 +100,6 @@ Matrix package.
 ```{r, fig.width=9}
 library(Matrix)
 v = diag(expm(M))
-v = v/max(v)
-LeMis$nodes$size = 4*v
-graphjs(LeMis, bg="#fbfbfb")
+v = v / max(v)
+graphjs(LeMis, vertex.size = 4 * v)
 ```
-
-
-## f-subgraph communicability
-
-The off-diagonal elements of the matrix exponential used in the last example
-can be interpreted as a measure connectivity between nodes. That is,
-nodes with many available paths between them of relatively short lengths have
-larger off-diagonal entries.
-
-The next example adjusts the plotted edge thickness by this f-subgraph
-communicability for f=exp; node sizes are determined by f-subgraph centrality
-as in the last example. This example colors the edges by the color of the
-originating node. It also sets a minimum node size beacuse some of the nodes
-in the last example are effectively invisible.
-```{r, fig.width=9}
-library(Matrix)
-E = expm(M)
-v = diag(E)
-v = v/max(v)
-v = pmax(0.1, v) # minimum node size
-E = E * M
-E = E / max(E)
-LeMis$nodes$size = 4*v
-LeMis$edges$size = 20*E@x
-LeMis$edges$color = LeMis$nodes$color[LeMis$edges$from + 1]
-graphjs(LeMis, bg="#fbfbfb")
-```
-
-## Use with the igraph package
-
-The `igraph` package defines a comprehensive interface to the superb
-[igraph](http://igraph.org/redirect.html) network analysis library.
-Use `graphjs` directly on igraph graph objects.
