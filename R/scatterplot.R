@@ -160,11 +160,12 @@
 #' M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
 #' scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 #'
-#' # Adding points to a plot with points3d
+#' # Adding points to a plot with points3d (cf. scatterplot3d)
 #' set.seed(1)
 #' lim <- c(-3, 3)
 #' x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
-#' a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red")
+#' a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red", pch="+")
+#' print(a)
 #'
 #' # Plot text using 'pch' (we label some points in this example)
 #' set.seed(1)
@@ -208,7 +209,14 @@ scatterplot3js <- function(
   signif = 8,
   bg = "#ffffff",
   cex.symbols = 1,
-  xlim, ylim, zlim, pch, ...) {
+  xlim, ylim, zlim, pch, ...)
+{
+  # save call state for points3d below
+  .callcon <- rawConnection(raw(0), "r+")
+  save(file=.callcon, list=ls())
+  .call <- rawConnectionValue(.callcon)
+  close(.callcon)
+  
   # validate input
   if (!missing(y) && !missing(z)) {
     if (is.matrix(x))
@@ -364,13 +372,52 @@ scatterplot3js <- function(
   }
 
   # create widget
-  htmlwidgets::createWidget(
+  ans <- htmlwidgets::createWidget(
           name = "scatterplotThree",
           x = options,
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           package = "threejs")
+  ans$points3d <- points3d_generator(.call)
+  ans
+}
+
+# internal function to support points3d similar to scatterplot3d
+points3d_generator <- function(call)
+{
+  function(x, y, z, color="steelblue", size=1, labels=NULL, pch="o")
+  {
+    e <- new.env()
+    rowlen <- function(x) ifel(is.null(nrow(x)), length(x), nrow(x))
+    con <- rawConnection(call, "r")
+    load(file=con, envir=e)
+    close(con)
+    if(!missing(y) && !is.null(e$y)) e$y <- c(e$y, y)
+    if(!missing(z) && !is.null(e$z)) e$z <- c(e$z, z)
+    if(!missing(y) && is.null(e$y)) x <- cbind(x, y, z)
+    if(is.data.frame(x)) x <- as.matrix(x)
+    if(length(e$color) != rowlen(e$x)) e$color <- rep(e$color, length.out = rowlen(e$x))
+    if(length(e$size) != rowlen(e$x)) e$size <- rep(e$size, length.out = rowlen(e$x))
+    if(is.null(e$pch) || is.symbol(e$pch)) e$pch = "o"
+    if(length(e$pch) != rowlen(e$x)) e$pch <- rep(e$pch, length.out = rowlen(e$x))
+    if(is.null(e$labels)) e$labels = ""
+    if(length(e$labels) != rowlen(e$x)) e$labels <- rep(e$labels, length.out = rowlen(e$x))
+    if(length(color) != rowlen(x)) color <- rep(color, length.out = rowlen(x))
+    if(length(size) != rowlen(x)) size <- rep(size, length.out = rowlen(x))
+    if(is.null(pch)) pch = "o"
+    if(length(pch) != rowlen(x)) pch <- rep(pch, length.out = rowlen(x))
+    if(is.null(labels)) labels = ""
+    if(length(labels) != rowlen(x)) labels <- rep(labels, length.out = rowlen(x))
+    # combine old and new options
+    if(is.matrix(e$x)) e$x <- rbind(e$x, x)
+    else e$x <- c(e$x, x)
+    e$color <- c(e$color, color)
+    e$size <- c(e$size, size)
+    e$labels <- c(e$labels, labels)
+    e$pch <- c(e$pch, pch)
+    do.call("scatterplot3js", args=as.list(e))
+  }
 }
 
 #' @rdname threejs-shiny

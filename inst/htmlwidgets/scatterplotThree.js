@@ -283,6 +283,7 @@ Widget.scatter = function()
   _this.create_plot = function(x)
   {
     _this.options = x;
+HOMER=_this;
     if(x.renderer == "canvas" && _this.renderer.GL)
     {
       _this.renderer = new THREE.CanvasRenderer();

@@ -198,11 +198,12 @@ col <- c( rainbow(length(phi))[order(i)],
 M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
 scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 
-# Adding points to a plot with points3d
+# Adding points to a plot with points3d (cf. scatterplot3d)
 set.seed(1)
 lim <- c(-3, 3)
 x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
-a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red")
+a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red", pch="+")
+print(a)
 
 # Plot text using 'pch' (we label some points in this example)
 set.seed(1)

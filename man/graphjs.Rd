@@ -113,11 +113,9 @@ At least one of \code{g} or \code{layout} must be specified in each animation li
 The layouts and colors can be optionally imbedded in the igraph object as described above.
 Each animation list entry must be named by a number corresponding to the vertex
 enumeration in \code{g}. An animation sequence is triggered when a corresponding
-vertex is clicked. Note that the layouts specified in each animation entry are
-not automatically scaled in order to preserve coordinate positions.
-Vertex coordinates must be manually scaled so that each coordinate lies in the range
-\code{[-1, 1]}. For detailed examples,  see \code{demo("click_animation", package="threejs")}
-and \code{demo("click_animation2", package="threejs")}.
+vertex is clicked. For instance, to trigger animations when vertices number 1 or 5 are
+clicked, include list entries labeled \code{"1"} and \code{"5"}.
+See the demos in \code{demo(package="threejs")} for detailed examples.
 }
 \examples{
 set.seed(1)
