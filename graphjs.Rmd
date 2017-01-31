@@ -5,15 +5,16 @@ date: "1/31/2017"
 output: html_document
 ---
 
-The new `grapjhs` function (an [html widget](http://htmlwidgets.org) and part
-of the [threejs](http://bwlewis.github.io/rthreejs) package), makes it easy to
-plot interactive 3-d graphs.
+The new `grapjhs` function makes it easy to plot interactive 3-d graph
+objects from the igraph package.
 
-This vignette explores the `graphjs` function using the `LeMis` data included in
-the `threejs` package. The `LeMis` data contain character coappearance data for
-Victor Hugo's novel Les Mis&eacute;rables, compiled in the Stanford Graph Database
-by Donaled Knuth (see http://www-cs-faculty.stanford.edu/~uno/sgb.html) and taken from
-the D3.js force directed graph example by Mike Bostock (http://bl.ocks.org/mbostock/4062045).
+This vignette explores basic use of the `graphjs` function using the `LeMis`
+data included in the `threejs` package. The `LeMis` data contain character
+coappearance data for Victor Hugo's novel Les Mis&eacute;rables, compiled in
+the Stanford Graph Database by Donaled Knuth (see
+http://www-cs-faculty.stanford.edu/~uno/sgb.html) and taken from the D3.js
+force directed graph example by Mike Bostock
+(http://bl.ocks.org/mbostock/4062045).
 
 We explore the `graphjs` function by looking at the graph of character coappearance
 in Les Mis&eacute;rables. We then illustrate a few measures of network centrality
