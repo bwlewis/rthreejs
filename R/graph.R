@@ -142,75 +142,79 @@ graphjs <- function(g, layout,
                     width=NULL, height=NULL, ...)
 {
   # check for list of graphs (edge animation)
-  if(is.list(g) && "igraph" %in% class(g[[1]]))
+  if (is.list(g) && "igraph" %in% class(g[[1]]))
   {
     from <- lapply(g, as_edgelist)
     to   <- lapply(from, function(x) x[, 2])
     from <- lapply(from, function(x) x[, 1])
-    if(missing(edge.color)) edge.color <- lapply(g, function(x) { ifel(is.null(E(x)$color), NA, E(x)$color) })
-    if(missing(layout)) layout <- lapply(g, function(x) {ifel(is.null(x$layout), layout_with_fr(x, dim=3, niter=50), x$layout)})
-    else if(is.function(layout)) layout <- lapply(g, layout)
-    else if(!is.list(layout)) layout <- list(layout)
-    if(missing(vertex.color)) vertex.color <- lapply(g, function(x) ifel(is.null(V(x)$color), "orange", V(x)$color))
+    if (missing(edge.color)) edge.color <- lapply(g, function(x) {
+      ifel(is.null(E(x)$color), NA, E(x)$color)
+    })
+    if (missing(layout)) layout <- lapply(g, function(x) {
+      ifel(is.null(x$layout), layout_with_fr(x, dim=3, niter=50), x$layout)
+    })
+    else if (is.function(layout)) layout <- lapply(g, layout)
+    else if (!is.list(layout)) layout <- list(layout)
+    if (missing(vertex.color)) vertex.color <- lapply(g, function(x) ifel(is.null(V(x)$color), "orange", V(x)$color))
     g <- g[[1]]
   } else # single plot
   {
-    if(!("igraph" %in% class(g))) stop("g must be an igraph object")
+    if (!("igraph" %in% class(g))) stop("g must be an igraph object")
     from <- as_edgelist(g)
     to   <- from[, 2]
     from <- from[, 1]
-    if(missing(layout)) layout <- list(ifel(is.null(g$layout), layout_with_fr(g, dim=3, niter=50), g$layout))
-    else if(is.function(layout)) layout <- list(layout(g))
-    else if(!is.list(layout)) layout <- list(layout)
-    if(missing(vertex.color)) vertex.color <- list(ifel(is.null(V(g)$color), "orange", V(g)$color))
-    if(missing(edge.color)) edge.color <- ifel(is.null(E(g)$color), NA, E(g)$color)
+    if (missing(layout)) layout <- list(ifel(is.null(g$layout), layout_with_fr(g, dim=3, niter=50), g$layout))
+    else if (is.function(layout)) layout <- list(layout(g))
+    else if (!is.list(layout)) layout <- list(layout)
+    if (missing(vertex.color)) vertex.color <- list(ifel(is.null(V(g)$color), "orange", V(g)$color))
+    if (missing(edge.color)) edge.color <- ifel(is.null(E(g)$color), NA, E(g)$color)
   }
   # other options
-  if(missing(vertex.size)) vertex.size <- ifel(is.null(V(g)$size), 2, V(g)$size / 7)
-  if(missing(vertex.shape)) vertex.shape <- ifel(is.null(V(g)$shape), "circle", V(g)$shape)
-  if(missing(vertex.label)) vertex.label <- ifel(is.null(V(g)$label), NA, V(g)$label)
-  if(missing(edge.width)) edge.width <- ifel(is.null(E(g)$width), 1, E(g)$width)
-  if(length(edge.width) > 1)
+  if (missing(vertex.size)) vertex.size <- ifel(is.null(V(g)$size), 2, V(g)$size / 7)
+  if (missing(vertex.shape)) vertex.shape <- ifel(is.null(V(g)$shape), "circle", V(g)$shape)
+  if (missing(vertex.label)) vertex.label <- ifel(is.null(V(g)$label), NA, V(g)$label)
+  if (missing(edge.width)) edge.width <- ifel(is.null(E(g)$width), 1, E(g)$width)
+  if (length(edge.width) > 1)
   {
     warning("mulitple edge widths not yet supported")
     edge.width <- edge.width[1]
   }
-  if(missing(edge.alpha))
+  if (missing(edge.alpha))
   {
-    if(length(E(g)) > 1000) edge.alpha <- 0.3
+    if (length(E(g)) > 1000) edge.alpha <- 0.3
     else edge.alpha <- 1
-    if(!is.null(E(g)$alpha)) edge.alpha <- E(g)$alpha
+    if (!is.null(E(g)$alpha)) edge.alpha <- E(g)$alpha
   }
 
   # normalize coordinates
   layout <- Map(norm_coords, layout)
 
-  if(!is.list(main)) main <- as.list(main)
+  if (!is.list(main)) main <- as.list(main)
 
   # map options to scatterplot3js options
   pch <- gsub("circle", "@", vertex.shape)
   u <- unique(vertex.shape)
-  if("pie" %in% u) pch <- gsub("pie", "@", pch)
-  if("sphere" %in% u) pch <- gsub("sphere", "o", pch)
-  if("square" %in% u) pch <- gsub("square", ".", pch)
-  if("csquare" %in% u) pch <- gsub("csquare", ".", pch)
-  if("rectangle" %in% u) pch <- gsub("rectangle", ".", pch)
-  if("crectangle" %in% u) pch <- gsub("crectangle", ".", pch)
-  if("vrectangle" %in% u) pch <- gsub("vrectangle", ".", pch)
+  if ("pie" %in% u) pch <- gsub("pie", "@", pch)
+  if ("sphere" %in% u) pch <- gsub("sphere", "o", pch)
+  if ("square" %in% u) pch <- gsub("square", ".", pch)
+  if ("csquare" %in% u) pch <- gsub("csquare", ".", pch)
+  if ("rectangle" %in% u) pch <- gsub("rectangle", ".", pch)
+  if ("crectangle" %in% u) pch <- gsub("crectangle", ".", pch)
+  if ("vrectangle" %in% u) pch <- gsub("vrectangle", ".", pch)
   opts <- list(...)
   names(opts)[names(opts) == "vertex.alpha"] <- "alpha" # rename for scatterplot3js
 
   # click animation
-  if("click" %in% names(opts))
+  if ("click" %in% names(opts))
   {
     opts$click <- lapply(opts$click, gopts)
     names(opts$click) <- paste(as.integer(names(opts$click)) - 1)
   }
-  
+
   options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color, from=from, to=to,
                     lwd=edge.width, linealpha=edge.alpha, axis=FALSE, grid=FALSE, center=TRUE,
                     bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), opts)
-  if(!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
-  if(!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
+  if (!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
+  if (!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   do.call("scatterplot3js", args=options)
 }

@@ -41,7 +41,7 @@
 texture <- function(data)
 {
   ext <- gsub(".*\\.","", data)
-  if(grepl("^http", data))
+  if (grepl("^http", data))
   {
     u <- url(data, open="rb")
     data <- tempfile()
@@ -50,7 +50,7 @@ texture <- function(data)
     close(u)
   }
 # Encode the file as a dataURI
-  if(nchar(ext) < 1) ext <- "png"
+  if (nchar(ext) < 1) ext <- "png"
   img <- dataURI(file=data, mime=sprintf("image/%s", ext))
   list(img=img, dataURI=TRUE)
 }
@@ -58,7 +58,7 @@ texture <- function(data)
 # internal non-braindead if-else
 ifel <- function(a, b, c)
 {
-  if(isTRUE(a)) return(b)
+  if (isTRUE(a)) return(b)
   c
 }
 
@@ -73,7 +73,7 @@ gopts <- function(g)
   from <- g$from
   to <- g$to
   alpha <- NULL
-  if("igraph" %in% class(g[[1]]))
+  if ("igraph" %in% class(g[[1]]))
   {
     from <- as_edgelist(g[[1]])
     to   <- from[, 2] - 1
@@ -84,18 +84,18 @@ gopts <- function(g)
     color <- color$color
     lcol <- gcol(E(g[[1]])$color)$color
   }
-  if("layout" %in% names(g)) layout <- g$layout
-  if("vertex.color" %in% names(g))
+  if ("layout" %in% names(g)) layout <- g$layout
+  if ("vertex.color" %in% names(g))
   {
     color <- gcol(g$vertex.color)
     alpha <- color$alpha
     color <- color$color
   }
-  if("edge.color" %in% names(g)) lcol <- gcol(g$edge.color)$color
+  if ("edge.color" %in% names(g)) lcol <- gcol(g$edge.color)$color
   ans <- list(layout=layout, from=from, to=to, color=color, lcol=lcol, alpha=alpha, cumulative=g$cumulative)
-  if(!is.null(ans$cumulative) && !ans$cumulative) ans$cumulative <- NULL
+  if (!is.null(ans$cumulative) && !ans$cumulative) ans$cumulative <- NULL
   ans <- ans[!vapply(ans, is.null, TRUE)]
-  if(!("layout" %in% names(ans))) stop("missing layout")
+  if (!("layout" %in% names(ans))) stop("missing layout")
   # re-order y, z, flip y, and center
   ans$layout <- ans$layout[, c(1, 3, 2), drop=FALSE]
   ans$layout[, 3] <- 1 - ans$layout[, 3]
@@ -107,7 +107,7 @@ gopts <- function(g)
 # return a list of 3-hex-digit color values and scalar numeric alpha values
 gcol <- function(x)
 {
-  if(is.null(x)) return(list(color=NULL, alpha=NULL))
+  if (is.null(x)) return(list(color=NULL, alpha=NULL))
   c <- col2rgb(x, alpha=TRUE)
   a <- as.vector(c[4, ] / 255)   # alpha values
   list(color = apply(c, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), alpha = a)

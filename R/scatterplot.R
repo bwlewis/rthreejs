@@ -211,15 +211,15 @@ scatterplot3js <- function(
   xlim, ylim, zlim, pch, ...) {
   # validate input
   if (!missing(y) && !missing(z)) {
-    if(is.matrix(x))
+    if (is.matrix(x))
       stop("Specify either: A three-column matrix x or, Three vectors x, y, and z. See ?scatterplot3js for help.")
     x <- cbind(x = x, y = y, z = z)
   }
-  if(is.list(x))
+  if (is.list(x))
   {
     if (!all(lapply(x, ncol) == 3)) stop("x must be a three column matrix")
     x <- lapply(x, function(y) {
-        ans <- if(is.data.frame(y)) as.matrix(y) else y
+        ans <- if (is.data.frame(y)) as.matrix(y) else y
         na.omit(ans)
       })
   } else
@@ -230,12 +230,12 @@ scatterplot3js <- function(
     x <- list(na.omit(x))
   }
   NROW <- nrow(x[[1]])
-  if(missing(pch)) pch <- rep("o", NROW)
-  if(length(pch) != NROW) pch <- rep_len(pch, NROW)
+  if (missing(pch)) pch <- rep("o", NROW)
+  if (length(pch) != NROW) pch <- rep_len(pch, NROW)
   renderer <- match.arg(renderer)
 
   # Strip alpha channel from colors and standardize color values
-  if(!is.list(color)) color <- list(color)
+  if (!is.list(color)) color <- list(color)
   color <- lapply(color, function(x) col2rgb(x, alpha=TRUE))
   a <- lapply(color, function(x) as.vector(x[4, ]) / 255)   # alpha values
   color <- lapply(color, function(y) apply(y, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)))
@@ -286,13 +286,13 @@ scatterplot3js <- function(
       })
   }
 
-  if("center" %in% names(options) && options$center) # not yet documented, useful for graph
+  if ("center" %in% names(options) && options$center) # not yet documented, useful for graph
   {
     x <- lapply(x, function(y) 2 * (y - 0.5))
 # FIXME adjust scale/tick marks
   }
-  if(!("linealpha" %in% names(options))) options$linealpha <- 1
-  if(!("alpha" %in% names(options))) options$alpha <- a
+  if (!("linealpha" %in% names(options))) options$linealpha <- 1
+  if (!("alpha" %in% names(options))) options$alpha <- a
 
   # convert matrix to a array required by scatterplotThree.js and strip
   x <- lapply(x, function(y) as.vector(t(signif(y, signif))))
@@ -310,13 +310,13 @@ scatterplot3js <- function(
     p2 <- (t2 - mn[2]) / (mx[2] - mn[2])
     t3 <- seq(from=mn[3], to=mx[3], length.out=num.ticks[3])
     p3 <- (t3 - mn[3]) / (mx[3] - mn[3])
-    if(flip.y) t3 <- t3[length(t3):1]
+    if (flip.y) t3 <- t3[length(t3):1]
 
     pfmt <- function(x, d=2)
     {
       ans <- sprintf("%.2f", x)
       i <- (abs(x) < 0.01 && x != 0)
-      if(any(i))
+      if (any(i))
       {
         ans[i] <- sprintf("%.2e", x)
       }
@@ -326,39 +326,39 @@ scatterplot3js <- function(
     options$xticklab <- pfmt(t1)
     options$yticklab <- pfmt(t2)
     options$zticklab <- pfmt(t3)
-    if(!is.null(x.ticklabs)) options$xticklab <- x.ticklabs
-    if(!is.null(y.ticklabs)) options$zticklab <- y.ticklabs
-    if(!is.null(z.ticklabs)) options$yticklab <- z.ticklabs
+    if (!is.null(x.ticklabs)) options$xticklab <- x.ticklabs
+    if (!is.null(y.ticklabs)) options$zticklab <- y.ticklabs
+    if (!is.null(z.ticklabs)) options$yticklab <- z.ticklabs
     options$xtick <- p1
     options$ytick <- p2
     options$ztick <- p3
   }
 
   # lines
-  if("from" %in% names(options))
+  if ("from" %in% names(options))
   {
-    if(!("to" %in% names(options))) stop("both from and to must be specified")
-    if(!is.list(options$from)) options$from <- list(options$from)
-    if(!is.list(options$to)) options$to <- list(options$to)
+    if (!("to" %in% names(options))) stop("both from and to must be specified")
+    if (!is.list(options$from)) options$from <- list(options$from)
+    if (!is.list(options$to)) options$to <- list(options$to)
     f <- function(x) # zero index and make sure each element is an array in JavaScript
     {
       a <- as.integer(x) - 1
-      if(length(a) == 1) a <- list(a)
+      if (length(a) == 1) a <- list(a)
       a
     }
     options$from <- Map(f, options$from)
     options$to <- Map(f, options$to)
-    if(!("lwd" %in% names(options))) options$lwd <- 1L
-    if("lcol" %in% names(options)) # discard alpha, normalize line colors
+    if (!("lwd" %in% names(options))) options$lwd <- 1L
+    if ("lcol" %in% names(options)) # discard alpha, normalize line colors
     {
       lc <- col2rgb(lc, alpha=FALSE)
       options$lcol <- apply(lc, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
     }
   }
   # validate animation frames
-  if(length(options$from) != length(options$to)) stop("mismatched line from/to animation coordinates")
+  if (length(options$from) != length(options$to)) stop("mismatched line from/to animation coordinates")
   N <- length(options$from) - length(options$vertices)
-  if(N > 0) # not enough vertex positions, replicate as needed
+  if (N > 0) # not enough vertex positions, replicate as needed
   {
     options$vertices <- c(options$vertices, replicate(N, options$vertices[[length(options$vertices)]], FALSE))
   }

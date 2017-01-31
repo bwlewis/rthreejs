@@ -12,7 +12,7 @@ shinyServer(function(input, output)
     else num.ticks <- rep(num.ticks, 3)
     data <- example_data
     colnames(data) <- NULL
-    color <- rep(rainbow(input$colors),length.out = nrow(data))
+    color <- rep(rainbow(input$colors), length.out = nrow(data))
     sizes <- rep(c(0.5, 1, 2)[1:input$sizes], length.out = nrow(data))
     scatterplot3js(x = data,
                     num.ticks = num.ticks,

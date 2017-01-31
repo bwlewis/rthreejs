@@ -164,33 +164,33 @@ globejs <- function(
   height = NULL,
   width = NULL, ...)
 {
-  if(missing(lat) || missing(long))
+  if (missing(lat) || missing(long))
   {
     lat <- NULL
     long <- NULL
   }
   # Strip alpha channel from colors
   i <- grep("^#", color)
-  if(length(i) > 0)
+  if (length(i) > 0)
   {
     j <- nchar(color[i]) > 7
-    if(any(j))
+    if (any(j))
     {
       color[i][j] <- substr(color[i][j], 1, 7)
     }
   }
   i <- grep("^#", arcsColor)
-  if(length(i) > 0)
+  if (length(i) > 0)
   {
     j <- nchar(arcsColor[i]) > 7
-    if(any(j))
+    if (any(j))
     {
       arcsColor[i][j] <- substr(arcsColor[i][j], 1, 7)
     }
   }
   i <- grep("^#", bg)
-  if(length(i) > 0) bg <- substr(bg, 1, 7)
-  if(missing(arcs))
+  if (length(i) > 0) bg <- substr(bg, 1, 7)
+  if (missing(arcs))
     arcs <- NULL
   else
   {
@@ -204,22 +204,22 @@ globejs <- function(
                  value=value, atmosphere=atmosphere, bg=bg, arcs=arcs,
                  arcsColor=arcsColor, arcsLwd=arcsLwd, arcsHeight=arcsHeight)
   additional_args <- list(...)
-  if(length(additional_args) > 0) options <- c(options, additional_args)
+  if (length(additional_args) > 0) options <- c(options, additional_args)
 # Clean up optional color arguments
-  if("bodycolor" %in% names(options))
+  if ("bodycolor" %in% names(options))
   {
     i <- grep("^#",options$bodycolor)
-    if(length(i) > 0) options$bodycolor <- substr(options$bodycolor, 1, 7)
+    if (length(i) > 0) options$bodycolor <- substr(options$bodycolor, 1, 7)
   }
-  if("emissive" %in% names(options))
+  if ("emissive" %in% names(options))
   {
     i <- grep("^#", options$emissive)
-    if(length(i) > 0) options$emissive <- substr(options$emissive, 1, 7)
+    if (length(i) > 0) options$emissive <- substr(options$emissive, 1, 7)
   }
-  if("lightcolor" %in% names(options))
+  if ("lightcolor" %in% names(options))
   {
     i <- grep("^#", options$lightcolor)
-    if(length(i) > 0) options$lightcolor <- substr(options$lightcolor, 1, 7)
+    if (length(i) > 0) options$lightcolor <- substr(options$lightcolor, 1, 7)
   }
 
 # Convert image files to dataURI using the texture function
