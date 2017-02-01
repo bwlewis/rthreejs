@@ -2,9 +2,15 @@
 title: "graphjs"
 author: "bwlewis"
 date: "1/31/2017"
-output: html_document
+output:
+  html_document:
+    css: graphjs.css
 ---
 
+*New! For animation examples, see <a href="animation/animation.html">Basic animation examples</a>.*
+<br/>
+*New! For interactive click animation examples, see <a href="click/index.html">Advanced animation examples</a>.*
+<hr/>
 The new `grapjhs` function makes it easy to plot interactive 3-d graph
 objects from the igraph package.
 
@@ -31,6 +37,10 @@ mouse operations.
 * Hold the right mouse button down and move the mouse to pan.
 * Use the mouse scroll wheel to zoom in and out.
 * Double-click on the plot to reset the view.
+
+An attempt is made to support touch equivalents to the mouse operations,
+but touch interfaces will likely not work as well as a traditional mouse
+or trackpad set up.
 
 ## A force directed graph
 

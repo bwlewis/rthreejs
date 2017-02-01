@@ -2,10 +2,42 @@
 title: "Basic graphjs animation"
 author: "bwlewis"
 date: "1/31/2017"
-output: html_document
+output:
+  html_document:
+    css: style.css
 ---
 
-The new `grapjhs` function makes it easy to plot interactive, animated 3-d graph
-objects from the igraph package.
+This vignette explores basic graph animation with `graphjs`. The basic
+animation idea defines the animation by a list of graphs and/or graph layouts.
 
-This vignette explores basic graph animation with `graphjs`.
+Consider the `LeMis` character co-occurrence graph included with the
+package. A static visualization using a force-directed vertex layout
+looks like:
+
+```{r, echo=FALSE, eval=TRUE}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+```
+```{r, fig.width=9}
+library(threejs)
+data(LeMis)
+graphjs(LeMis, layout=layout_with_fr(LeMis, dim=3))
+```
+
+<br/>
+<a href="vertex.html">Click here to proceed to a vertex animation example.</a>
+
+
+## Contents
+
+- <a href="animation.html">Start</a>
+- <a href="vertex.html">Basic vertex animation</a>
+- <a href="color.html">Basic vertex animation with color</a>
+- <a href="edge.html">Basic edge animation</a>
+- <a href="../index.html">Back to threejs gallery</a>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>

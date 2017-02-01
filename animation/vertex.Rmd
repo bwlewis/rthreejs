@@ -1,0 +1,57 @@
+---
+output:
+  html_document:
+    css: style.css
+---
+
+# Vertex animation
+
+Let's say that we want to display a number of different vertex layouts
+as an animated sequence. Simply specify a list of layouts in the
+`layout` parameter instead of a single layout. For instance
+(you can interact with the plot during the animation):
+```{r, echo=FALSE, eval=TRUE}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+```
+```{r, fig.width=9}
+library(threejs)
+data(LeMis)
+graphjs(LeMis,
+        layout=list(layout_randomly(LeMis, dim=3),
+                    layout_on_sphere(LeMis),
+                    layout_with_drl(LeMis, dim=3),
+                    layout_with_fr(LeMis, dim=3)),
+        main=list("random layout", "sphere layout",
+                  "drl layout", "fr layout"),
+        fpl=300)
+```
+Note that we also supplied a list of main title text, one title corresponding
+to each layout. The `fpl=300` parameter the (linear) interpolating steps
+between each layout to 300 in this example.
+
+## Limitations
+
+Each layout must include the same number of vertices. This limitation is
+for efficiency and performance of the rendered plot. Althoug the number
+of vertices must remain constant during the animation, their color and
+transparency values may be changed dynamically as shown in the next
+example below.
+
+<br/>
+<a href="color.html">Click here to proceed to an animation example with different colors.</a>
+
+
+## Contents
+
+- <a href="animation.html">Start</a>
+- <a href="vertex.html">Basic vertex animation</a>
+- <a href="color.html">Basic vertex animation with color</a>
+- <a href="edge.html">Basic edge animation</a>
+- <a href="../index.html">Back to threejs gallery</a>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>

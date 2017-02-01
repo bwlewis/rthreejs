@@ -1,0 +1,53 @@
+---
+output:
+  html_document:
+    css: style.css
+---
+
+# Edge animation
+
+We illustrate edge animation with a simpler example to make it easy to see the
+effect. Our example begins as a trivially simple graph of only five vertices
+and no edges between them.
+
+The animation proceeds by adding edges one by one. Similarly to vertex
+animation examples where lists of layouts define the animation sequence,
+edge animation requires a list of igraph objects with different edges.
+
+```{r, echo=FALSE, eval=TRUE}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+```
+```{r, fig.width=9}
+g <- make_ring(5) - edges(1:5) # five vertices, no edges
+
+graph_list <- list(
+  g + edge(1, 2),
+  g + edge(1, 2) + edge(2, 3),
+  g + edge(1, 2) + edge(2, 3) + edge(3, 4),
+  g + edge(1, 2) + edge(2, 3) + edge(3, 4) + edge(4, 5),
+  g + edge(1, 2) + edge(2, 3) + edge(3, 4) + edge(4, 5) + edge(5, 1))
+
+graphjs(graph_list, main=paste(1:5),
+        vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
+```
+
+## Notes
+
+You can of course supply a list of layouts too, to control animation of both
+edges and vertex positions. Since no layouts were specified, a default vertex
+layout was generated for each scene in the above example.
+
+## Contents
+
+- <a href="animation.html">Start</a>
+- <a href="vertex.html">Basic vertex animation</a>
+- <a href="color.html">Basic vertex animation with color</a>
+- <a href="edge.html">Basic edge animation</a>
+- <a href="../index.html">Back to threejs gallery</a>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>

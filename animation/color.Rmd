@@ -1,0 +1,64 @@
+---
+output:
+  html_document:
+    css: style.css
+---
+
+# Vertex animation with color
+
+This example is nearly identical to the last one. It displays a number
+of vertex layouts for the `LeMis` graph in sequence, but changes the
+vertex colors while doing so. Similarly to layouts, specify animated
+colors as a list.
+```{r, echo=FALSE, eval=TRUE}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+```
+```{r, fig.width=9}
+library(threejs)
+data(LeMis)
+N <- length(V(LeMis))  # number of vertices
+graphjs(LeMis,
+        layout=list(layout_randomly(LeMis, dim=3),
+                    layout_on_sphere(LeMis),
+                    layout_with_drl(LeMis, dim=3),
+                    layout_with_fr(LeMis, dim=3)),
+        vertex.color=list(rainbow(N),
+                          "blue",
+                          "orange",
+                          rainbow(N)),
+        main=list("random layout", "sphere layout",
+                  "drl layout", "fr layout"),
+        fpl=300)
+```
+
+## Notes
+
+You may have noticed that the default edge color scheme interpolates
+between the vertices at each end. You can also explicitly specify
+edge colors with the `edge.color` option, and animate among those
+as above by supplying a list.
+
+## Limitations
+
+Vertex colors may include alpha (transparency) and will be adjusted
+as specified. Edge colors, however, ignore transparency. Instead you
+can only set an overall edge transparency value with the `edge.alpha`
+parameter.
+
+<br/>
+<a href="edge.html">Click here to proceed to an edge animation example.</a>
+
+## Contents
+
+- <a href="animation.html">Start</a>
+- <a href="vertex.html">Basic vertex animation</a>
+- <a href="color.html">Basic vertex animation with color</a>
+- <a href="edge.html">Basic edge animation</a>
+- <a href="../index.html">Back to threejs gallery</a>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
