@@ -40,8 +40,8 @@ See https://bwlewis.github.io/rthreejs/animation/animation.html
 and https://bwlewis.github.io/rthreejs/advanced/advanced.html for short tutorials on the
 new graph animation capabilities.
 
-The good news is that performance is generally much improved, using custom
-WebGL shaders where needed.
+Performance is generally much improved using extensive buffering and custom
+WebGL shaders where needed. See https://bwlewis.github.io/rthreejs/ego/index.html for an example.
 
 ## What else is new in version 0.3.0
 
