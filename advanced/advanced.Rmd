@@ -92,9 +92,9 @@ click <- Map(function(i)
 }, seq(idx))
 names(click) <- paste(idx)
 ```
-Let's take a quick look at this list to help see what we've defined:
+Let's take a quick look at the first few entries in this list to help see what we've defined:
 ```{r}
-str(click)
+str(head(click, 2))
 ```
 
 Finally, let's make our interactive plot! Click on a vertex to display
@@ -103,8 +103,18 @@ its cluster.
 (graphjs(LeMis, layout=l0, click=click, vertex.color=col, fps=20, font.main="78px Arial"))
 ```
 
+## Limitations
+
+Each click animation list entry may only contain single graph, layout, color,
+etc. specifications (that is, not a list defining an animation sequence). This
+will probably change in the future.
+
+Like the basic graph animation techniques, every layout must contain the same number
+of vertices (a condition imposed for performance reasons).
+
 <br/>
-<a href="vertex.html">Click here to proceed to an animation example that accumulates expanded vertex positions.</a>
+<a href="cumulative.html">Click here to proceed to an animation example that accumulates expanded vertex positions.</a>
+
 
 ## Note
 
