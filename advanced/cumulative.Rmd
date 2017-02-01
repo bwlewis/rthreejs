@@ -1,0 +1,79 @@
+---
+output:
+  html_document:
+    css: style.css
+---
+
+# Cumulative interactive animation
+
+The example explored in this vignette is nearly identical to the <a href="advanced.html">Interactive
+animation</a> example. Instead of resetting the visualization with each new
+click, this example retains the final animation state of each interaction.
+It accumulates animation output.
+
+The example begins with exactly the same code as before to compute the
+clusters, vertex Page Rank values, and most important vertex in each cluster.
+The differences appear with the last example appear later.
+
+
+```{r, echo=FALSE, eval=TRUE}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+```
+```{r, fig.width=9}
+library(threejs)
+data(LeMis)
+N  <- length(V(LeMis))
+
+# Vertex page rank values
+pr <- page_rank(LeMis)$vector
+# order the page rank values
+i <- order(pr, decreasing=TRUE)
+
+# Vertex cluster membership
+cl <- unclass(membership(cluster_louvain(LeMis)))
+
+# Find the index of the highest page rank vertex in each cluster
+idx <- aggregate(seq(1:N)[i], by=list(cl[i]), FUN=head, 1)$x
+# Create a default force-directed layout for the whole networl
+l1 <- norm_coords(layout_with_fr(LeMis, dim=3))
+# Collapse the layout to just the idx vertices
+l0 <- Reduce(rbind,Map(function(i) l1[idx[i],], cl))
+
+# Grouped vertex colors, setting all but idx vertices transparent
+col <- rainbow(length(idx), alpha=0)[cl]
+col[idx] <- rainbow(length(idx), alpha=1)
+```
+
+The only difference with the last example appears in the code below. In
+particular, we specify vertex coordinates as differences from a base layout
+(the variable `l0`) instead of as absolute coordinates. And, we indicate the
+`cumulative=TRUE` option in each vertex animation entry.
+
+```{r}
+click <- Map(function(i)
+{
+  x <- l0
+  x[cl == i, ] <- l1[cl == i, ]
+  x <- x - l0   # convert to differences for cumulative=TRUE below
+  c <- col
+  c[cl == i] <- rainbow(length(idx), alpha=1)[i]
+  list(layout=x, vertex.color=c, cumulative=TRUE)
+}, seq(idx))
+names(click) <- paste(idx)
+
+(graphjs(LeMis, layout=l0, click=click, vertex.color=col, fps=20, font.main="78px Arial"))
+```
+
+
+## Contents
+
+- <a href="advanced.html">Interactive animation</a>
+- <a href="cumulative.html">Cumulative interactive animation</a>
+- <a href="../index.html">Back to threejs gallery</a>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
