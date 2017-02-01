@@ -34,7 +34,7 @@ cl <- unclass(membership(cluster_louvain(LeMis)))
 
 # Find the index of the highest page rank vertex in each cluster
 idx <- aggregate(seq(1:N)[i], by=list(cl[i]), FUN=head, 1)$x
-# Create a default force-directed layout for the whole networl
+# Create a default force-directed layout for the whole network
 l1 <- norm_coords(layout_with_fr(LeMis, dim=3))
 # Collapse the layout to just the idx vertices
 l0 <- Reduce(rbind,Map(function(i) l1[idx[i],], cl))
