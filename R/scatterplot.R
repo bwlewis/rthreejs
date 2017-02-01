@@ -216,7 +216,7 @@ scatterplot3js <- function(
   save(file=.callcon, list=ls())
   .call <- rawConnectionValue(.callcon)
   close(.callcon)
- 
+
   # validate input
   if (!missing(y) && !missing(z)) {
     if (is.matrix(x))
@@ -399,15 +399,15 @@ points3d_generator <- function(call)
     if (is.data.frame(x)) x <- as.matrix(x)
     if (length(e$color) != rowlen(e$x)) e$color <- rep(e$color, length.out = rowlen(e$x))
     if (length(e$size) != rowlen(e$x)) e$size <- rep(e$size, length.out = rowlen(e$x))
-    if (is.null(e$pch) || is.symbol(e$pch)) e$pch = "o"
+    if (is.null(e$pch) || is.symbol(e$pch)) e$pch <- "o"
     if (length(e$pch) != rowlen(e$x)) e$pch <- rep(e$pch, length.out = rowlen(e$x))
-    if (is.null(e$labels)) e$labels = ""
+    if (is.null(e$labels)) e$labels <- ""
     if (length(e$labels) != rowlen(e$x)) e$labels <- rep(e$labels, length.out = rowlen(e$x))
     if (length(color) != rowlen(x)) color <- rep(color, length.out = rowlen(x))
     if (length(size) != rowlen(x)) size <- rep(size, length.out = rowlen(x))
-    if (is.null(pch)) pch = "o"
+    if (is.null(pch)) pch <- "o"
     if (length(pch) != rowlen(x)) pch <- rep(pch, length.out = rowlen(x))
-    if (is.null(labels)) labels = ""
+    if (is.null(labels)) labels <- ""
     if (length(labels) != rowlen(x)) labels <- rep(labels, length.out = rowlen(x))
     # combine old and new options
     if (is.matrix(e$x)) e$x <- rbind(e$x, x)
