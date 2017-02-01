@@ -23,35 +23,36 @@ visualization widgets for R.
 
 # New in version 0.3.0 (January, 2017)
 
-The new 0.3.0 package version includes major changes. The `scatterplot3js`
-function generally works as before but with more capabilities.
-The `graphjs` function is very different with a new API that follows
-the igraph package.
+The new 0.3.0 package version includes major changes. The `scatterplot3js()`
+function generally works as before but with more capabilities.  The `graphjs()`
+function is very different with a new API more closely tied to the igraph
+package.
 
-`graphjs` is now much more tightly bound to the igraph package, and the
-threejs package now depends on that. Why igraph?
+The threejs package now depends on igrah. Why igraph?
 
 1. If you're doing serious network analysis, you're probably already using igraph (or you should be).
 2. We now use external graph layouts (either from igraph or elsewhere). This gives much greater
    graph layout flexibility, something I was looking for. But also removes the cute (but slow and
    crude) force-directed JavaScript animation previously used. To partially make up for that, a
-   very basic but flexible graph animation scheme is now in place that's easy to use. See `?graphjs`
-   for examples.
+   very basic but flexible graph animation scheme is now in place that's easy to use.
+
+See https://bwlewis.github.io/rthreejs/animation/animation.html
+and https://bwlewis.github.io/rthreejs/advanced/advanced.html for short tutorials on the
+new graph animation capabilities.
 
 The good news is that performance is generally much improved, using custom
 WebGL shaders where needed.
 
 ## What else is new in version 0.3.0
 
-The `scatterplot3js` function was substantially improved and updated.
+The `scatterplot3js()` function was substantially improved and updated.
 
 - The new `pch` option supports many point styles with size control.
 - Interactive rotation and zooming are greatly improved and panning is now supported: press and hold the right mouse button (or touch equivalent) and move the mouse to pan.
 - Mouse over labels are supported in WebGL renderings.
 - Lines are supported too.
 
-The `graphjs` function is completely new and now relies on `scatterplot3js`
-under the hood.
+The `graphjs()` function is completely new.
 
 - Greater variety of WebGL vertex rendering ("pch") options, including spheres
   and much higher-performance options for large graphs.
