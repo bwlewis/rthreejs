@@ -216,7 +216,7 @@ scatterplot3js <- function(
   save(file=.callcon, list=ls())
   .call <- rawConnectionValue(.callcon)
   close(.callcon)
-  
+ 
   # validate input
   if (!missing(y) && !missing(z)) {
     if (is.matrix(x))
@@ -248,7 +248,7 @@ scatterplot3js <- function(
   a <- lapply(color, function(x) as.vector(x[4, ]) / 255)   # alpha values
   color <- lapply(color, function(y) apply(y, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)))
 
-  bg <- sub("^(#[[:xdigit:]]{6}+).*$","\\1", bg, perl = TRUE)
+  bg <- sub("^(#[[:xdigit:]]{6}+).*$", "\\1", bg, perl = TRUE)
 
   # create options
   options <- c(as.list(environment()), list(...))
@@ -310,7 +310,7 @@ scatterplot3js <- function(
   if (!is.null(num.ticks))
   {
     if (length(num.ticks) != 3) stop("num.ticks must have length 3")
-    num.ticks <- pmax(1, num.ticks[c(1,3,2)])
+    num.ticks <- pmax(1, num.ticks[c(1, 3, 2)])
 
     t1 <- seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
     p1 <- (t1 - mn[1]) / (mx[1] - mn[1])
@@ -393,24 +393,24 @@ points3d_generator <- function(call)
     con <- rawConnection(call, "r")
     load(file=con, envir=e)
     close(con)
-    if(!missing(y) && !is.null(e$y)) e$y <- c(e$y, y)
-    if(!missing(z) && !is.null(e$z)) e$z <- c(e$z, z)
-    if(!missing(y) && is.null(e$y)) x <- cbind(x, y, z)
-    if(is.data.frame(x)) x <- as.matrix(x)
-    if(length(e$color) != rowlen(e$x)) e$color <- rep(e$color, length.out = rowlen(e$x))
-    if(length(e$size) != rowlen(e$x)) e$size <- rep(e$size, length.out = rowlen(e$x))
-    if(is.null(e$pch) || is.symbol(e$pch)) e$pch = "o"
-    if(length(e$pch) != rowlen(e$x)) e$pch <- rep(e$pch, length.out = rowlen(e$x))
-    if(is.null(e$labels)) e$labels = ""
-    if(length(e$labels) != rowlen(e$x)) e$labels <- rep(e$labels, length.out = rowlen(e$x))
-    if(length(color) != rowlen(x)) color <- rep(color, length.out = rowlen(x))
-    if(length(size) != rowlen(x)) size <- rep(size, length.out = rowlen(x))
-    if(is.null(pch)) pch = "o"
-    if(length(pch) != rowlen(x)) pch <- rep(pch, length.out = rowlen(x))
-    if(is.null(labels)) labels = ""
-    if(length(labels) != rowlen(x)) labels <- rep(labels, length.out = rowlen(x))
+    if (!missing(y) && !is.null(e$y)) e$y <- c(e$y, y)
+    if (!missing(z) && !is.null(e$z)) e$z <- c(e$z, z)
+    if (!missing(y) && is.null(e$y)) x <- cbind(x, y, z)
+    if (is.data.frame(x)) x <- as.matrix(x)
+    if (length(e$color) != rowlen(e$x)) e$color <- rep(e$color, length.out = rowlen(e$x))
+    if (length(e$size) != rowlen(e$x)) e$size <- rep(e$size, length.out = rowlen(e$x))
+    if (is.null(e$pch) || is.symbol(e$pch)) e$pch = "o"
+    if (length(e$pch) != rowlen(e$x)) e$pch <- rep(e$pch, length.out = rowlen(e$x))
+    if (is.null(e$labels)) e$labels = ""
+    if (length(e$labels) != rowlen(e$x)) e$labels <- rep(e$labels, length.out = rowlen(e$x))
+    if (length(color) != rowlen(x)) color <- rep(color, length.out = rowlen(x))
+    if (length(size) != rowlen(x)) size <- rep(size, length.out = rowlen(x))
+    if (is.null(pch)) pch = "o"
+    if (length(pch) != rowlen(x)) pch <- rep(pch, length.out = rowlen(x))
+    if (is.null(labels)) labels = ""
+    if (length(labels) != rowlen(x)) labels <- rep(labels, length.out = rowlen(x))
     # combine old and new options
-    if(is.matrix(e$x)) e$x <- rbind(e$x, x)
+    if (is.matrix(e$x)) e$x <- rbind(e$x, x)
     else e$x <- c(e$x, x)
     e$color <- c(e$color, color)
     e$size <- c(e$size, size)

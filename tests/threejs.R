@@ -8,8 +8,8 @@ scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
 z <- seq(-10, 10, 0.1)
 x <- cos(z)
 y <- sin(z)
-scatterplot3js(x,y,z, color=rainbow(length(z)))
-scatterplot3js(x,y,z, color=rainbow(length(z)), axisLabels=c("a", "b", "c"))
+scatterplot3js(x, y, z, color=rainbow(length(z)))
+scatterplot3js(x, y, z, color=rainbow(length(z)), axisLabels=c("a", "b", "c"))
 
 # globes
 data(flights, package="threejs")

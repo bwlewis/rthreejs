@@ -208,7 +208,7 @@ globejs <- function(
 # Clean up optional color arguments
   if ("bodycolor" %in% names(options))
   {
-    i <- grep("^#",options$bodycolor)
+    i <- grep("^#", options$bodycolor)
     if (length(i) > 0) options$bodycolor <- substr(options$bodycolor, 1, 7)
   }
   if ("emissive" %in% names(options))

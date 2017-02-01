@@ -40,7 +40,7 @@
 #' @export
 texture <- function(data)
 {
-  ext <- gsub(".*\\.","", data)
+  ext <- gsub(".*\\.", "", data)
   if (grepl("^http", data))
   {
     u <- url(data, open="rb")

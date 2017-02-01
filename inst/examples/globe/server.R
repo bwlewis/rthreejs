@@ -17,7 +17,7 @@ shinyServer(function(input, output)
   values <- reactive({
     cities <- cull()
     value <- h * cities$pop / max(cities$pop)
-    col <- rainbow(10, start=2.8 / 6,end=3.4 / 6)
+    col <- rainbow(10, start=2.8 / 6, end=3.4 / 6)
     names(col) <- c()
     # Extend palette to data values
     col <- col[floor(length(col) * (h - value) / h) + 1]
