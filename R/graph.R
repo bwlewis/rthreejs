@@ -158,7 +158,7 @@ graphjs <- function(g, layout,
   } else # single plot
   {
     if (!("igraph" %in% class(g))) stop("g must be an igraph object")
-    from <- as_edgelist(g)
+    from <- as_edgelist(g, names=FALSE)
     to   <- from[, 2]
     from <- from[, 1]
     if (missing(layout)) layout <- list(ifel(is.null(g$layout), layout_with_fr(g, dim=3, niter=50), g$layout))
