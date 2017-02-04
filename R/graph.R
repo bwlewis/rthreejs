@@ -142,7 +142,7 @@ graphjs <- function(g, layout,
   # check for list of graphs (edge animation)
   if (is.list(g) && "igraph" %in% class(g[[1]]))
   {
-    from <- lapply(g, as_edgelist)
+    from <- lapply(g, as_edgelist, names=FALSE)
     to   <- lapply(from, function(x) x[, 2])
     from <- lapply(from, function(x) x[, 1])
     if (missing(edge.color)) edge.color <- lapply(g, function(x) {
