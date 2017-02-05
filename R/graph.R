@@ -81,7 +81,7 @@
 #'
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
-#' (If you don't see your widget plot, try printing it with the \code{print}) function.
+#' (If you don't see your widget plot, try printing it with the \code{print} function.)
 #'
 #' @seealso \code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 #'

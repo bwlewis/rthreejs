@@ -39,7 +39,7 @@ graphjs(g, layout, vertex.color, vertex.size, vertex.shape, vertex.label,
 }
 \value{
 An htmlwidget object that is displayed using the object's show or print method.
-(If you don't see your widget plot, try printing it with the \code{print}) function.
+(If you don't see your widget plot, try printing it with the \code{print} function.)
 }
 \description{
 Make interactive 3D plots of \code{\link{igraph}} objects.

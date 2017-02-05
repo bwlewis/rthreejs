@@ -50,7 +50,7 @@
 #'
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
-#' (If you don't see your widget plot, try printing it with the \code{print}) function. The
+#' (If you don't see your widget plot, try printing it with the \code{print} function.) The
 #' returned object includes a special \code{points3d} function for adding points to the
 #' plot similar to \code{scatterplot3d}. See the note below and examples for details.
 #'
