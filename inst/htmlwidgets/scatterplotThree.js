@@ -6,13 +6,20 @@ HTMLWidgets.widget(
 
   initialize: function(el, width, height)
   {
+console.log("initialize " + width + " "  + height);
     var g = new Widget.scatter();
-    g.init(el, parseInt(width), parseInt(height));
+    // set nonzero minimum threejs renderer size to avoid problems
+    var w = parseInt(width);
+    var h = parseInt(height);
+    if(w == 0) w = 500;
+    if(h == 0) h = 500;
+    g.init(el, w, h);
     return {widget: g, width: parseInt(width), height: parseInt(height)};
   },
 
   resize: function(el, width, height, obj)
   {
+console.log("resize " + width + " "  + height);
     obj.width = parseInt(width);
     obj.height = parseInt(height);
     obj.widget.renderer.setSize(width, height);
@@ -21,6 +28,7 @@ HTMLWidgets.widget(
 
   renderValue: function(el, x, obj)
   {
+console.log("render value " + obj.width + " " + obj.height);
     obj.widget.create_plot(x); // see below
     obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate(); 
@@ -135,6 +143,15 @@ Widget.scatter = function()
     info.style.top = "-" + el.getBoundingClientRect().height + "px";
     info.style.left = "0px";
     el.appendChild(info);
+
+// hack for case:
+          // subscribe to custom shown event (fired by ioslides to trigger
+          // shiny reactivity but we can use it as well). this is necessary
+          // because if a widget starts out as display:none it has height
+          // and width == 0 and this doesn't change when it becomes visible
+EL = el;
+HOMER = _this;
+
 
     el.onmousemove = function(ev)
     { 
