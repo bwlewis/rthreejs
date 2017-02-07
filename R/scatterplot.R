@@ -359,8 +359,9 @@ scatterplot3js <- function(
     if (!("lwd" %in% names(options))) options$lwd <- 1L
     if ("lcol" %in% names(options)) # discard alpha, normalize line colors
     {
-      lc <- col2rgb(lcol, alpha=FALSE)
-      options$lcol <- apply(lc, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
+      if (!is.list(options$lcol)) options$lcol <- list(options$lcol)
+      lc <- Map(function(x) col2rgb(x, alpha=FALSE), options$lcol)
+      options$lcol <- Map(function(x) apply(x, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), lc)
     }
   }
   # validate animation frames
