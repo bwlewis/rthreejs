@@ -359,7 +359,7 @@ scatterplot3js <- function(
     if (!("lwd" %in% names(options))) options$lwd <- 1L
     if ("lcol" %in% names(options)) # discard alpha, normalize line colors
     {
-      lc <- col2rgb(lc, alpha=FALSE)
+      lc <- col2rgb(lcol, alpha=FALSE)
       options$lcol <- apply(lc, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255))
     }
   }
