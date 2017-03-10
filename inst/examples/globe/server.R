@@ -1,5 +1,6 @@
 library("shiny")
 library("threejs")
+
 data(world.cities, package="maps")
 
 earth_dark <- list(img=system.file("images/world.jpg",package="threejs"),
