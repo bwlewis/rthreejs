@@ -35,7 +35,7 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       p("Instructions :"),
-      p(a("How it works ?", href="https://wordpress.com/post/data-seo.com/1258")),
+      p(a("How it works ?", href="https://data-seo.com/2017/03/10/seo-viz-how-it-works/")),
       # tags$hr(),
       # tags$div("Majestic : CF/TF ",tags$ul(
       #   tags$li(tags$span("Batiment (>50%)",class="")),
