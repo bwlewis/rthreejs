@@ -58,10 +58,16 @@ shinyServer(function(input, output, session)
       
       updateSliderInput(session, "inlink", max = max(v$pos.Inlinks))
       updateSliderInput(session, "traffic", max = max(v$pos.Trafic))
-      updateSliderInput(session, "depth", max = max(v$pos.Level))      
+      updateSliderInput(session, "depth", max = max(v$pos.Level))   
+      
       
     }
     
+    if (!is.null(input$fileXLSX) & is.null(input$fileLOG)) {   
+      validate(
+        need(v$error_file == FALSE, ">>> Setting Up Google Analytics In your Crawler or Upload logs to extract SEO Traffic by Url")
+      )
+    }
 
     if (!is.null(input$fileXLSX) & !is.null(input$fileLOG)) {
 
@@ -137,6 +143,9 @@ shinyServer(function(input, output, session)
         
         #nb orphan pages
         output$chart5 <- renderText(paste(length(DForphan[which(DForphan!="")])," Orphan Pages",sep=""))
+        
+        #TODO : if no GA sessions in logs, we take SEO Traffic in logs #####
+        
         
         #seo visits on orphan pages
         #TODO : call API Analytics

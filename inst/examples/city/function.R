@@ -86,6 +86,7 @@ getCurlMultiHandle2 <- function() {
 prepareUrl <- function(file) {
   
   #file <- "./data/internal_html_planetecroisiere_ga.xlsx"
+  error_file <- FALSE 
   
   filexlsx <- file
   
@@ -153,7 +154,13 @@ prepareUrl <- function(file) {
   urls[is.na(urls)] <- 0
   
   #change to numeric for ntile
-  urls$`GA Sessions` <- as.numeric(urls$`GA Sessions`)
+  if (!is.null(urls$`GA Sessions`)) {
+    urls$`GA Sessions` <- as.numeric(urls$`GA Sessions`)
+  }
+  else {
+    urls$`GA Sessions` <- 1
+    error_file <- TRUE
+  }
   
   urls$`Status Code` <- round(as.numeric(urls$`Status Code`)/100)
   
@@ -321,7 +328,7 @@ prepareUrl <- function(file) {
       
     }
 
-  return(c(pos=urls,block=nburls,blocks_x=side,blocks_z=side,sitename=sitename))
+  return(c(pos=urls,block=nburls,blocks_x=side,blocks_z=side,sitename=sitename,error_file=error_file))
   
 }
 

@@ -5,9 +5,12 @@ library("tools")
 shinyUI(fluidPage(
   titlePanel("SEO-viz"),
   tags$head(
+    
     tags$style(HTML("
                     .legend { list-style: none; }
                     .legend li { float: left; margin-right: 10px; }
+
+                    .shiny-output-error-validation {color: green;}
 
                     #choose_columns .checkbox { float:left;width:50%; }
 
