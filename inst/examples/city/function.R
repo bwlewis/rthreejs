@@ -120,8 +120,8 @@ prepareUrl <- function(file) {
            & !grepl(".gif",Address)
            & !grepl(".pdf",Address)) %>%
     mutate(Name=gsub(sitename,"",Address)) %>%
-    # limit first 4000 urls
-    head(4000)
+    # limit first 8000 urls
+    head(5000)
   
   urls[1,]$Name <- "home"
   

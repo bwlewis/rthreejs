@@ -63,7 +63,7 @@ shinyUI(fluidPage(
       #sliderInput("N", "Number of urls to plot", value=20, min = 10, max = 1000, step = 10),
       tags$div(class = "myclass"),
       p('Step 1 : Export your data from ScreamingFrog with your GA sessions'),      
-      fileInput('fileXLSX', 'Choose XLSX file to upload (e.g. .xlsx ) Limit first 4000 urls',
+      fileInput('fileXLSX', 'Choose XLSX file to upload (e.g. .xlsx ) Limit first 5000 urls',
                 accept = c(
                   'text/xlsx'
                 )
