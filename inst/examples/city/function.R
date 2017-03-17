@@ -154,6 +154,7 @@ prepareUrl <- function(file) {
   
   #change to numeric for ntile
   urls$`GA Sessions` <- as.numeric(urls$`GA Sessions`)
+  
   urls$`Status Code` <- round(as.numeric(urls$`Status Code`)/100)
   
   urls$Inlinks <- as.numeric(urls$Inlinks)

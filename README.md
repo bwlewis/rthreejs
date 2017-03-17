@@ -41,4 +41,12 @@ devtools::install_github("voltek62/seo-viz")
 runApp(system.file("examples/city", package="threejs"))
 ```
 
+## Test
+
+Example : /data/internal_html_simple.xlsx
+
+First line  : Internal - HTML				
+Second line : Address;Status Code;Level;Inlinks;GA Sessions
+
+
 
