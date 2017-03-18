@@ -48,6 +48,7 @@ shinyServer(function(input, output, session)
 
       v$pos.Target[1:length(v$pos.Address)] <- 0
       v$pos.Googlebot[1:length(v$pos.Googlebot)] <- 0
+      v$pos.TraficLog[1:length(v$pos.TraficLog)] <- 0
       
       output$chart1 <- renderText(paste(toString(length(v$pos.Address))," Pages in the Structure",sep=""))
       output$chart2 <- renderText(paste(toString(sum(v$pos.Trafic))," SEO visits",sep=""))    
@@ -81,56 +82,66 @@ shinyServer(function(input, output, session)
         #loader    
         withProgress(message = 'Creating your city', value = 0, {
         
-          for(i in 1:nrow(inFile)) {
-            
-            logs <- importLogs(input$fileLOG[[i, 'datapath']])
-            
-            if(is.null(logsSummary)) {
-              logsSummary <- logs
-            }
-            else {
-              logsSummary <- rbind(logsSummary,logs)
-            }      
-            
+          # for(i in 1:nrow(inFile)) {
+          #   
+          #   logs <- importLogs(input$fileLOG[[i, 'datapath']])
+          #   
+          #   if(is.null(logsSummary)) {
+          #     logsSummary <- logs
+          #   }
+          #   else {
+          #     logsSummary <- rbind(logsSummary,logs)
+          #   }      
+          #   
+          #   incProgress(1/(nrow(inFile)+1), detail = paste("Log : Import part", i))
+          #   
+          # }
+          
+          my.list <- vector("list", nrow(inFile))
+          for(i in 1:nrow(inFile)){
+            # Call all necessary commands to create values
+            my.list[[i]] <- readLogs(input$fileLOG[[i, 'datapath']])
             incProgress(1/(nrow(inFile)+1), detail = paste("Log : Import part", i))
-            
           }
+          logsSummary <- rbind(logsSummary, do.call(rbind, my.list))
           
           incProgress(1/(nrow(inFile)+1), detail = paste("Log : Fusion", i))
         
-        logsSummary <- processLogs(logsSummary)
+          logsSummary <- importLogs(logsSummary)
+          trafficSummary <- processSEOTrafficLogs(logsSummary)
+          logsSummary <- processLogs(logsSummary)
         
         })
         
-  
         #merge liste des V
         sitename <- gsub("/$","",v$sitename)
         
         df1 <- data.frame(pos.Address=as.character(gsub(sitename,"",v$pos.Address)),stringsAsFactors=FALSE)
         
         colnames(logsSummary) <- c("pos.Address","count")
+        
         #PATCH invisible character ! 3 hours lost
         logsSummary$pos.Address <- gsub(" ","",logsSummary$pos.Address)
-        
-        #Filter Amp pages, robots.txt and sitemap
-        logsSummary <- filter(logsSummary, !grepl("/amp/",pos.Address)
-                      & !grepl("robots.txt",pos.Address)
-                      & !grepl("/sitemap",pos.Address ))
-        
-
         
         df3 <- merge(df1, logsSummary, by = "pos.Address", all.x=TRUE)
         df3[is.na(df3)] <- 0
         
         v$pos.Googlebot <- df3$count
-        
-        #v$pos.Width[which(v$pos.Googlebot>0)] <- ntile(v$pos.Googlebot[which(v$pos.Googlebot>0)], 5)
         v$pos.Width <- v$pos.Googlebot
         
-        # if no traffic and googlebot>0 : add +1
-        #ind <- which(v$pos.Googlebot>0 & v$pos.Height==0)
-        #v$pos.Height[ind] <- 1
+        # extract SEO traffic from logs
+        colnames(trafficSummary) <- c("pos.Address","count")
+        trafficSummary$pos.Address <- gsub(" ","",trafficSummary$pos.Address)
+        df4 <- merge(df1, trafficSummary, by = "pos.Address", all.x=TRUE)
+        df4[is.na(df4)] <- 0
 
+        v$pos.TraficLog <- df4$count
+
+        #cat("v$error_file",v$error_file,"\r\n")
+        
+        #CHANGE Height=trafic SEO si pas de data
+        if(v$error_file == TRUE)
+         v$pos.Height <- df4$count
         
         #display unique pages
         count_activepage <- length(which(df3$count>0))
@@ -138,22 +149,34 @@ shinyServer(function(input, output, session)
         
         DForphan <- setdiff(logsSummary$pos.Address,df1$pos.Address)
         
+        #FIX ; size
         DForphan <- c(DForphan, rep("", length(df1$pos.Address) - length(DForphan)))
         v$DForphan <- DForphan
         
         #nb orphan pages
-        output$chart5 <- renderText(paste(length(DForphan[which(DForphan!="")])," Orphan Pages",sep=""))
+        DForphan <- as.data.frame(DForphan[which(DForphan!="")])
+        colnames(DForphan) <- c("pos.Address")
+        
+        output$chart5 <- renderText(paste(nrow(DForphan)," Orphan Pages",sep=""))
         
         #TODO : if no GA sessions in logs, we take SEO Traffic in logs #####
         
-        
         #seo visits on orphan pages
-        #TODO : call API Analytics
-        #output$chart6 <- renderText(paste("SEO Visits on Orphan Pages",sep=""))
+        #print(DForphan)
+        #print("--------")
+        
+        df5 <- merge(DForphan, trafficSummary, by = "pos.Address", all.x=TRUE)
+        df5[is.na(df5)] <- 0
+        
+        #print(arrange(df5,-count))
+        
+        #v$DForphan <- arrange(df5,-count)
+        
+        output$chart6 <- renderText(paste(sum(df5$count)," SEO Visits on Orphan Pages",sep=""))
         
         #active orphan pages with trafic
-        #count_orphan <- length(v$pos.Trafic[which((v$pos.Trafic>0)==TRUE)])
-        #output$chart7 <- renderText(paste("Active Orphan Pages",sep=""))
+        count_orphan <- nrow(filter(df5,count>0))
+        output$chart7 <- renderText(paste(count_orphan," Active Orphan Pages",sep=""))
         
         updateSliderInput(session, "bot", max = max(v$pos.Googlebot))
       
@@ -298,7 +321,8 @@ shinyServer(function(input, output, session)
                   posaddress=v$pos.Address,
                   posmajestic=v$pos.Majestic,
                   postarget=v$pos.Target,
-                  posgooglebot=v$pos.Googlebot
+                  posgooglebot=v$pos.Googlebot,
+                  postraficlog=v$pos.TraficLog
                   #value=v$value
                   #color=v$color, 
                   #atmosphere=TRUE

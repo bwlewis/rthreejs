@@ -37,7 +37,7 @@ shinyUI(fluidPage(
   ),
   sidebarLayout(
     sidebarPanel(
-      p("Instructions :"),
+      p("Instructions : v.1.1"),
       p(a("How it works ?", href="https://data-seo.com/2017/03/10/seo-viz-how-it-works/")),
       # tags$hr(),
       # tags$div("Majestic : CF/TF ",tags$ul(

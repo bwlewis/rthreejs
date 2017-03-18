@@ -102,7 +102,7 @@ prepareUrl <- function(file) {
                       skip=1)
   
   # last line is always NA
-  urls <- head(urls,-1)
+  #urls <- head(urls,-1)
   
   #urls2 <- select(urls,Address,Level,`GA Sessions`)
   
@@ -400,7 +400,7 @@ testGoogleIP <- function(ip) {
   
 }  
 
-importLogs <- function(name) {
+readLogs <- function(name) {
   
   if (grepl(".gz",name))
     filename <- gzfile(name) 
@@ -410,13 +410,20 @@ importLogs <- function(name) {
   maxfields <- max(count.fields(filename))
   
   logs <- read.table(filename, stringsAsFactors=FALSE, 
-                     col.names = paste0("V",seq_len(maxfields)), fill = TRUE)
+                     col.names = paste0("V",seq_len(maxfields)), fill = TRUE)  
+  
+}
+
+
+importLogs <- function(logs) {
   
   # detect field
   log100 <- logs[1:20,]
   idxURL <- which(grepl("/",log100)==TRUE & grepl("\\[",log100)==FALSE)
   idxIP  <- which(grepl("\\d+\\.\\d+\\.\\d+\\.\\d+", log100)==TRUE)
   idxMozilla <- which(grepl("Mozilla",log100)==TRUE)
+  idxStatusCode <- which(grepl("200",log100)==TRUE)
+  idxReferer <- which(grepl("http://",log100)==TRUE | grepl("google",log100)==TRUE)
 
   #FIX : take the first
   if (length(idxURL)>1)
@@ -426,10 +433,20 @@ importLogs <- function(name) {
   if (length(idxIP)>1)
     idxIP <- idxIP[1]
   
-  logs <- select(logs,c(idxIP,idxURL,idxMozilla))
-  colnames(logs) <- c("vIP","vURL","vUSERAGENT")
+  #FIX : take the first
+  if (length(idxStatusCode)>1)
+    idxStatusCode <- idxStatusCode[1]  
+  
+  if (length(idxReferer)>1)
+    idxReferer <- idxReferer[1]  
+  
+  logs <- select(logs,c(idxIP,idxURL,idxMozilla,idxStatusCode,idxReferer))
+  colnames(logs) <- c("vIP","vURL","vUSERAGENT","vSTATUS","vREFERER")
  
-  logs <- filter(logs,grepl("Googlebot",vUSERAGENT)
+  #Filter Amp pages, robots.txt and sitemap
+  logs <- filter(logs,
+                 #grepl("Googlebot",vUSERAGENT)
+                 grepl("200",vSTATUS)
                  & !grepl(".jpg",vURL)
                  & !grepl(".png",vURL)
                  & !grepl(".css",vURL)
@@ -437,7 +454,13 @@ importLogs <- function(name) {
                  & !grepl(".gif",vURL)
                  & !grepl(".ico",vURL)
                  & !grepl("POST ",vURL)
-                 & !grepl(".pdf",vURL))     
+                 & !grepl("HEAD ",vURL)
+                 & !grepl("PUT ",vURL)
+                 & !grepl(".pdf",vURL)
+                 & !grepl("/amp/",vURL)
+                 & !grepl("robots.txt",vURL)
+                 & !grepl("/sitemap",vURL)
+                 )     
  
   logs <- mutate(logs, vURL=gsub("GET ","",vURL) ) %>%
             mutate( vURL= gsub("HTTP\\/1.1","",vURL) )
@@ -450,17 +473,18 @@ processLogs <- function(logs) {
     
     logs_google <- logs   
     
-    logs_ip <- group_by(logs_google,vIP) %>%
+    logs_ip <- filter(logs_google,grepl("Googlebot",vUSERAGENT)) %>%
+      group_by(vIP) %>%
       summarize(count=n())
     
     logs_ip$test <- FALSE
     
-
-      for (k in 1:nrow(logs_ip)) {
-        current_ip <- logs_ip$vIP[k]
-        logs_ip$test[k] <- testGoogleIP(current_ip)
-      }        
-      logs_ip <- filter(logs_ip, test==TRUE)
+    #filter fake googlebot
+    for (k in 1:nrow(logs_ip)) {
+      current_ip <- logs_ip$vIP[k]
+      logs_ip$test[k] <- testGoogleIP(current_ip)
+    }        
+    logs_ip <- filter(logs_ip, test==TRUE)
            
     
     logs_ip$count <- NULL
@@ -469,13 +493,31 @@ processLogs <- function(logs) {
     logs <- merge(logs_google, logs_ip, by = "vIP") %>%
       filter(!grepl("Mobile",vUSERAGENT))
     
-    #GROUP BY IP
+    #GROUP BY URL
     logs <- group_by(logs,vURL) %>%
       summarize(count=n())    
     
   return(logs)
   
 }
+
+processSEOTrafficLogs <- function(logs) {
+  
+  logs <- filter(logs, !grepl("/amp/",vURL)
+                        & grepl("google",vREFERER)
+                        & !grepl("66.249.",vIP)
+                        & !grepl("robots.txt",vURL)
+                        & !grepl("sitemap",vURL)
+                 ) 
+  
+  #GROUP BY URL
+  logs <- group_by(logs,vURL) %>%
+    summarize(count=n())    
+  
+  return(logs)
+  
+}
+
 
 categorize <- function(file) {
   
@@ -498,5 +540,11 @@ categorize <- function(file) {
   }
   
 }
+
+#v <- prepareUrl("c:\\LogsTest\\makeup\\internal_html_makeup_without_ga.xlsx")
+#logsSummary <- importLogs("c:\\LogsTest\\makeup\\vintagemakeup.fr-17-02-2017.log.gz")
+#trafficSummary <- processSEOTrafficLogs(logsSummary)
+#logsSummary2 <- processLogs(logsSummary)
+
 
 

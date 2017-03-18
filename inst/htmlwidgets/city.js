@@ -7,6 +7,7 @@ var categorynamemap = [];
 var addressmap = [];
 var inlinkmap = [];
 var traficmap = [];
+var traficlogmap = [];
 var rescodemap = [];
 var levelmap = [];
 var majesticmap = [];
@@ -226,6 +227,7 @@ HTMLWidgets.widget(
     addressmap = [],
     inlinksmap = [],
     traficmap = [],
+    traficlogmap = [],
     rescodemap = [],
     levelmap = [],
     majesticmap = [],
@@ -258,6 +260,7 @@ HTMLWidgets.widget(
         inlinkmap[i] = [];
         rescodemap[i] = [];      
         traficmap[i] = [];
+        traficlogmap[i] = [];
         rescodemap[i] = [];
         levelmap[i] = [];
         majesticmap[i] = [];
@@ -280,6 +283,7 @@ HTMLWidgets.widget(
           address = x.posaddress[i];
           inlink = x.posinlink[i];
           trafic = x.postrafic[i];
+          traficlog = x.postraficlog[i];
           level = x.poslevel[i];
           majestic = x.posmajestic[i];
           target = x.postarget[i];
@@ -293,6 +297,7 @@ HTMLWidgets.widget(
           addressmap[posx-1][posy-1]  = address;
           inlinkmap[posx-1][posy-1]  = inlink;        
           traficmap[posx-1][posy-1]  = trafic;
+          traficlogmap[posx-1][posy-1]  = traficlog;
           //rescodemap[posx-1][posy-1]  = rescode;
           levelmap[posx-1][posy-1]  = level;
           majesticmap[posx-1][posy-1]  = majestic;
@@ -513,13 +518,16 @@ HTMLWidgets.widget(
   			  
   			    txt += "" + addressmap[ipos][jpos] +
   			    "<br/>Level:" + levelmap[ipos][jpos] +
-  			    " Trafic:" + traficmap[ipos][jpos] +
+  			    " Traffic:" + traficmap[ipos][jpos] +
             " Inlinks:" + inlinkmap[ipos][jpos] +
             " Rescode:" + colormap[ipos][jpos] + "XX" +         
             " Category:" + categorynamemap[ipos][jpos];
             
             if ( googlebotmap[ipos][jpos]!= undefined)
               txt += " GoogleBot:" + googlebotmap[ipos][jpos]
+              
+            if ( traficlogmap[ipos][jpos]!= undefined)
+              txt += " Traffic(from logs):" + traficlogmap[ipos][jpos]              
           
             if (addressmap[ipos][jpos]!=undefined) {
   			      createInfoCanvas(txt);
