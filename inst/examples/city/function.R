@@ -221,9 +221,10 @@ prepareUrl <- function(file) {
     # thresold >> 20
     #filter(urls_vocab_filtered, !(terms %in% stopwords)) %>%
     schemas <- arrange(urls_vocab_filtered,-terms_counts) %>%
-      select(terms)
+      select(terms) 
     
-    #print(schemas)
+    print("----1")
+    print(schemas)
 
     urls$Category <- "no match"
 
@@ -235,11 +236,6 @@ prepareUrl <- function(file) {
     }
 
     urls$Category[1] <- "home"
-    #DEBUG
-    #urls$Level[1] <- 1
-    #print(urls$Category[1])
-    #print(urls$Address[1])
-    #print(urls[1,])
     
     urls$CategoryName <-  urls$Category
     urls$Category <- as.numeric(as.factor(urls$Category))

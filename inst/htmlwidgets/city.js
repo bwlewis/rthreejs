@@ -494,9 +494,11 @@ HTMLWidgets.widget(
           " Rescode:" + colormap[ipos][jpos] + "XX" +          
           " Category:" + categorynamemap[ipos][jpos];
           
-          
-            if ( googlebotmap[ipos][jpos]!= undefined)
+          if ( googlebotmap[ipos][jpos]!= undefined)
               txt += " GoogleBot:" + googlebotmap[ipos][jpos]
+              
+          if ( traficlogmap[ipos][jpos]!= undefined)
+              txt += " Traffic(from logs):" + traficlogmap[ipos][jpos]  
           
           if (addressmap[ipos][jpos]!=undefined) {
   			    createInfoCanvas(txt);

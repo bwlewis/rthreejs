@@ -109,6 +109,7 @@ shinyServer(function(input, output, session)
         
           logsSummary <- importLogs(logsSummary)
           trafficSummary <- processSEOTrafficLogs(logsSummary)
+          #print(trafficSummary)
           logsSummary <- processLogs(logsSummary)
         
         })
@@ -134,7 +135,7 @@ shinyServer(function(input, output, session)
         trafficSummary$pos.Address <- gsub(" ","",trafficSummary$pos.Address)
         df4 <- merge(df1, trafficSummary, by = "pos.Address", all.x=TRUE)
         df4[is.na(df4)] <- 0
-
+        
         v$pos.TraficLog <- df4$count
 
         #cat("v$error_file",v$error_file,"\r\n")
@@ -207,13 +208,16 @@ shinyServer(function(input, output, session)
     
     names(col) <- c()
     
-    df <- as.data.frame(v) %>%
+    df <- as.data.frame(v,stringsAsFactors=FALSE) %>%
           select(pos.Category,pos.CategoryName) %>%
-          unique() %>%
-          arrange(pos.Category)
+          arrange(pos.Category) %>%
+          unique()
     
     df$pos.Color <- col[df$pos.Category]
     
+    #count category by typology
+    print("----2")
+    print(df$pos.CategoryName)
     
     my_checkboxGroupInput("columns", "Categories:",
                                    choices = df$pos.CategoryName,
