@@ -216,8 +216,8 @@ shinyServer(function(input, output, session)
     df$pos.Color <- col[df$pos.Category]
     
     #count category by typology
-    print("----2")
-    print(df$pos.CategoryName)
+    #print("----2")
+    #print(df$pos.CategoryName)
     
     my_checkboxGroupInput("columns", "Categories:",
                                    choices = df$pos.CategoryName,

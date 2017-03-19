@@ -223,8 +223,8 @@ prepareUrl <- function(file) {
     schemas <- arrange(urls_vocab_filtered,-terms_counts) %>%
       select(terms) 
     
-    print("----1")
-    print(schemas)
+    #print("----1")
+    #print(schemas)
 
     urls$Category <- "no match"
 
