@@ -8,7 +8,7 @@ source("./function.R")
 
 options(shiny.maxRequestSize = 10000*1024^2)
 
-my_checkboxGroupInput <- function(variable, label, choices, selected, colors){
+my_checkboxGroupInput <- function(variable, label, choices, selected, colors, total){
   #print(variable)
   choices_names <- choices
   if(length(names(choices))>0) my_names <- names(choices)
@@ -21,7 +21,7 @@ my_checkboxGroupInput <- function(variable, label, choices, selected, colors){
                        '" value="', choices, 
                        '"', ifelse(choices %in% selected, 'checked="checked"', ''), 
                        '/>',
-                       '<span>', choices_names,'</span>',
+                       '<span>', choices_names,'[',total,']</span>',
                        '</label>',
                        '</div>', collapse = " "))
       )
@@ -200,8 +200,6 @@ shinyServer(function(input, output, session)
       return()
     }
     
-    #print("v not null")
-    
     nbcolor <- max(v$pos.Category)
     qual_col_pals <- brewer.pal.info[brewer.pal.info$category == 'qual',]
     col <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))    
@@ -210,20 +208,19 @@ shinyServer(function(input, output, session)
     
     df <- as.data.frame(v,stringsAsFactors=FALSE) %>%
           select(pos.Category,pos.CategoryName) %>%
-          arrange(pos.Category) %>%
-          unique()
+          arrange(pos.Category)
     
-    df$pos.Color <- col[df$pos.Category]
-    
-    #count category by typology
-    #print("----2")
-    #print(df$pos.CategoryName)
+    dfcategory <- group_by(df, pos.CategoryName) %>%
+      summarize(count=n())
+    dfcategory$pos.Color <- col[unique(df$pos.Category)]
     
     my_checkboxGroupInput("columns", "Categories:",
-                                   choices = df$pos.CategoryName,
+                                   choices = dfcategory$pos.CategoryName,
                                    #selected = "",
-                                  selected = df$pos.CategoryName, 
-                                  colors= df$pos.Color)
+                                  selected = dfcategory$pos.CategoryName, 
+                                  colors= dfcategory$pos.Color,
+                                  total = dfcategory$count
+    )
     
   })  
 
