@@ -49,13 +49,14 @@ shinyServer(function(input, output, session)
       v$pos.Target[1:length(v$pos.Address)] <- 0
       v$pos.Googlebot[1:length(v$pos.Googlebot)] <- 0
       v$pos.TraficLog[1:length(v$pos.TraficLog)] <- 0
-      
+
       output$chart1 <- renderText(paste(toString(length(v$pos.Address))," Pages in the Structure",sep=""))
-      output$chart2 <- renderText(paste(toString(sum(v$pos.Trafic))," SEO visits",sep=""))    
       
-      # add SFcrawl + trafic >0
-      count_active <- length(v$pos.Trafic[which((v$pos.Trafic>0)==TRUE)])
-      output$chart3 <- renderText(paste(count_active," Active pages",sep=""))    
+      if (v$error_file == FALSE) {
+        output$chart2 <- renderText(paste(toString(sum(v$pos.Trafic))," SEO visits",sep=""))    
+        count_active <- length(v$pos.Trafic[which((v$pos.Trafic>0)==TRUE)])
+        output$chart3 <- renderText(paste(count_active," Active pages",sep=""))    
+      }
       
       updateSliderInput(session, "inlink", max = max(v$pos.Inlinks))
       updateSliderInput(session, "traffic", max = max(v$pos.Trafic))
@@ -138,11 +139,18 @@ shinyServer(function(input, output, session)
         
         v$pos.TraficLog <- df4$count
 
-        #cat("v$error_file",v$error_file,"\r\n")
-        
         #CHANGE Height=trafic SEO si pas de data
-        if(v$error_file == TRUE)
-         v$pos.Height <- df4$count
+        if(v$error_file == TRUE) {
+          max <- 10
+          v$pos.Height <- 0
+          v$pos.Height <- df4$count
+          
+          updateSliderInput(session, "traffic", max = max(df4$count))
+          
+          output$chart2 <- renderText(paste(toString(sum(df4$count))," SEO visits",sep=""))    
+          count_active <- length(df4$count[which((df4$count>0)==TRUE)])
+          output$chart3 <- renderText(paste(count_active," Active pages",sep=""))    
+        }
         
         #display unique pages
         count_activepage <- length(which(df3$count>0))
@@ -305,7 +313,7 @@ shinyServer(function(input, output, session)
               blocks_x=v$blocks_x,
               blocks_z=v$blocks_z,
               sitename=v$sitename,
-              height_max=max(v$pos.Trafic),
+              height_max=max(v$pos.Height),
               weight_max=max(v$pos.Googlebot),
               list(
                   posx=v$pos.X, 

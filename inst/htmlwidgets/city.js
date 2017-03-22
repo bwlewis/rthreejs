@@ -308,8 +308,6 @@ HTMLWidgets.widget(
         
       }
       
-      //console.log(levelmap);
-      
       //// ADD GROUND
   	  var street_h = city.curb_h*2;
   
@@ -321,8 +319,6 @@ HTMLWidgets.widget(
   	  stuff.scene.add(bedrock);
   	  
   	  /////////////////////////////////////
-  
-  
   	  for (var i = 0; i < city.blocks_x; i++) {		
   		  for (var j = 0; j < city.blocks_z; j++) {	
   
@@ -331,12 +327,15 @@ HTMLWidgets.widget(
   				
   				//get values from heightmap array
   				var hm = heightmap[i][j];
+  				var h=0;
   				
-  				//get building height for block 
-  				var max = 200;
-  				var min = 10;
-  				var h = Math.round((hm*max)/city.heightmax)+min;
-  				
+  				if (hm>0) {
+    				//get building height for block 
+    				var max = 200;
+    				var min = 1;
+    				var h = Math.round((hm*max)/city.heightmax)+min;
+  				}
+
           /////////////////////////////
   		
   				//max possible distance from center of block
@@ -404,13 +403,6 @@ HTMLWidgets.widget(
     			  var building_color = getRGBscaleColor(color);
           }
   					
-  				if (levelmap[i][j]<2) {
-  				  
-  				  console.log("levelmap",levelmap[i][j]);
-  				  console.log("addressmap",addressmap[i][j]);
-  				  
-  				}
-  				  
   	
   	      //si trafic
   				if (hm>0) {

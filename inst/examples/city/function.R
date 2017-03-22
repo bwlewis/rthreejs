@@ -353,7 +353,7 @@ majesticGetInfoUrl <- function(u) {
   
   req <-GET(url)
   
-  print(req)
+  #print(req)
   
   #result <- fromJSON( req )
   result <- content(req)$DataTables$Results$Data
