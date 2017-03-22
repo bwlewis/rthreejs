@@ -481,7 +481,7 @@ HTMLWidgets.widget(
   			  
   			  txt += "" + addressmap[ipos][jpos] +
   			  "<br/>Level:" + levelmap[ipos][jpos] +
-  			  " Trafic:" + traficmap[ipos][jpos] +
+  			  " Trafic(GA):" + traficmap[ipos][jpos] +
           " Inlinks:" + inlinkmap[ipos][jpos] +
           " Rescode:" + colormap[ipos][jpos] + "XX" +          
           " Category:" + categorynamemap[ipos][jpos];
@@ -512,7 +512,7 @@ HTMLWidgets.widget(
   			  
   			    txt += "" + addressmap[ipos][jpos] +
   			    "<br/>Level:" + levelmap[ipos][jpos] +
-  			    " Traffic:" + traficmap[ipos][jpos] +
+  			    " Traffic(GA):" + traficmap[ipos][jpos] +
             " Inlinks:" + inlinkmap[ipos][jpos] +
             " Rescode:" + colormap[ipos][jpos] + "XX" +         
             " Category:" + categorynamemap[ipos][jpos];
