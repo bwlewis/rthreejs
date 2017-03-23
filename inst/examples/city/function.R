@@ -108,11 +108,13 @@ prepareUrl <- function(file) {
   
   # get sitename
   sitename <- urls[1,]$Address
+  
   # crawler generate NA columns
   #urls <- urls[colSums(!is.na(urls)) > 0]
   # sort by Level and remove sitename
   urls <- arrange(urls,Level) %>%
-    filter(grepl(sitename,Address) 
+    filter(
+          grepl(sitename,Address) 
            & !grepl(".jpg",Address)
            & !grepl(".css",Address)
            & !grepl(".js",Address)
@@ -419,8 +421,10 @@ importLogs <- function(logs) {
   idxIP  <- which(grepl("\\d+\\.\\d+\\.\\d+\\.\\d+", log100)==TRUE)
   idxMozilla <- which(grepl("Mozilla",log100)==TRUE)
   idxStatusCode <- which(grepl("200",log100)==TRUE)
-  idxReferer <- which(grepl("http://",log100)==TRUE | grepl("google",log100)==TRUE)
+  idxReferer <- which(grepl("http://",log100)==TRUE)
 
+  #print(head(log100))
+  
   #FIX : take the first
   if (length(idxURL)>1)
     idxURL <- idxURL[1]  
@@ -435,10 +439,13 @@ importLogs <- function(logs) {
   
   if (length(idxReferer)>1)
     idxReferer <- idxReferer[1]  
+
+  #cat("idxIP:",idxIP," idxURL:",idxURL," idxMozilla:",idxMozilla," idxStatusCode:",idxStatusCode," idxReferer:",idxReferer)
   
   logs <- select(logs,c(idxIP,idxURL,idxMozilla,idxStatusCode,idxReferer))
   colnames(logs) <- c("vIP","vURL","vUSERAGENT","vSTATUS","vREFERER")
- 
+  
+
   #Filter Amp pages, robots.txt and sitemap
   logs <- filter(logs,
                  #grepl("Googlebot",vUSERAGENT)
@@ -469,9 +476,15 @@ processLogs <- function(logs) {
     
     logs_google <- logs   
     
-    logs_ip <- filter(logs_google,grepl("Googlebot",vUSERAGENT)) %>%
+    #print("11")
+    #print(nrow(logs_google))
+    
+    logs_ip <- filter(logs_google,grepl("googlebot",vUSERAGENT,ignore.case=TRUE)) %>%
       group_by(vIP) %>%
       summarize(count=n())
+    
+    #print("22")    
+    #print(logs_ip$vIP)
     
     logs_ip$test <- FALSE
     
@@ -537,10 +550,9 @@ categorize <- function(file) {
   
 }
 
-#v <- prepareUrl("c:\\LogsTest\\makeup\\internal_html_makeup_without_ga.xlsx")
-#logsSummary <- importLogs("c:\\LogsTest\\makeup\\vintagemakeup.fr-17-02-2017.log.gz")
+#v <- prepareUrl("internal_html_crawl.xlsx")
+#logs <- readLogs("prepared-4.log")
+#logsSummary <- importLogs(logs)
 #trafficSummary <- processSEOTrafficLogs(logsSummary)
 #logsSummary2 <- processLogs(logsSummary)
-
-
 

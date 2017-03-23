@@ -3,6 +3,7 @@ library(threejs)
 library(dplyr)
 library(readxl)
 library(RColorBrewer)
+library(urltools)
 
 source("./function.R")
 
@@ -117,7 +118,11 @@ shinyServer(function(input, output, session)
         
         #merge liste des V
         sitename <- gsub("/$","",v$sitename)
+        domain <- domain(sitename)
+        scheme <- scheme(sitename)
         
+        sitename <- paste(scheme,"://",domain,sep="")
+
         df1 <- data.frame(pos.Address=as.character(gsub(sitename,"",v$pos.Address)),stringsAsFactors=FALSE)
         
         colnames(logsSummary) <- c("pos.Address","count")
@@ -137,11 +142,14 @@ shinyServer(function(input, output, session)
         df4 <- merge(df1, trafficSummary, by = "pos.Address", all.x=TRUE)
         df4[is.na(df4)] <- 0
         
+        #print("df4")
+        #print(df4)
+        
         v$pos.TraficLog <- df4$count
 
         #CHANGE Height=trafic SEO si pas de data
         if(v$error_file == TRUE) {
-          max <- 10
+
           v$pos.Height <- 0
           v$pos.Height <- df4$count
           
@@ -158,34 +166,26 @@ shinyServer(function(input, output, session)
         
         DForphan <- setdiff(logsSummary$pos.Address,df1$pos.Address)
         
-        #FIX ; size
-        DForphan <- c(DForphan, rep("", length(df1$pos.Address) - length(DForphan)))
-        v$DForphan <- DForphan
+        if((length(df1$pos.Address)-length(DForphan))>0) {
         
-        #nb orphan pages
-        DForphan <- as.data.frame(DForphan[which(DForphan!="")])
-        colnames(DForphan) <- c("pos.Address")
-        
-        output$chart5 <- renderText(paste(nrow(DForphan)," Orphan Pages",sep=""))
-        
-        #TODO : if no GA sessions in logs, we take SEO Traffic in logs #####
-        
-        #seo visits on orphan pages
-        #print(DForphan)
-        #print("--------")
-        
-        df5 <- merge(DForphan, trafficSummary, by = "pos.Address", all.x=TRUE)
-        df5[is.na(df5)] <- 0
-        
-        #print(arrange(df5,-count))
-        
-        #v$DForphan <- arrange(df5,-count)
-        
-        output$chart6 <- renderText(paste(sum(df5$count)," SEO Visits on Orphan Pages",sep=""))
-        
-        #active orphan pages with trafic
-        count_orphan <- nrow(filter(df5,count>0))
-        output$chart7 <- renderText(paste(count_orphan," Active Orphan Pages",sep=""))
+          DForphan <- c(DForphan, rep("", length(df1$pos.Address) - length(DForphan)))
+          v$DForphan <- DForphan
+          
+          #nb orphan pages
+          DForphan <- as.data.frame(DForphan[which(DForphan!="")])
+          colnames(DForphan) <- c("pos.Address")
+          output$chart5 <- renderText(paste(nrow(DForphan)," Orphan Pages",sep=""))
+          
+          df5 <- merge(DForphan, trafficSummary, by = "pos.Address", all.x=TRUE)
+          df5[is.na(df5)] <- 0
+          
+          output$chart6 <- renderText(paste(sum(df5$count)," SEO Visits on Orphan Pages",sep=""))
+          
+          #active orphan pages with trafic
+          count_orphan <- nrow(filter(df5,count>0))
+          output$chart7 <- renderText(paste(count_orphan," Active Orphan Pages",sep=""))
+          
+        }
         
         updateSliderInput(session, "bot", max = max(v$pos.Googlebot))
       
