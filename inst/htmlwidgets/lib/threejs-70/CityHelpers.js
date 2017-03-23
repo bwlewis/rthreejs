@@ -96,8 +96,9 @@ function normalizeArray(arr) {
 }
 //carete a box mesh with a geometry and material
 function getBoxMesh(color, w, h, l, x, y, z, shadow) {
-	shadow = (typeof shadow === "undefined") ? false : shadow;
-	material = new THREE.MeshLambertMaterial({ color: color});	
+	//shadow = (typeof shadow === "undefined") ? false : shadow;
+  material = new THREE.MeshLambertMaterial({ color: color});	
+
 	geom = new THREE.BoxGeometry(w, h, l);
 	mesh = new THREE.Mesh(geom, material);
 	mesh.position.set(x || 0, y || 0, z || 0);
@@ -107,10 +108,35 @@ function getBoxMesh(color, w, h, l, x, y, z, shadow) {
 	}*/
 	return mesh;
 }
+
+//carete a box mesh with a geometry and material
+function getBoxMeshBuilding(color, w, h, l, x, y, z, shadow) {
+	//shadow = (typeof shadow === "undefined") ? false : shadow;
+	if (shadow)
+    material = new THREE.MeshLambertMaterial({ color: color});	
+	else
+	  material = new THREE.MeshLambertMaterial({ color: color, transparent: true, opacity: 0.4});
+	  
+	geom = new THREE.BoxGeometry(w, h, l);
+	mesh = new THREE.Mesh(geom, material);
+	mesh.position.set(x || 0, y || 0, z || 0);
+	/*mesh.receiveShadow = true;
+	if(shadow){
+		mesh.castShadow = true;
+	}*/
+	return mesh;
+}
+
+
 //carete a box mesh with a geometry and material
 function getBoxMeshOpts(options) {
 	var o=options||{};
 	return getBoxMesh(o.color, o.w, o.h, o.l, o.x, o.y, o.z, o.shadow);
+}
+
+function getBoxMeshOptsBuilding(options) {
+	var o=options||{};
+	return getBoxMeshBuilding(o.color, o.w, o.h, o.l, o.x, o.y, o.z, o.shadow);
 }
 //water mesh
 function getWaterMesh(w, h, l, x, y, z) {

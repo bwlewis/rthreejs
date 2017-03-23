@@ -56,8 +56,8 @@ shinyUI(fluidPage(
       sliderInput("bot", "Googlebot Crawl Frequency:",
                   min = 0, max = 10000, value = c(0,10000)),   
       
-      #sliderInput("depth", "Depth:",
-      #            min = 0, max = 20, value = c(0,20)),         
+      sliderInput("depth", "Depth:",
+                  min = 0, max = 20, value = c(0,20)),         
       
       uiOutput("choose_columns"),
       #sliderInput("N", "Number of urls to plot", value=20, min = 10, max = 1000, step = 10),

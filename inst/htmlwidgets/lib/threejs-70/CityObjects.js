@@ -108,7 +108,7 @@ var Building = function(opts) {
 	};
 	
 	//building core
-	this.parts.push(getBoxMeshOpts({
+	this.parts.push(getBoxMeshOptsBuilding({
 		color: opts.color,
 		w: opts.w,
 		h: opts.h,

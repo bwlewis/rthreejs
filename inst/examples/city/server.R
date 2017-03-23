@@ -165,7 +165,7 @@ shinyServer(function(input, output, session)
         output$chart4 <- renderText(paste(count_activepage," Unique Pages crawled by Google",sep=""))
         
         #indexing rate
-        percent_indexing_rate <- round((length(v$pos.Trafic[which((v$pos.Trafic>0)==TRUE)])/count_activepage,1)*100)
+        percent_indexing_rate <- round((length(v$pos.Trafic[which((v$pos.Trafic>0)==TRUE)])/count_activepage)*100)
         output$chart8 <- renderText(paste(percent_indexing_rate,"% Indexing Rate",sep=""))
 
         DForphan <- setdiff(logsSummary$pos.Address,df1$pos.Address)
@@ -253,7 +253,8 @@ shinyServer(function(input, output, session)
       v$pos.Height[ind] <- 0
       #
       ind <- which(v$pos.Level<input$depth[1] | v$pos.Level>input$depth[2])
-      v$pos.Height[ind] <- 0
+      #v$pos.Height[ind] <- 0
+      #change opacity
       
     }
     
