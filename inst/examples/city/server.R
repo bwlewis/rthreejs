@@ -164,6 +164,10 @@ shinyServer(function(input, output, session)
         count_activepage <- length(which(df3$count>0))
         output$chart4 <- renderText(paste(count_activepage," Unique Pages crawled by Google",sep=""))
         
+        #indexing rate
+        percent_indexing_rate <- round((length(v$pos.Trafic[which((v$pos.Trafic>0)==TRUE)])/count_activepage,1)*100)
+        output$chart8 <- renderText(paste(percent_indexing_rate,"% Indexing Rate",sep=""))
+
         DForphan <- setdiff(logsSummary$pos.Address,df1$pos.Address)
         
         if((length(df1$pos.Address)-length(DForphan))>0) {
