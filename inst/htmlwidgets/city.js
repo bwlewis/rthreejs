@@ -435,6 +435,24 @@ HTMLWidgets.widget(
   	  
   	  // TODO ;add orphan pages by displaying suburbs
   	  // foreach -80
+  	  /////////////////////////////////////
+  	  /*
+  	  for (var i = 0; i < 20; i++) {		
+  				var x = ((city.block*i) + city.block/2) - (city.width)/2;
+  				var z = ((city.block*j) + city.block/2) - (city.length)/2;
+  				
+    			color = 0x4B95DE;
+    			var curb_color = getRGBscaleColor(color);
+    			
+  				var w = city.block-city.road_w;    	
+    	
+  				curb = getBoxMesh(curb_color, w, city.curb_h, w);
+  				curb.position.set(x+200, city.curb_h/2, z-80);
+
+  				stuff.scene.add(curb);	
+  	  }
+  	  */
+  	  
   	  
     }    	
 
