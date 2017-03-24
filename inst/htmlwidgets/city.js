@@ -383,6 +383,9 @@ HTMLWidgets.widget(
     			  // redirect
     			  else if (cm==3)
     			    color = 0x0066FF;
+    			  else
+    			  // water
+    			    color = 0x4B95DE;
     			    
     			  var curb_color = getRGBscaleColor(color);
   				}
@@ -401,13 +404,9 @@ HTMLWidgets.widget(
                };
   				
   				stuff.scene.add(curb);	
-  				
   				curbs.push(curb);
   				
   	      var transparent = transparentmap[i][j];
-  	      
-  	      //console.log("transparent:", transparent);
-  				  
           var building_color;
 
 				  if (categorymap[i][j]!=null) {
@@ -433,6 +432,10 @@ HTMLWidgets.widget(
   				
   		  }
   	  }
+  	  
+  	  // TODO ;add orphan pages by displaying suburbs
+  	  // foreach -80
+  	  
     }    	
 
   
