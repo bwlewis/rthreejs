@@ -366,10 +366,32 @@ HTMLWidgets.widget(
   				
   				//create curb mesh
   				//TODO : add special color if page objective
-  				if (targetmap[i][j]!=10)
-  				  var curb_color = colors.GROUND;
-  				else
-  				  var curb_color = colors.BLACK;
+  				
+  				//get values from colormap array
+  				var cm = colormap[i][j];
+  				
+  				var curb_color = colors.GROUND;
+  				
+  				//colormap special according rescode
+  				if (cm!=2) {
+           	// server error
+    			  if(cm==5)
+    			    color = 0xCC0000;
+    			  // bad request
+    			  else if (cm==4)
+    			    color = 0x0000FF;
+    			  // redirect
+    			  else if (cm==3)
+    			    color = 0x0066FF;
+    			    
+    			  var curb_color = getRGBscaleColor(color);
+  				}
+    			else {    
+    			  //var building_color = getRGBscaleColor(color); 				
+    				if (targetmap[i][j]==10)
+    				  var curb_color = colors.BLACK;
+    			}
+  				
   				
   				curb = getBoxMesh(curb_color, w, city.curb_h, w);
   				curb.position.set(x, city.curb_h/2, z);
@@ -382,40 +404,21 @@ HTMLWidgets.widget(
   				
   				curbs.push(curb);
   				
-  				//get values from colormap array
-  				var cm = colormap[i][j];
-  				
   	      var transparent = transparentmap[i][j];
   	      
   	      //console.log("transparent:", transparent);
   				  
           var building_color;
+
+				  if (categorymap[i][j]!=null) {
+				    var color = eval(categorymap[i][j]);
+				    var building_color = getRGBscaleColor(color);
+				  }
+				  else {
+				    var color = 0x996633;
+				    var building_color = getRGBscaleColor(color);
+				  }
   				
-  				//rescode 200
-  				if (cm==2) {
-  				  if (categorymap[i][j]!=null) {
-  				    var color = eval(categorymap[i][j]);
-  				    var building_color = getRGBscaleColor(color);
-  				  }
-  				  else {
-  				    var color = 0x996633;
-  				    var building_color = getRGBscaleColor(color);
-  				  }
-  				}
-          else {
-           	// server error
-    			  if(cm==5)
-    			    color = 0xCC0000;
-    			  // bad request
-    			  else if (cm==4)
-    			    color = 0x0000FF;
-    			  // redirect
-    			  else if (cm==3)
-    			    color = 0x0066FF;
-    				    
-    			  var building_color = getRGBscaleColor(color);
-          }
-  	
   	      //si trafic
   				if (hm>0) {
   				  //TODO : add opacity

@@ -303,6 +303,8 @@ shinyServer(function(input, output, session)
     #TODO : add specific pages and color base
     #v$pos.Target <- 0
     
+    #print(v$pos.Status)
+    
     args <- c(block=v$block,
               blocks_x=v$blocks_x,
               blocks_z=v$blocks_z,

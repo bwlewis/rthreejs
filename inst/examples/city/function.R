@@ -11,6 +11,7 @@ library(stringr)
 library(httr)
 library(RCurl)
 
+max_urls <- 10000
 
 apiKey <- ""
 # change to api for prod
@@ -123,7 +124,7 @@ prepareUrl <- function(file) {
            & !grepl(".pdf",Address)) %>%
     mutate(Name=gsub(sitename,"",Address)) %>%
     # limit first 8000 urls
-    head(5000)
+    head(max_urls)
   
   urls[1,]$Name <- "home"
   

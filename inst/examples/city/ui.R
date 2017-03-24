@@ -18,6 +18,7 @@ shinyUI(fluidPage(
 
                     .legend span { border: 1px solid #ccc; width: 12px; height: 12px; margin: 2px; }
 
+                    .legend .statusTarget { color:#FFFFFF;background-color: #000000; }
                     .legend .status200 { color:#FFFFFF;background-color: #996633; }
                     .legend .status300 { color:#FFFFFF;background-color: #0066FF; }
                     .legend .status400 { color:#FFFFFF;background-color: #0000FF; }
@@ -37,8 +38,7 @@ shinyUI(fluidPage(
   ),
   sidebarLayout(
     sidebarPanel(
-      p("Instructions : v.1.1"),
-      p(a("How it works ?", href="https://data-seo.com/2017/03/10/seo-viz-how-it-works/")),
+      p("Instructions : v.1.2 ",a("How it works ?", href="https://data-seo.com/2017/03/10/seo-viz-how-it-works/")),
       # tags$hr(),
       # tags$div("Majestic : CF/TF ",tags$ul(
       #   tags$li(tags$span("Batiment (>50%)",class="")),
@@ -63,7 +63,7 @@ shinyUI(fluidPage(
       #sliderInput("N", "Number of urls to plot", value=20, min = 10, max = 1000, step = 10),
       tags$div(class = "myclass"),
       p('Step 1 : Export your data from ScreamingFrog with your GA sessions'),      
-      fileInput('fileXLSX', 'Choose XLSX file to upload (e.g. .xlsx ) Limit first 5000 urls',
+      fileInput('fileXLSX', 'Choose XLSX file to upload (e.g. .xlsx ) Limit first 10000 urls',
                 accept = c(
                   'text/xlsx'
                 )
@@ -94,14 +94,22 @@ shinyUI(fluidPage(
                 )
                 , multiple = FALSE
       ),      
-      p("Use the mouse zoom to zoom in/out."),
-      p("Click and drag to rotate."),
-      tags$hr(), 
       downloadButton('exportData', 'Export Data'),
       downloadButton('exportOrphan', 'Export Orphan Page'),
-      tags$hr(), 
+      tags$hr(),
+      tags$div("Legend",tags$ul(
+        tags$li(tags$span("Target",class="statusTarget")),
+        tags$li(tags$span("3xx",class="status300")),
+        tags$li(tags$span("4xx",class="status400")),
+        tags$li(tags$span("5xx",class="status500")),
+        class="legend"
+      )),      
+      tags$hr(),
+      p("Use the mouse zoom to zoom in/out."),
+      p("Click and drag to rotate."),
+      #tags$hr(), 
       p("Sponsors :",a("OVH", href="https://www.ovh.com"),a("- Majestic", href="https://www.majestic.com")),
-      tags$hr(),  
+      #tags$hr(),  
       p("My blogs :", a("data-seo.com", href="https://data-seo.com")," | ",a("data-seo.fr", href="https://data-seo.fr"))
     ),
     mainPanel(
