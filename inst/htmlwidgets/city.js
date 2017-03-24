@@ -13,6 +13,7 @@ var levelmap = [];
 var majesticmap = [];
 var targetmap = [];
 var googlebotmap = [];
+var transparentmap = [];
 
 var watermap = [];
 var spritey;
@@ -177,7 +178,7 @@ HTMLWidgets.widget(
     }    
     
     //recursively create buildings return array of meshes
-    function setupBuildings(r, i, j, x, z, w, l, h, sub, color, buildings, cb){
+    function setupBuildings(r, i, j, x, z, w, l, h, sub, color, transparent, buildings, cb){
       var offset, half, between;
     
       //array of buildings for this block
@@ -185,6 +186,8 @@ HTMLWidgets.widget(
       
       //add rim building
       //var r = getRandInt(0,20);
+      
+      //console.log("setupBuildings transparent",transparent);
     
       building = new Building({
     		h : h,
@@ -193,8 +196,10 @@ HTMLWidgets.widget(
     		x: x,
     		z: z,
     		rim : r,
-    		color: color
+    		color: color,
+    		transparent : transparent
       });
+      
       buildings.push(building.group);
     	
       var b = mergeMeshes(buildings);
@@ -233,6 +238,7 @@ HTMLWidgets.widget(
     majesticmap = [],
     targetmap = [],
     googlebotmap = [],
+    transparentmap = [],
     cols=0;
     
     //init
@@ -266,6 +272,7 @@ HTMLWidgets.widget(
         majesticmap[i] = [];
         targetmap[i] = [];
         googlebotmap[i] = [];
+        transparentmap[i] = [];
       }
       
       if(x.posx != null)
@@ -288,6 +295,7 @@ HTMLWidgets.widget(
           majestic = x.posmajestic[i];
           target = x.postarget[i];
           googlebot = x.posgooglebot[i];
+          transparent = x.postransparent[i];
   
           heightmap[posx-1][posy-1]   = height;
           colormap[posx-1][posy-1]    = rescode;
@@ -303,6 +311,7 @@ HTMLWidgets.widget(
           majesticmap[posx-1][posy-1]  = majestic;
           targetmap[posx-1][posy-1]  = target;
           googlebotmap[posx-1][posy-1]  = googlebot;
+          transparentmap[posx-1][posy-1]  = transparent;
           
         }
         
@@ -375,6 +384,10 @@ HTMLWidgets.widget(
   				
   				//get values from colormap array
   				var cm = colormap[i][j];
+  				
+  	      var transparent = transparentmap[i][j];
+  	      
+  	      //console.log("transparent:", transparent);
   				  
           var building_color;
   				
@@ -402,11 +415,11 @@ HTMLWidgets.widget(
     				    
     			  var building_color = getRGBscaleColor(color);
           }
-  					
   	
   	      //si trafic
   				if (hm>0) {
-  				  setupBuildings(r, i, j, x, z, wh, wh,  h, city.subdiv, building_color); 
+  				  //TODO : add opacity
+  				  setupBuildings(r, i, j, x, z, wh, wh,  h, city.subdiv, building_color, transparent); 
   				  //setupBuildings(r, i, j, x, z, wh, inner,  h, city.subdiv, building_color); 
   				}
   				//si pas de trafic mais googlebot actif

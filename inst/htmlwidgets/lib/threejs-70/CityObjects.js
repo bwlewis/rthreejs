@@ -116,10 +116,12 @@ var Building = function(opts) {
 		x: opts.x,
 		y: (opts.h/2)+city.curb_h,
 		z: opts.z,
-		shadow: false
+		shadow: false,
+		transparent: opts.transparent
 	}));
 	
 	//console.log("x",opts.x,"y",(opts.h/2)+city.curb_h,"z",opts.z);
+	//console.log("opts.transparent",opts.transparent);
 	
 	//draw rim on top of some buildings
 	/*

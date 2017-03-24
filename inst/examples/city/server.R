@@ -48,8 +48,9 @@ shinyServer(function(input, output, session)
       v <- prepareUrl(inFile$datapath)
 
       v$pos.Target[1:length(v$pos.Address)] <- 0
-      v$pos.Googlebot[1:length(v$pos.Googlebot)] <- 0
-      v$pos.TraficLog[1:length(v$pos.TraficLog)] <- 0
+      v$pos.Googlebot[1:length(v$pos.Address)] <- 0
+      v$pos.TraficLog[1:length(v$pos.Address)] <- 0
+      v$pos.Transparent[1:length(v$pos.Address)] <- 1
 
       output$chart1 <- renderText(paste(toString(length(v$pos.Address))," Pages in the Structure",sep=""))
       
@@ -83,21 +84,6 @@ shinyServer(function(input, output, session)
         
         #loader    
         withProgress(message = 'Creating your city', value = 0, {
-        
-          # for(i in 1:nrow(inFile)) {
-          #   
-          #   logs <- importLogs(input$fileLOG[[i, 'datapath']])
-          #   
-          #   if(is.null(logsSummary)) {
-          #     logsSummary <- logs
-          #   }
-          #   else {
-          #     logsSummary <- rbind(logsSummary,logs)
-          #   }      
-          #   
-          #   incProgress(1/(nrow(inFile)+1), detail = paste("Log : Import part", i))
-          #   
-          # }
           
           my.list <- vector("list", nrow(inFile))
           for(i in 1:nrow(inFile)){
@@ -247,14 +233,17 @@ shinyServer(function(input, output, session)
     
     if (!is.null(input$fileXLSX)) {    
       ind <- which(v$pos.Inlinks<input$inlink[1] | v$pos.Inlinks>input$inlink[2])
-      v$pos.Height[ind] <- 0
+      #v$pos.Height[ind] <- 0
+      v$pos.Transparent[ind] <- 0
       # 
       ind <- which(v$pos.Trafic<input$traffic[1] | v$pos.Trafic>input$traffic[2])
-      v$pos.Height[ind] <- 0
+      #v$pos.Height[ind] <- 0
+      v$pos.Transparent[ind] <- 0
       #
       ind <- which(v$pos.Level<input$depth[1] | v$pos.Level>input$depth[2])
       #v$pos.Height[ind] <- 0
       #change opacity
+      v$pos.Transparent[ind] <- 0
       
     }
     
@@ -336,7 +325,8 @@ shinyServer(function(input, output, session)
                   posmajestic=v$pos.Majestic,
                   postarget=v$pos.Target,
                   posgooglebot=v$pos.Googlebot,
-                  postraficlog=v$pos.TraficLog
+                  postraficlog=v$pos.TraficLog,
+                  postransparent=v$pos.Transparent
                   #value=v$value
                   #color=v$color, 
                   #atmosphere=TRUE

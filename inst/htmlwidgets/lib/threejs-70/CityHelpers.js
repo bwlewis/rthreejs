@@ -110,12 +110,12 @@ function getBoxMesh(color, w, h, l, x, y, z, shadow) {
 }
 
 //carete a box mesh with a geometry and material
-function getBoxMeshBuilding(color, w, h, l, x, y, z, shadow) {
+function getBoxMeshBuilding(color, w, h, l, x, y, z, shadow, transparent) {
 	//shadow = (typeof shadow === "undefined") ? false : shadow;
-	if (shadow)
-    material = new THREE.MeshLambertMaterial({ color: color});	
+	if (transparent===0)
+	  material = new THREE.MeshLambertMaterial({ color: color, transparent: true, opacity: 0.3});
 	else
-	  material = new THREE.MeshLambertMaterial({ color: color, transparent: true, opacity: 0.4});
+    material = new THREE.MeshLambertMaterial({ color: color});	
 	  
 	geom = new THREE.BoxGeometry(w, h, l);
 	mesh = new THREE.Mesh(geom, material);
@@ -136,7 +136,7 @@ function getBoxMeshOpts(options) {
 
 function getBoxMeshOptsBuilding(options) {
 	var o=options||{};
-	return getBoxMeshBuilding(o.color, o.w, o.h, o.l, o.x, o.y, o.z, o.shadow);
+	return getBoxMeshBuilding(o.color, o.w, o.h, o.l, o.x, o.y, o.z, o.shadow, o.transparent);
 }
 //water mesh
 function getWaterMesh(w, h, l, x, y, z) {
