@@ -8,22 +8,22 @@ HTMLWidgets.widget(
   {
 console.log("initialize " + width + " "  + height);
     var g = new Widget.scatter();
-    // set nonzero minimum threejs renderer size to avoid problems
     var w = parseInt(width);
     var h = parseInt(height);
-    if(w == 0) w = 500;
-    if(h == 0) h = 500;
+    if(w == 0) w = 1; // set minimum object size
+    if(h == 0) h = 1;
     g.init(el, w, h);
     return {widget: g, width: parseInt(width), height: parseInt(height)};
   },
 
   resize: function(el, width, height, obj)
   {
-console.log("resize " + width + " "  + height);
-    obj.width = parseInt(width);
-    obj.height = parseInt(height);
-    obj.widget.renderer.setSize(width, height);
+console.log("resize " + width + " " + height);
+    obj.widget.init(el, width, height)
+    obj.widget.create_plot(obj.widget.options); // see below
+    obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate(); 
+HOMER = obj;
   },
 
   renderValue: function(el, x, obj)
@@ -93,11 +93,13 @@ Widget.scatter = function()
   this.frame = -1;   // current animation frame
   this.scene = 0;    // current animation scene
 
-  var camera, controls, scene;
+  var controls, scene;
   var _this = this;
+
 
   _this.init = function (el, width, height)
   {
+console.log("init " + width + " "  + height);
     if(Detector.webgl)
     {
       _this.renderer = new THREE.WebGLRenderer({alpha: true});
@@ -108,8 +110,11 @@ Widget.scatter = function()
     }
     _this.renderer.sortObjects = false;
     _this.renderer.autoClearColor = false;
-    _this.renderer.setSize(el.innerWidth, el.innerHeight);
+//    _this.renderer.setSize(el.innerWidth, el.innerHeight);
+    _this.renderer.setSize(width, height);
     _this.el = el; // stash a reference to our container for posterity
+    _this.width = width;
+    _this.height = height;
 
     // Info box for mouse-over labels and generic text
     var info = document.createElement("div");
@@ -118,16 +123,16 @@ Widget.scatter = function()
     info.style.fontFamily = "Sans";
     info.style.fontSize = "x-large";
     _this.infobox = info;
-    _this.fgcss = "#000000"; // default foreground css color
-    _this.main = "";       // default text in infobox
+    _this.fgcss = "#000000";     // default foreground css color
+    _this.main = "";             // default text in infobox
     _this.mousethreshold = 0.02; // default mouse over id threshold
 
-    camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
-    camera.position.z = 2.0;
-    camera.position.x = 2.5;
-    camera.position.y = 1.2;
+    _this.camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
+    _this.camera.position.z = 2.0;
+    _this.camera.position.x = 2.5;
+    _this.camera.position.y = 1.2;
 
-    controls = new THREE.TrackballControls(camera, el);
+    controls = new THREE.TrackballControls(_this.camera, el);
     controls.rotateSpeed = 0.5;
     controls.zoomSpeed = 4.2;
     controls.panSpeed = 1;
@@ -138,6 +143,9 @@ Widget.scatter = function()
     controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
+    while (el.hasChildNodes()) {
+      el.removeChild(el.lastChild);
+    }
     el.appendChild(_this.renderer.domElement);
     info.style.position = "relative";
     info.style.top = "-" + el.getBoundingClientRect().height + "px";
@@ -145,12 +153,23 @@ Widget.scatter = function()
     el.appendChild(info);
 
 // hack for case:
-          // subscribe to custom shown event (fired by ioslides to trigger
-          // shiny reactivity but we can use it as well). this is necessary
-          // because if a widget starts out as display:none it has height
-          // and width == 0 and this doesn't change when it becomes visible
-EL = el;
-HOMER = _this;
+     // subscribe to custom shown event (fired by ioslides to trigger
+     // shiny reactivity but we can use it as well). this is necessary
+     // because if a widget starts out as display:none it has height
+     // and width == 0 and this doesn't change when it becomes visible
+    $(el).closest('slide').on('shown', function() {
+console.log("slide SHOWN");
+      _this.renderer.setSize(_this.width, _this.height);
+      _this.animate();
+     });
+
+     // do the same for reveal.js
+     $(el).closest('section.slide').on('shown', function() {
+console.log("secton.slide SHOWN");
+      _this.renderer.setSize(_this.width, _this.height);
+      _this.animate();
+     });
+
 
 
     el.onmousemove = function(ev)
@@ -162,7 +181,7 @@ HOMER = _this;
       var canvasRect = this.getBoundingClientRect();
       mouse.x = 2 * (ev.clientX - canvasRect.left) / canvasRect.width - 1;
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
-      raycaster.setFromCamera(mouse, camera);
+      raycaster.setFromCamera(mouse, _this.camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
       if(I.length > 0)
       {
@@ -200,7 +219,7 @@ HOMER = _this;
       var canvasRect = this.getBoundingClientRect();
       mouse.x = 2 * (ev.clientX - canvasRect.left) / canvasRect.width - 1;
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
-      raycaster.setFromCamera(mouse, camera);
+      raycaster.setFromCamera(mouse, _this.camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
       if(I.length > 0 && I[0].object.type == "Points")
       {
@@ -868,7 +887,7 @@ HOMER = _this;
     if(controls.idle && _this.frame < 0) _this.idle = true; // Conserve CPU by terminating render loop when not needed
     // render scenes
     _this.renderer.clear();
-    _this.renderer.render(scene, camera);
+    _this.renderer.render(scene, _this.camera);
   }
 
 };
