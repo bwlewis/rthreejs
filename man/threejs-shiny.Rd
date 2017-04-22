@@ -3,8 +3,8 @@
 \name{globeOutput}
 \alias{globeOutput}
 \alias{renderGlobe}
-\alias{renderScatterplotThree}
 \alias{scatterplotThreeOutput}
+\alias{renderScatterplotThree}
 \alias{threejs-shiny}
 \title{Shiny bindings for threejs widgets}
 \usage{
@@ -34,4 +34,3 @@ is useful if you want to save an expression in a variable.}
 Output and render functions for using threejs widgets within Shiny
 applications and interactive Rmd documents.
 }
-

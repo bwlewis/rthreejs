@@ -117,6 +117,7 @@ vertex is clicked. For instance, to trigger animations when vertices number 1 or
 clicked, include list entries labeled \code{"1"} and \code{"5"}.
 See the demos in \code{demo(package="threejs")} for detailed examples.
 }
+
 \examples{
 set.seed(1)
 g <- sample_islands(3, 10, 5/10, 1)
@@ -167,4 +168,3 @@ The three.js project \url{http://threejs.org}.
 \seealso{
 \code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 }
-

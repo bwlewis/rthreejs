@@ -26,4 +26,4 @@ Suggests:
     htmltools (>= 0.2.6),
     maps
 Enhances: knitr, shiny
-RoxygenNote: 5.0.0
+RoxygenNote: 6.0.1

@@ -160,6 +160,7 @@ the following new plot options.
      defaulting to 1.}
 }
 }
+
 \examples{
 # Example 1 from the scatterplot3d package (cf.)
 z <- seq(-10, 10, 0.1)
@@ -176,8 +177,8 @@ scatterplot3js(x, y, z, color=rainbow(length(z)),
 
 # Point cloud example, should run this with WebGL!
 N     <- 20000
-theta <- runif(N) * 2 * pi
-phi   <- runif(N) * 2 * pi
+theta <- runif (N) * 2 * pi
+phi   <- runif (N) * 2 * pi
 R     <- 1.5
 r     <- 1.0
 x <- (R + r * cos(theta)) * cos(phi)
@@ -185,7 +186,7 @@ y <- (R + r * cos(theta)) * sin(phi)
 z <- r * sin(theta)
 d <- 6
 h <- 6
-t <- 2 * runif(N) - 1
+t <- 2 * runif (N) - 1
 w <- t^2 * sqrt(1 - t^2)
 x1 <- d * cos(theta) * sin(phi) * w
 y1 <- d * sin(theta) * sin(phi) * w
@@ -214,4 +215,3 @@ The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{h
 \seealso{
 scatterplot3d, rgl, points3d, lines3d
 }
-

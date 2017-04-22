@@ -29,4 +29,3 @@ This function replaces the old \code{points3d} approach used by \code{scatterplo
    points3d(x + 0.2, y + 0.2, z, color="red", pch=paste("point", 1:5))
 }
 }
-

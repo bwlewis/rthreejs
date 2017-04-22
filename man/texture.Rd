@@ -25,7 +25,7 @@ invoked for images used in the \code{globejs} function.
 Due to browser
 "same origin policy" security restrictions, loading textures
 from a file system in three.js may lead to a security exception,
-see 
+see
 \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
 References to file locations work in Shiny apps, but not in stand-alone
 examples. The \code{texture} function facilitates transfer of image
@@ -46,4 +46,3 @@ t <- texture(img)
 The threejs project \url{http://threejs.org}.
 \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
 }
-
