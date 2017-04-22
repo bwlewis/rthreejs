@@ -50,9 +50,7 @@
 #'
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
-#' (If you don't see your widget plot, try printing it with the \code{print} function.) The
-#' returned object includes a special \code{points3d} function for adding points to the
-#' plot similar to \code{scatterplot3d}. See the note below and examples for details.
+#' (If you don't see your widget plot, try printing it with the \code{print} function.)
 #'
 #' @section Interacting with the plot:
 #' Press and hold the left mouse button (or touch or trackpad equivalent) and move
@@ -103,13 +101,14 @@
 #' one of those to plot large numbers of points.
 #'
 #' @section Plotting lines:
+#' See \code{\link{lines3d}} for an alternative interface.
 #' Lines are optionally drawn between points specified in \code{x, y, z} using
 #' the following new plot options.
 #' \itemize{
 #'   \item{"from"}{ A numeric vector of indices of line starting vertices corresponding to entries in \code{x}.}
 #'   \item{"to"}{ A numeric vector exactly as long as \code{from} of indices of line ending vertices corresponding
 #'       to entries in \code{x}.}
-#'   \item{"lcol"}{ Either a single color value or vector of values as long as \code{from} of line widths; line colors
+#'   \item{"lcol"}{ Either a single color value or vector of values as long as \code{from}; line colors
 #'      default to interpolating their vertex point colors.}
 #'   \item{"lwd"}{ A single numeric value of line width (for all lines), defaults to 1.}
 #'   \item{"linealpha"}{ A single numeric value between 0 and 1 inclusive setting the transparency of all plot lines,
@@ -121,7 +120,7 @@
 #' in \code{x, y, z}.
 #'
 #' @references
-#' The three.js project \url{http://threejs.org}.
+#' The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{http://htmlwidgets.org}.
 #'
 #' @examples
 #' # Example 1 from the scatterplot3d package (cf.)
@@ -137,8 +136,7 @@
 #' scatterplot3js(x, y, z, color=rainbow(length(z)),
 #'                pch=sample(c(".", "o", letters), length(x), replace=TRUE))
 #'
-#' # Pretty point cloud example, should run this with WebGL!
-#' # Note the use of pch="." for the most efficient rendering.
+#' # Point cloud example, should run this with WebGL!
 #' N     <- 20000
 #' theta <- runif(N) * 2 * pi
 #' phi   <- runif(N) * 2 * pi
@@ -160,35 +158,18 @@
 #' M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
 #' scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 #'
-#' # Adding points to a plot with points3d (cf. scatterplot3d)
-#' set.seed(1)
-#' lim <- c(-3, 3)
-#' x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
-#' a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red", pch="+")
-#' print(a)
-#'
 #' # Plot text using 'pch' (we label some points in this example)
 #' set.seed(1)
 #' x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
-#' a <- scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim)
-#' b <- a$points3d(x + 0.2, y + 0.2, z, color="red", pch=paste("point", 1:5))
-#' print(b)
-#'
-#' # Explicitly use the Canvas renderer
-#' N <- 100
-#' i <- sample(3, N, replace=TRUE)
-#' x <- matrix(rnorm(N*3),ncol=3)
-#' lab <- c("small", "bigger", "biggest")
-#' scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
-#' # Same example, but with WebGL spheres (if available)
-#' scatterplot3js(x, color=rainbow(N), size=i)
+#' scatterplot3js(x, y, z, pch="@") %>%
+#'    points3d(x + 0.1, y + 0.1, z, color="red", pch=paste("point", 1:5))
 #'
 #' \dontrun{
 #'   # A shiny example
 #'   shiny::runApp(system.file("examples/scatterplot",package="threejs"))
 #' }
 #'
-#' @seealso scatterplot3d, rgl
+#' @seealso scatterplot3d, rgl, points3d, lines3d
 #' @importFrom stats na.omit
 #' @export
 scatterplot3js <- function(
@@ -209,7 +190,7 @@ scatterplot3js <- function(
   signif = 8,
   bg = "#ffffff",
   cex.symbols = 1,
-  xlim, ylim, zlim, pch, ...)
+  xlim, ylim, zlim, pch="@", ...)
 {
   # save call state for points3d below
   .callcon <- rawConnection(raw(0), "r+")
@@ -380,46 +361,115 @@ scatterplot3js <- function(
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           package = "threejs")
-  ans$points3d <- points3d_generator(.call)
+  ans$call <- match.call()
+  ans$.call <- .call
+  ans$points3d <- function(...) stop("Syntax for adding points has changed: See ?points3d for examples.")
   ans
 }
 
-# internal function to support points3d similar to scatterplot3d
-points3d_generator <- function(call)
+#' Add points to a 3D scatterplot
+#'
+#' @param s A scatterplot object returned by \code{\link{scatterplot3js}}.
+#' @param ... Optional new point arguments (see examples) following \code{\link{scatterplot3js}} syntax.
+#' @return A new scatterplot htmlwidget object.
+#' @note This function replaces the old \code{points3d} approach used by \code{scatterplot3d}.
+#' @examples
+#' \dontrun{
+#'  x <- rnorm(5)
+#'  y <- rnorm(5)
+#'  z <- rnorm(5)
+#'  scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim) %>%
+#'    points3d(x + 0.2, y + 0.2, z, color="red", pch=paste("point", 1:5))
+#' }
+#' @export
+points3d <- function(s, ...)
 {
-  function(x, y, z, color="steelblue", size=1, labels=NULL, pch="o")
+  stopifnot("scatterplotThree" %in% class(s))
+  n <- list(...)
+  if(names(n)[1] == "") names(n)[1] <- "x"
+  if(names(n)[2] == "") names(n)[2] <- "y"
+  if(names(n)[3] == "") names(n)[3] <- "z"
+  if(is.null(n$x)) return(s)
+  e <- new.env()
+  con <- rawConnection(s$.call, "r")
+  load(file=con, envir=e)
+  close(con)
+  e <- as.list(e)
+  if(is.data.frame(e$x)) e$x <- as.matrix(e$x)
+  if(!is.null(e$y))
   {
-    e <- new.env()
-    rowlen <- function(x) ifel(is.null(nrow(x)), length(x), nrow(x))
-    con <- rawConnection(call, "r")
-    load(file=con, envir=e)
-    close(con)
-    if (!missing(y) && !is.null(e$y)) e$y <- c(e$y, y)
-    if (!missing(z) && !is.null(e$z)) e$z <- c(e$z, z)
-    if (!missing(y) && is.null(e$y)) x <- cbind(x, y, z)
-    if (is.data.frame(x)) x <- as.matrix(x)
-    if (length(e$color) != rowlen(e$x)) e$color <- rep(e$color, length.out = rowlen(e$x))
-    if (length(e$size) != rowlen(e$x)) e$size <- rep(e$size, length.out = rowlen(e$x))
-    if (is.null(e$pch) || is.symbol(e$pch)) e$pch <- "o"
-    if (length(e$pch) != rowlen(e$x)) e$pch <- rep(e$pch, length.out = rowlen(e$x))
-    if (is.null(e$labels)) e$labels <- ""
-    if (length(e$labels) != rowlen(e$x)) e$labels <- rep(e$labels, length.out = rowlen(e$x))
-    if (length(color) != rowlen(x)) color <- rep(color, length.out = rowlen(x))
-    if (length(size) != rowlen(x)) size <- rep(size, length.out = rowlen(x))
-    if (is.null(pch)) pch <- "o"
-    if (length(pch) != rowlen(x)) pch <- rep(pch, length.out = rowlen(x))
-    if (is.null(labels)) labels <- ""
-    if (length(labels) != rowlen(x)) labels <- rep(labels, length.out = rowlen(x))
-    # combine old and new options
-    if (is.matrix(e$x)) e$x <- rbind(e$x, x)
-    else e$x <- c(e$x, x)
-    e$color <- c(e$color, color)
-    e$size <- c(e$size, size)
-    e$labels <- c(e$labels, labels)
-    e$pch <- c(e$pch, pch)
-    do.call("scatterplot3js", args=as.list(e))
+    e$x <- cbind(e$x, e$y, e$z)
+    e$y <- NULL
+    e$z <- NULL
   }
+  if(is.data.frame(n$x)) n$x <- as.matrix(n$x)
+  if(!is.null(n$y))
+  {
+    n$x <- cbind(n$x, n$y, n$z)
+    n$y <- NULL
+    n$z <- NULL
+  }
+  N <- nrow(e$x)
+  if(length(e$color) != N) e$color <- rep(e$color, length.out=N)
+  if(length(e$pch) != N) e$pch <- rep(e$pch, length.out=N)
+  if(length(e$size) != N) e$size <- rep(e$size, length.out=N)
+  if(is.null(e$labels)) e$labels <- ""
+  if(length(e$labels) != N) e$labels <- rep(e$labels, length.out=N)
+  M <- nrow(n$x)
+  if(is.null(n$color)) n$color <- "steelblue"
+  if(is.null(n$pch)) n$pch <- "@"
+  if(is.null(n$size)) n$size <- 1
+  if(length(n$color) != M) n$color <- rep(n$color, length.out=M)
+  if(length(n$pch) != M) n$pch <- rep(n$pch, length.out=M)
+  if(length(n$size) != M) n$size <- rep(n$size, length.out=M)
+  if(is.null(n$labels)) n$labels <- ""
+  if(length(n$labels) != M) n$labels <- rep(n$labels, length.out=M)
+
+  # Combine old and new arguments...
+  e$x <- rbind(e$x, n$x)
+  e$color <- c(e$color, n$color)
+  e$pch <- c(e$pch, n$pch)
+  e$size <- c(e$size, n$size)
+  e$labels <- c(e$labels, n$labels)
+
+  do.call("scatterplot3js", args=e)
 }
+
+#' Add lines to a 3D scatterplot
+#'
+#' @param s A scatterplot object returned by \code{\link{scatterplot3js}}.
+#' @param from A vector of integer indices of starting points.
+#' @param to A vector of integer indices of ending points of the same length as \code{from}.
+#' @param color Either a single color value or vector of values as long as ‘from’ of line colors; line colors default to interpolating their vertex point colors.
+#' @param lwd A single numeric value of line width (applies to all lines).
+#' @param alpha A single numeric value of line alpha (applies to all lines).
+#' @return A new scatterplot htmlwidget object.
+#' @note This function replaces the old \code{points3d} approach used by \code{scatterplot3d}.
+#' @examples
+#' \dontrun{
+#'  x <- rnorm(5)
+#'  y <- rnorm(5)
+#'  z <- rnorm(5)
+#'  scatterplot3js(x, y, z, pch="@", color=rainbow(5)) %>%
+#'    lines3d(c(1, 2), c(3, 4), lwd=2)
+#' }
+#' @export
+lines3d <- function(s, from, to, lwd=1, alpha=1, color)
+{
+  stopifnot("scatterplotThree" %in% class(s))
+  e <- new.env()
+  con <- rawConnection(s$.call, "r")
+  load(file=con, envir=e)
+  close(con)
+  e <- as.list(e)
+  e$from <- from
+  e$to <- to
+  if(! missing(color)) e$lcol <- color
+  e$lwd <- lwd
+  e$linealpha <- alpha
+  do.call("scatterplot3js", args=e)
+}
+
 
 #' @rdname threejs-shiny
 #' @export

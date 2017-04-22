@@ -9,7 +9,7 @@ scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
   z.ticklabs = NULL, color = "steelblue", size = cex.symbols,
   stroke = "black", flip.y = TRUE, grid = TRUE, renderer = c("auto",
   "canvas"), signif = 8, bg = "#ffffff", cex.symbols = 1, xlim, ylim,
-  zlim, pch, ...)
+  zlim, pch = "@", ...)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -82,9 +82,7 @@ down.}
 }
 \value{
 An htmlwidget object that is displayed using the object's show or print method.
-(If you don't see your widget plot, try printing it with the \code{print} function.) The
-returned object includes a special \code{points3d} function for adding points to the
-plot similar to \code{scatterplot3d}. See the note below and examples for details.
+(If you don't see your widget plot, try printing it with the \code{print} function.)
 }
 \description{
 A 3D scatterplot widget using three.js. Many options
@@ -148,13 +146,14 @@ one of those to plot large numbers of points.
 
 \section{Plotting lines}{
 
+See \code{\link{lines3d}} for an alternative interface.
 Lines are optionally drawn between points specified in \code{x, y, z} using
 the following new plot options.
 \itemize{
   \item{"from"}{ A numeric vector of indices of line starting vertices corresponding to entries in \code{x}.}
   \item{"to"}{ A numeric vector exactly as long as \code{from} of indices of line ending vertices corresponding
       to entries in \code{x}.}
-  \item{"lcol"}{ Either a single color value or vector of values as long as \code{from} of line widths; line colors
+  \item{"lcol"}{ Either a single color value or vector of values as long as \code{from}; line colors
      default to interpolating their vertex point colors.}
   \item{"lwd"}{ A single numeric value of line width (for all lines), defaults to 1.}
   \item{"linealpha"}{ A single numeric value between 0 and 1 inclusive setting the transparency of all plot lines,
@@ -175,8 +174,7 @@ scatterplot3js(x, y, z, color=rainbow(length(z)), axisLabels=c("a", "b", "c"))
 scatterplot3js(x, y, z, color=rainbow(length(z)),
                pch=sample(c(".", "o", letters), length(x), replace=TRUE))
 
-# Pretty point cloud example, should run this with WebGL!
-# Note the use of pch="." for the most efficient rendering.
+# Point cloud example, should run this with WebGL!
 N     <- 20000
 theta <- runif(N) * 2 * pi
 phi   <- runif(N) * 2 * pi
@@ -198,28 +196,11 @@ col <- c( rainbow(length(phi))[order(i)],
 M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
 scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 
-# Adding points to a plot with points3d (cf. scatterplot3d)
-set.seed(1)
-lim <- c(-3, 3)
-x <- scatterplot3js(rnorm(5),rnorm(5),rnorm(5), xlim=lim, ylim=lim, zlim=lim)
-a <- x$points3d(rnorm(3), rnorm(3), rnorm(3) / 2, color="red", pch="+")
-print(a)
-
 # Plot text using 'pch' (we label some points in this example)
 set.seed(1)
 x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
-a <- scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim)
-b <- a$points3d(x + 0.2, y + 0.2, z, color="red", pch=paste("point", 1:5))
-print(b)
-
-# Explicitly use the Canvas renderer
-N <- 100
-i <- sample(3, N, replace=TRUE)
-x <- matrix(rnorm(N*3),ncol=3)
-lab <- c("small", "bigger", "biggest")
-scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
-# Same example, but with WebGL spheres (if available)
-scatterplot3js(x, color=rainbow(N), size=i)
+scatterplot3js(x, y, z, pch="@") \%>\%
+   points3d(x + 0.1, y + 0.1, z, color="red", pch=paste("point", 1:5))
 
 \dontrun{
   # A shiny example
@@ -228,9 +209,9 @@ scatterplot3js(x, color=rainbow(N), size=i)
 
 }
 \references{
-The three.js project \url{http://threejs.org}.
+The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{http://htmlwidgets.org}.
 }
 \seealso{
-scatterplot3d, rgl
+scatterplot3d, rgl, points3d, lines3d
 }
 

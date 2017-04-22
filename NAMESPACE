@@ -3,6 +3,8 @@
 export(globeOutput)
 export(globejs)
 export(graphjs)
+export(lines3d)
+export(points3d)
 export(renderGlobe)
 export(renderScatterplotThree)
 export(scatterplot3js)
