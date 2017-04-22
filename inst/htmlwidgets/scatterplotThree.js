@@ -6,7 +6,6 @@ HTMLWidgets.widget(
 
   initialize: function(el, width, height)
   {
-console.log("initialize " + width + " "  + height);
     var g = new Widget.scatter();
     var w = parseInt(width);
     var h = parseInt(height);
@@ -18,17 +17,14 @@ console.log("initialize " + width + " "  + height);
 
   resize: function(el, width, height, obj)
   {
-console.log("resize " + width + " " + height);
     obj.widget.init(el, width, height)
     obj.widget.create_plot(obj.widget.options); // see below
     obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate(); 
-HOMER = obj;
   },
 
   renderValue: function(el, x, obj)
   {
-console.log("render value " + obj.width + " " + obj.height);
     obj.widget.create_plot(x); // see below
     obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate(); 
@@ -99,7 +95,6 @@ Widget.scatter = function()
 
   _this.init = function (el, width, height)
   {
-console.log("init " + width + " "  + height);
     if(Detector.webgl)
     {
       _this.renderer = new THREE.WebGLRenderer({alpha: true});
@@ -158,14 +153,12 @@ console.log("init " + width + " "  + height);
      // because if a widget starts out as display:none it has height
      // and width == 0 and this doesn't change when it becomes visible
     $(el).closest('slide').on('shown', function() {
-console.log("slide SHOWN");
       _this.renderer.setSize(_this.width, _this.height);
       _this.animate();
      });
 
      // do the same for reveal.js
      $(el).closest('section.slide').on('shown', function() {
-console.log("secton.slide SHOWN");
       _this.renderer.setSize(_this.width, _this.height);
       _this.animate();
      });
