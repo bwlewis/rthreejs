@@ -17,8 +17,8 @@ HTMLWidgets.widget(
 
   resize: function(el, width, height, obj)
   {
-    obj.widget.init(el, width, height)
-    obj.widget.create_plot(obj.widget.options); // see below
+    obj.width = width;
+    obj.height = height;
     obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate(); 
   },
