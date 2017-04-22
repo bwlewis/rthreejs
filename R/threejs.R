@@ -15,7 +15,7 @@
 #'
 #' # See also help for globe.js and scatterplot3.js
 #' }
-#' 
+#'
 #' @docType package
 NULL
 

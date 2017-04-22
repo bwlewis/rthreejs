@@ -138,8 +138,8 @@
 #'
 #' # Point cloud example, should run this with WebGL!
 #' N     <- 20000
-#' theta <- runif(N) * 2 * pi
-#' phi   <- runif(N) * 2 * pi
+#' theta <- runif (N) * 2 * pi
+#' phi   <- runif (N) * 2 * pi
 #' R     <- 1.5
 #' r     <- 1.0
 #' x <- (R + r * cos(theta)) * cos(phi)
@@ -147,7 +147,7 @@
 #' z <- r * sin(theta)
 #' d <- 6
 #' h <- 6
-#' t <- 2 * runif(N) - 1
+#' t <- 2 * runif (N) - 1
 #' w <- t^2 * sqrt(1 - t^2)
 #' x1 <- d * cos(theta) * sin(phi) * w
 #' y1 <- d * sin(theta) * sin(phi) * w
@@ -284,7 +284,7 @@ scatterplot3js <- function(
   if (!("alpha" %in% names(options))) options$alpha <- a
 
   # convert matrix to a array required by scatterplotThree.js and strip
-  x <- lapply(x, function(y) as.vector(t(signif(y, signif))))
+  x <- lapply(x, function(y) as.vector(t(signif (y, signif))))
   options$vertices <- x
 
   # Ticks
@@ -386,44 +386,44 @@ points3d <- function(s, ...)
 {
   stopifnot("scatterplotThree" %in% class(s))
   n <- list(...)
-  if(names(n)[1] == "") names(n)[1] <- "x"
-  if(names(n)[2] == "") names(n)[2] <- "y"
-  if(names(n)[3] == "") names(n)[3] <- "z"
-  if(is.null(n$x)) return(s)
+  if (names(n)[1] == "") names(n)[1] <- "x"
+  if (names(n)[2] == "") names(n)[2] <- "y"
+  if (names(n)[3] == "") names(n)[3] <- "z"
+  if (is.null(n$x)) return(s)
   e <- new.env()
   con <- rawConnection(s$.call, "r")
   load(file=con, envir=e)
   close(con)
   e <- as.list(e)
-  if(is.data.frame(e$x)) e$x <- as.matrix(e$x)
-  if(!is.null(e$y))
+  if (is.data.frame(e$x)) e$x <- as.matrix(e$x)
+  if (!is.null(e$y))
   {
     e$x <- cbind(e$x, e$y, e$z)
     e$y <- NULL
     e$z <- NULL
   }
-  if(is.data.frame(n$x)) n$x <- as.matrix(n$x)
-  if(!is.null(n$y))
+  if (is.data.frame(n$x)) n$x <- as.matrix(n$x)
+  if (!is.null(n$y))
   {
     n$x <- cbind(n$x, n$y, n$z)
     n$y <- NULL
     n$z <- NULL
   }
   N <- nrow(e$x)
-  if(length(e$color) != N) e$color <- rep(e$color, length.out=N)
-  if(length(e$pch) != N) e$pch <- rep(e$pch, length.out=N)
-  if(length(e$size) != N) e$size <- rep(e$size, length.out=N)
-  if(is.null(e$labels)) e$labels <- ""
-  if(length(e$labels) != N) e$labels <- rep(e$labels, length.out=N)
+  if (length(e$color) != N) e$color <- rep(e$color, length.out=N)
+  if (length(e$pch) != N) e$pch <- rep(e$pch, length.out=N)
+  if (length(e$size) != N) e$size <- rep(e$size, length.out=N)
+  if (is.null(e$labels)) e$labels <- ""
+  if (length(e$labels) != N) e$labels <- rep(e$labels, length.out=N)
   M <- nrow(n$x)
-  if(is.null(n$color)) n$color <- "steelblue"
-  if(is.null(n$pch)) n$pch <- "@"
-  if(is.null(n$size)) n$size <- 1
-  if(length(n$color) != M) n$color <- rep(n$color, length.out=M)
-  if(length(n$pch) != M) n$pch <- rep(n$pch, length.out=M)
-  if(length(n$size) != M) n$size <- rep(n$size, length.out=M)
-  if(is.null(n$labels)) n$labels <- ""
-  if(length(n$labels) != M) n$labels <- rep(n$labels, length.out=M)
+  if (is.null(n$color)) n$color <- "steelblue"
+  if (is.null(n$pch)) n$pch <- "@"
+  if (is.null(n$size)) n$size <- 1
+  if (length(n$color) != M) n$color <- rep(n$color, length.out=M)
+  if (length(n$pch) != M) n$pch <- rep(n$pch, length.out=M)
+  if (length(n$size) != M) n$size <- rep(n$size, length.out=M)
+  if (is.null(n$labels)) n$labels <- ""
+  if (length(n$labels) != M) n$labels <- rep(n$labels, length.out=M)
 
   # Combine old and new arguments...
   e$x <- rbind(e$x, n$x)
@@ -464,7 +464,7 @@ lines3d <- function(s, from, to, lwd=1, alpha=1, color)
   e <- as.list(e)
   e$from <- from
   e$to <- to
-  if(! missing(color)) e$lcol <- color
+  if (! missing(color)) e$lcol <- color
   e$lwd <- lwd
   e$linealpha <- alpha
   do.call("scatterplot3js", args=e)

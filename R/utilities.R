@@ -16,7 +16,7 @@
 #' Due to browser
 #' "same origin policy" security restrictions, loading textures
 #' from a file system in three.js may lead to a security exception,
-#' see 
+#' see
 #' \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
 #' References to file locations work in Shiny apps, but not in stand-alone
 #' examples. The \code{texture} function facilitates transfer of image
@@ -26,7 +26,7 @@
 #' @references
 #' The threejs project \url{http://threejs.org}.
 #' \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' # A big image (may take a while to download):
@@ -35,7 +35,7 @@
 #'              "world.topo.bathy.200412.3x5400x2700.jpg", sep="")
 #' t <- texture(img)
 #' }
-#' 
+#'
 #' @importFrom base64enc dataURI
 #' @export
 texture <- function(data)

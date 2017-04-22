@@ -126,7 +126,7 @@
 #' library(maptools)
 #' library(threejs)
 #' data(wrld_simpl)
-#' 
+#'
 #' bgcolor <- "#000025"
 #' earth <- tempfile(fileext=".jpg")
 #'
@@ -146,7 +146,7 @@
 #' # A shiny example:
 #' shiny::runApp(system.file("examples/globe",package="threejs"))
 #' }
-#' 
+#'
 #' # See http://bwlewis.github.io/rthreejs for additional examples.
 #' @export
 globejs <- function(

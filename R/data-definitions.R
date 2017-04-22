@@ -16,9 +16,9 @@ NULL
 
 
 #' Global flight example data from Callum Prentice.
-#' 
+#'
 #' Global flight example data from Callum Prentice.
-#' 
+#'
 #' @docType data
 #' @name flights
 #' @keywords datasets
