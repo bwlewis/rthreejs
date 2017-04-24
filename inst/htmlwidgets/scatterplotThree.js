@@ -105,7 +105,6 @@ Widget.scatter = function()
     }
     _this.renderer.sortObjects = false;
     _this.renderer.autoClearColor = false;
-//    _this.renderer.setSize(el.innerWidth, el.innerHeight);
     _this.renderer.setSize(width, height);
     _this.el = el; // stash a reference to our container for posterity
     _this.width = width;
@@ -122,7 +121,8 @@ Widget.scatter = function()
     _this.main = "";             // default text in infobox
     _this.mousethreshold = 0.02; // default mouse over id threshold
 
-    _this.camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
+    if(height > 0) _this.camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
+    else _this.camera = new THREE.PerspectiveCamera(40, 1, 1e-5, 100);
     _this.camera.position.z = 2.0;
     _this.camera.position.x = 2.5;
     _this.camera.position.y = 1.2;
@@ -152,14 +152,25 @@ Widget.scatter = function()
      // shiny reactivity but we can use it as well). this is necessary
      // because if a widget starts out as display:none it has height
      // and width == 0 and this doesn't change when it becomes visible
+     // XXX OMIT JQUERY DEPENDENCY?
     $(el).closest('slide').on('shown', function() {
+      _this.width = _this.el.offsetWidth;
+      _this.height = _this.el.offsetHeight;
+      _this.camera.aspect = _this.width / _this.height;
+      _this.camera.updateProjectionMatrix();
       _this.renderer.setSize(_this.width, _this.height);
+      controls.handleResize(); // http://stackoverflow.com/questions/28625085/how-to-update-trackball-controls-at-three-js#28625473
       _this.animate();
      });
 
-     // do the same for reveal.js
+     // ...and the same for reveal.js
      $(el).closest('section.slide').on('shown', function() {
+      _this.width = _this.el.offsetWidth;
+      _this.height = _this.el.offsetHeight;
+      _this.camera.aspect = _this.width / _this.height;
+      _this.camera.updateProjectionMatrix();
       _this.renderer.setSize(_this.width, _this.height);
+      controls.handleResize(); // http://stackoverflow.com/questions/28625085/how-to-update-trackball-controls-at-three-js#28625473
       _this.animate();
      });
 
