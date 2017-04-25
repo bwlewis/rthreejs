@@ -19,11 +19,11 @@ graphjs(g, layout, vertex.color, vertex.size, vertex.shape, vertex.label,
 
 \item{vertex.shape}{optional vertex shape or vector of shapes}
 
-\item{vertex.label}{optional vertex label or vector of labels}
+\item{vertex.label}{optional mouse-over vertex label or vector of labels}
 
 \item{edge.color}{optional edge color or vector of colors as long as the number of edges in \code{g}}
 
-\item{edge.width}{optional edge width or vector of edge widths}
+\item{edge.width}{optional edge width (single scalar value, see notes)}
 
 \item{edge.alpha}{optional single numeric edge transparency value}
 
@@ -54,7 +54,8 @@ Press and hold the left mouse button (or touch or trackpad equivalent) and move
 the mouse to rotate the plot. Press and hold the right mouse button (or touch
 equivalent) to pan. Use the mouse scroll wheel or touch equivalent to zoom.
 If \code{vertex.label}s are specified (see below), moving the mouse pointer over
-a point will display the label.
+a point will display the label. Altenatively use \code{vertex.shape} to plot
+character names as shown in the examples below.
 }
 
 \section{Layout options}{
@@ -81,6 +82,9 @@ option enables a mouse-over label display instead of plotting lables directly ne
 
 Optional parameters beginning with \code{edge.} represent a subset of the igraph
 edge visualization options and work similarly as the \code{vertex.} options above.
+The current version of the package only supports uniform edge widths specified by
+a single scalar value. This choice was made for performance reasons to support large
+visualizations.
 }
 
 \section{Graph animation}{
