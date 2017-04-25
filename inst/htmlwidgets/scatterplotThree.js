@@ -147,7 +147,7 @@ Widget.scatter = function()
     info.style.left = "0px";
     el.appendChild(info);
 
-// hack for case:
+// semi-ugly hack for case:
 // subscribe to custom shown event (fired by ioslides to trigger
 // shiny reactivity but we can use it as well). this is necessary
 // because if a widget starts out as display:none it has height
@@ -174,8 +174,32 @@ Widget.scatter = function()
         controls.handleResize();
         _this.animate();
        });
-     }
-
+    } else {
+// Using 'slideenter' event here as 'show' did not work here. ???
+      if(el.closest('slide') !== null)
+      {
+        el.closest('slide').addEventListener('slideenter', function() {
+          _this.width = _this.el.offsetWidth;
+          _this.height = _this.el.offsetHeight;
+          _this.camera.aspect = _this.width / _this.height;
+          _this.camera.updateProjectionMatrix();
+          _this.renderer.setSize(_this.width, _this.height);
+          controls.handleResize();
+          _this.animate();
+         }, false);
+      } else if(el.closest('section.slide') !== null)
+      {
+        el.closest('slide').addEventListener('slideenter', function() {
+          _this.width = _this.el.offsetWidth;
+          _this.height = _this.el.offsetHeight;
+          _this.camera.aspect = _this.width / _this.height;
+          _this.camera.updateProjectionMatrix();
+          _this.renderer.setSize(_this.width, _this.height);
+          controls.handleResize();
+          _this.animate();
+         }, false);
+      }
+    }
 
     el.onmousemove = function(ev)
     {
