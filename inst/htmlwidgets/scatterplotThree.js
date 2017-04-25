@@ -20,14 +20,14 @@ HTMLWidgets.widget(
     obj.width = width;
     obj.height = height;
     obj.widget.renderer.setSize(obj.width, obj.height);
-    obj.widget.animate(); 
+    obj.widget.animate();
   },
 
   renderValue: function(el, x, obj)
   {
     obj.widget.create_plot(x); // see below
     obj.widget.renderer.setSize(obj.width, obj.height);
-    obj.widget.animate(); 
+    obj.widget.animate();
   }
 })
 
@@ -148,36 +148,37 @@ Widget.scatter = function()
     el.appendChild(info);
 
 // hack for case:
-     // subscribe to custom shown event (fired by ioslides to trigger
-     // shiny reactivity but we can use it as well). this is necessary
-     // because if a widget starts out as display:none it has height
-     // and width == 0 and this doesn't change when it becomes visible
-     // XXX OMIT JQUERY DEPENDENCY?
-    $(el).closest('slide').on('shown', function() {
-      _this.width = _this.el.offsetWidth;
-      _this.height = _this.el.offsetHeight;
-      _this.camera.aspect = _this.width / _this.height;
-      _this.camera.updateProjectionMatrix();
-      _this.renderer.setSize(_this.width, _this.height);
-      controls.handleResize(); // http://stackoverflow.com/questions/28625085/how-to-update-trackball-controls-at-three-js#28625473
-      _this.animate();
-     });
+// subscribe to custom shown event (fired by ioslides to trigger
+// shiny reactivity but we can use it as well). this is necessary
+// because if a widget starts out as display:none it has height
+// and width == 0 and this doesn't change when it becomes visible
+    if (typeof jQuery != 'undefined')
+    {
+      $(el).closest('slide').on('shown', function() {
+        _this.width = _this.el.offsetWidth;
+        _this.height = _this.el.offsetHeight;
+        _this.camera.aspect = _this.width / _this.height;
+        _this.camera.updateProjectionMatrix();
+        _this.renderer.setSize(_this.width, _this.height);
+        controls.handleResize();
+        _this.animate();
+       });
 
-     // ...and the same for reveal.js
-     $(el).closest('section.slide').on('shown', function() {
-      _this.width = _this.el.offsetWidth;
-      _this.height = _this.el.offsetHeight;
-      _this.camera.aspect = _this.width / _this.height;
-      _this.camera.updateProjectionMatrix();
-      _this.renderer.setSize(_this.width, _this.height);
-      controls.handleResize(); // http://stackoverflow.com/questions/28625085/how-to-update-trackball-controls-at-three-js#28625473
-      _this.animate();
-     });
-
+       // ...and the same for reveal.js
+       $(el).closest('section.slide').on('shown', function() {
+        _this.width = _this.el.offsetWidth;
+        _this.height = _this.el.offsetHeight;
+        _this.camera.aspect = _this.width / _this.height;
+        _this.camera.updateProjectionMatrix();
+        _this.renderer.setSize(_this.width, _this.height);
+        controls.handleResize();
+        _this.animate();
+       });
+     }
 
 
     el.onmousemove = function(ev)
-    { 
+    {
       if(ev.preventDefault) ev.preventDefault();
       var mouse = new THREE.Vector2();
       var raycaster = new THREE.Raycaster();
@@ -292,7 +293,6 @@ Widget.scatter = function()
           }
         }
         if(_this.options.click[i].lcol) _this.options.lcol = _this.options.click[i].lcol;
-        
         _this.scene = 0; // reset animation
         _this.frame = 0; // start
         if(_this.idle)
@@ -545,7 +545,7 @@ Widget.scatter = function()
         context.beginPath();
         context.arc(0, 0, 0.5, 0, Math.PI*2, true);
         if(x.stroke)
-        { 
+        {
           context.strokeStyle = x.stroke;
           context.lineWidth = 0.15;
           context.stroke();
@@ -649,7 +649,7 @@ Widget.scatter = function()
       }
 // Ticks and tick labels
       function tick(length, thickness, axis, ticks, ticklabels)
-      { 
+      {
         for(var j=0; j < ticks.length; j++)
         {
           var tick = new THREE.Geometry();
@@ -673,7 +673,7 @@ Widget.scatter = function()
 
 // Grid
     if(x.grid && x.xtick && x.ztick && x.xtick.length == x.ztick.length)
-    { 
+    {
       for(var j=1; j < x.xtick.length; j++)
       {
         var gridline = new THREE.Geometry();
