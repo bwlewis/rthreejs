@@ -6,12 +6,11 @@ HTMLWidgets.widget(
 
   initialize: function(el, width, height)
   {
-    var g = new Widget.scatter();
     var w = parseInt(width);
     var h = parseInt(height);
+    var g = new Widget.scatter(w, h);
     if(w == 0) w = 1; // set minimum object size
     if(h == 0) h = 1;
-    g.init(el, w, h);
     return {widget: g, width: parseInt(width), height: parseInt(height)};
   },
 
@@ -25,6 +24,7 @@ HTMLWidgets.widget(
 
   renderValue: function(el, x, obj)
   {
+    obj.widget.init(el, obj.widget.init_width, obj.widget.init_height); // init here, see issue #52
     obj.widget.create_plot(x); // see below
     obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate();
@@ -83,15 +83,16 @@ HTMLWidgets.widget(
  * fontaxis    optional axis css font
  */
 var Widget = Widget || {};
-Widget.scatter = function()
+Widget.scatter = function(w, h)
 {
   this.idle = true;
   this.frame = -1;   // current animation frame
   this.scene = 0;    // current animation scene
+  this.init_width = w;
+  this.init_height = h;
 
   var controls, scene;
   var _this = this;
-
 
   _this.init = function (el, width, height)
   {
