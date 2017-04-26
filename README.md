@@ -99,5 +99,5 @@ For detailed help on the widgets and additional examples, see
 <img src="https://travis-ci.org/bwlewis/rthreejs.svg?branch=master" alt="Travis CI status"></img>
 </a>
 [![codecov.io](https://codecov.io/github/bwlewis/rthreejs/coverage.svg?branch=master)](https://codecov.io/github/bwlewis/rthreejs?branch=master)
-[![CRAN version](http://www.r-pkg.org/badges/version/threejs)](https://cran.r-project.org/packages=threejs)
+[![CRAN version](http://www.r-pkg.org/badges/version/threejs)]
 ![](http://cranlogs.r-pkg.org/badges/threejs)

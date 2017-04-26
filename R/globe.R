@@ -96,6 +96,7 @@
 #'         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
 #'         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
 #'
+#' \dontrun{
 #' # Plot populous world cities from the maps package.
 #' library(threejs)
 #' library(maps)
@@ -111,7 +112,6 @@
 #'         lat=cities$lat, long=cities$long,
 #'         value=value, color=col)
 #'
-#' \dontrun{
 #' # Plot a high-resolution NASA MODIS globe, setting colors to more closely reproduce
 #' # the natural image colors. Note that this example can can take a while to download!
 #' globejs("http://goo.gl/GVjxJ")

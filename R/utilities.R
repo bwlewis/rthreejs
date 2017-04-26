@@ -103,8 +103,10 @@ gopts <- function(g)
   ans
 }
 
-# internal color format parser
-# return a list of 3-hex-digit color values and scalar numeric alpha values
+#' A basic internal color format parser
+#' @param x a character-valued color name
+#' @return a list of 3-hex-digit color values and scalar numeric alpha values
+#' @importFrom grDevices col2rgb rgb
 gcol <- function(x)
 {
   if (is.null(x)) return(list(color=NULL, alpha=NULL))
