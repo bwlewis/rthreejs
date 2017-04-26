@@ -110,6 +110,9 @@
 #' (graphjs(ego, bg="black"))
 #'
 #' \dontrun{
+#' # A shiny example
+#' shiny::runApp(system.file("examples/graph", package="threejs"))
+#'
 #' # A graph amination that shows several layouts
 #' data("LeMis")
 #' graphjs(LeMis,
@@ -218,5 +221,13 @@ graphjs <- function(g, layout,
                     bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), opts)
   if (!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if (!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
-  do.call("scatterplot3js", args=options)
+  options$options <- TRUE
+  options <- do.call("scatterplot3js", args=options)
+  htmlwidgets::createWidget(
+          name = "scatterplotThree",
+          x = options,
+          width = width,
+          height = height,
+          htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+          package = "threejs")
 }

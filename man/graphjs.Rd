@@ -140,6 +140,9 @@ data("ego")
 (graphjs(ego, bg="black"))
 
 \dontrun{
+# A shiny example
+shiny::runApp(system.file("examples/graph", package="threejs"))
+
 # A graph amination that shows several layouts
 data("LeMis")
 graphjs(LeMis,

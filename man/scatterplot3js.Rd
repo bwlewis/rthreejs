@@ -205,7 +205,7 @@ scatterplot3js(x, y, z, pch="@") \%>\%
 
 \dontrun{
   # A shiny example
-  shiny::runApp(system.file("examples/scatterplot",package="threejs"))
+  shiny::runApp(system.file("examples/scatterplot", package="threejs"))
 }
 
 }

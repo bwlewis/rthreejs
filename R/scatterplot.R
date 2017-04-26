@@ -166,7 +166,7 @@
 #'
 #' \dontrun{
 #'   # A shiny example
-#'   shiny::runApp(system.file("examples/scatterplot",package="threejs"))
+#'   shiny::runApp(system.file("examples/scatterplot", package="threejs"))
 #' }
 #'
 #' @seealso scatterplot3d, rgl, points3d, lines3d
@@ -352,6 +352,9 @@ scatterplot3js <- function(
   {
     options$vertices <- c(options$vertices, replicate(N, options$vertices[[length(options$vertices)]], FALSE))
   }
+
+  # Don't create the widget; instead only return the options
+  if(!is.null(options$options) && options$options) return(options)
 
   # create widget
   ans <- htmlwidgets::createWidget(
