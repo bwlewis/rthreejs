@@ -284,7 +284,7 @@ scatterplot3js <- function(
   if (!("alpha" %in% names(options))) options$alpha <- a
 
   # convert matrix to a array required by scatterplotThree.js and strip
-  x <- lapply(x, function(y) as.vector(t(signif (y, signif))))
+  x <- lapply(x, function(y) as.vector(t(signif(y, signif))))
   options$vertices <- x
 
   # Ticks
@@ -354,7 +354,7 @@ scatterplot3js <- function(
   }
 
   # Don't create the widget; instead only return the options
-  if(!is.null(options$options) && options$options) return(options)
+  if (!is.null(options$options) && options$options) return(options)
 
   # create widget
   ans <- htmlwidgets::createWidget(
@@ -443,7 +443,8 @@ points3d <- function(s, ...)
 #' @param s A scatterplot object returned by \code{\link{scatterplot3js}}.
 #' @param from A vector of integer indices of starting points.
 #' @param to A vector of integer indices of ending points of the same length as \code{from}.
-#' @param color Either a single color value or vector of values as long as \code{from} of line colors; line colors default to interpolating their vertex point colors.
+#' @param color Either a single color value or vector of values as long as \code{from} of line colors;
+#'        line colors default to interpolating their vertex point colors.
 #' @param lwd A single numeric value of line width (applies to all lines).
 #' @param alpha A single numeric value of line alpha (applies to all lines).
 #' @return A new scatterplot htmlwidget object.

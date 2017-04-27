@@ -23,7 +23,6 @@ addons:
 
 env:
   global:
-    - RunRRedisTests=yes
     - R_LIBS_USER=~/R/library
 
 cache:
@@ -43,4 +42,4 @@ script:
 
 after_success:
   - Rscript -e 'library(threejs); covr::codecov()'
-  - Rscript -e 'lintr::lint_package()'
+  - Rscript -e 'library(lintr); with_defaults(open_curly_linter=NULL, line_length_linter=line_length_linter(130), camel_case_linter=NULL, snake_case_linter=NULL, infix_spaces_linter=NULL, object_usage_linter=NULL); lint_package()'
