@@ -18,9 +18,9 @@
 #' @param ... optional additional arguments passed to \code{\link{scatterplot3js}}
 #'
 #' @section Interacting with the plot:
-#' Press and hold the left mouse button (or touch or trackpad equivalent) and move
-#' the mouse to rotate the plot. Press and hold the right mouse button (or touch
-#' equivalent) to pan. Use the mouse scroll wheel or touch equivalent to zoom.
+#' Press and hold the left mouse button, or touch or trackpad equivalent, and move
+#' the mouse to rotate the plot. Press and hold the right mouse button
+#' to pan. Use the mouse scroll wheel to zoom.
 #' If \code{vertex.label}s are specified (see below), moving the mouse pointer over
 #' a point will display the label. Altenatively use \code{vertex.shape} to plot
 #' character names as shown in the examples below.
