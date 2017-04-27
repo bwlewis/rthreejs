@@ -164,9 +164,9 @@ HTMLWidgets.widget(
         else
           colr = new THREE.Color(x.color);
         if(Array.isArray(x.value))
-          size = Math.max(1, parseInt(x.value[i]));
+          size = parseFloat(x.value[i]);
         else
-          size = Math.max(1, parseInt(x.value));
+          size = parseFloat(x.value);
         phi = (90 - lat) * Math.PI / 180;
         theta = - lng * Math.PI / 180;
         var point = new THREE.Mesh(bg, bm);
