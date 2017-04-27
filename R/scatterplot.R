@@ -239,7 +239,7 @@ scatterplot3js <- function(
   names(options) <- gsub("\\.", "", names(options))
 
   # re-order so z points up as expected.
-  x <- lapply(x, function (y) y[, c(1, 3, 2), drop=FALSE])
+  x <- lapply(x, function(y) y[, c(1, 3, 2), drop=FALSE])
 
   # set axis labels if they exist
   if (!is.null(colnames(x[[1]])) && is.null(options$axisLabels))

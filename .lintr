@@ -1,1 +1,1 @@
-linters: with_defaults(open_curly_linter=NULL, line_length_linter=line_length_linter(130), camel_case_linter=NULL, snake_case_linter=NULL, infix_spaces_linter=NULL, object_usage_linter=NULL)
+linters: with_defaults(open_curly_linter=NULL, line_length_linter=line_length_linter(130), camel_case_linter=NULL, snake_case_linter=NULL, infix_spaces_linter=NULL, object_usage_linter=NULL, object_name_linter=NULL)
