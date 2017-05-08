@@ -26,9 +26,11 @@ and Internet Explorer work very well.
 
 <aside>
 ```{r  echo=FALSE, marginfigure=TRUE, fig.width=4.5, fig.height=4.5}
+suppressMessages({
 library("threejs")
 earth <- texture("/tmp/world.topo.bathy.200412.3x5400x2700.jpg")
-globejs(img=earth, bg="#fcfcfa", emissive="#aaaacc")
+globejs(img=earth, bg="#fcfcfa", emissive="#111122")
+})
 ```
 </aside>
 
@@ -40,7 +42,7 @@ image downloaded from the web.
 ```{r  echo=TRUE, eval=FALSE}
 library("threejs")
 earth <- "http://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg"
-globejs(img=earth, bg="white", emissive="#aaaacc")
+globejs(img=earth, bg="white")
 ```
 
 You can plot points and bars over the globe by supplying data to the *lat* and *long* arguments,
@@ -71,149 +73,26 @@ will work with other R packages like the excellent new *rworldmap* package.
 http://cran.r-project.org/web/packages/maptools/
 </aside>
 
-### Example 2: Bono awareness index
 
-We start with fun map that approximates one published in the
-Onion's atlas of the planet earth (thanks to Andy South for referencing this in his
-*rworldmap* package).
-
-<aside>
-Scott Dikkers,
-<i>Our dumb world: the Onion's atlas of the planet Earth</i>, 73 ed.,
-Little Brown & Co., 2007.
-</aside>
-
-This example illustrates generating a basic map with political boundaries. The countries
-are colored according to a loose approximation of the Onion's "Bono awareness index."
-The example illustrates the required plot parameters to display a basic map like this on the globe.
-
-A facsimile of the Bono awareness index color data may be found on my website at
-http://illposed.net/bono.rdata; the data are stored in a single-column R data frame whose
-row names are labeled with country names, a sample of which is shown here:
-```{r eval=TRUE, echo=TRUE}
-load(url("http://illposed.net/bono.rdata"))
-bono[c(33,51,126,180,209),,drop=FALSE]
-```
-The index data are factors with five levels. We'll use the factor levels to color
-the countries in our map. The trickiest part of preparing a map for display with
-*globejs* is setting up the plot parameters. The map needs to take up the entire
-plot region (no margins), and lat/long maps must have a 2:1 aspect ratio. Note that
-some of the map plotting functions available in R (including the *maptools* functions)
-override plot parameters. We illustrate that in the example below by showing the
-full set of required plot parameters, repeating the overridden ones in the *maptools* plot
-function. The complicated looking function that computes the *map_palette* colors
-simply darkens the default *heat.color* palette a bit.
-
-<aside>
-```{r  echo=FALSE, marginfigure=TRUE, fig.width=4.5, fig.height=4.5}
-suppressPackageStartupMessages(library("maptools"))
-data(wrld_simpl)                             # Basic country shapes
-load(url("http://illposed.net/bono.rdata"))
-
-bgcolor="#000025"
-earth=tempfile(fileext=".jpg")
-jpeg(earth, width=2048, height=1024, quality=100, bg=bgcolor, antialias="default")
-par(mar = c(0,0,0,0),    pin = c(4,2),    pty = "m",    xaxs = "i",
-    xaxt = "n",          xpd = FALSE,    yaxs = "i",    yaxt = "n")
-
-map_palette <- apply(col2rgb(heat.colors(5)[5:1])/768,2,function(x)rgb(x[1],x[2],x[3]))
-# Restrict bono data to countries from the maptools package
-bono <- bono[rownames(bono) %in% wrld_simpl$NAME, ,drop=FALSE]
-# Set a default color for each country and the colors from the bono data
-clrs <- rep(map_palette[1], length(wrld_simpl$NAME))
-names(clrs) <- wrld_simpl$NAME
-clrs[rownames(bono)] <- map_palette[bono$index]
-
-plot(wrld_simpl,  col=clrs,   bg=bgcolor,        border="cyan",  ann=FALSE,
-     axes=FALSE,  xpd=FALSE,  xlim=c(-180,180), ylim=c(-90,90),  setParUsrBB=TRUE)
-
-graphics.off()
-
-globejs(earth, bg="#fcfcfa")
-```
-<div style="width: 250px;">
-<font color="#7f7f40">Has heard of nation once</font><br/><br/>
-<font color="#7f7f00">Only thinks about nation when drawing up U2 tour schedule</font><br/><br/>
-<font color="#7f5500">Frequently dedicates songs to nation</font><br/><br/>
-<font color="#7f2a00">Moved enough by nation's crisis to momentarily remove sunglasses</font><br/><br/>
-<font color="#7f0000">Cares about welfare of nation nearly as much as his own</font><br/><br/>
-</div>
-</aside>
-
-```{r eval=FALSE}
-library("maptools")
-data(wrld_simpl)                             # Basic country shapes
-load(url("http://illposed.net/bono.rdata"))  # Awareness index data
-
-bgcolor <- "#000025"
-earth <- tempfile(fileext=".jpg")
-jpeg(earth, width=2048, height=1024, quality=100, bg=bgcolor, antialias="default")
-par(mar = c(0,0,0,0),    pin = c(4,2),    pty = "m",    xaxs = "i",
-    xaxt = "n",          xpd = FALSE,    yaxs = "i",    yaxt = "n")
-
-map_palette <- apply(col2rgb(heat.colors(5)[5:1])/768,2,function(x)rgb(x[1],x[2],x[3]))
-# Restrict bono data to countries from the maptools package
-bono <- bono[rownames(bono) %in% wrld_simpl$NAME, ,drop=FALSE]
-# Set a default color for each country and the colors from the bono data
-clrs <- rep(map_palette[1], length(wrld_simpl$NAME))
-names(clrs) <- wrld_simpl$NAME
-clrs[rownames(bono)] <- map_palette[bono$index]
-
-plot(wrld_simpl,  col=clrs,   bg=bgcolor,        border="cyan",  ann=FALSE,
-     axes=FALSE,  xpd=FALSE,  xlim=c(-180,180), ylim=c(-90,90),  setParUsrBB=TRUE)
-
-graphics.off()
-
-legendcol=heat.colors(5)[5:1]
-globejs(earth,  bg="white")
-```
-
-Use R jpeg or PNG antialiasing to produce smoother-looking border and boundary lines in your map image.
-Note that the image background must be the same as the plot background or antialiasing can result in
-image edge artifacts. Those artifacts become objectionably visible when the left and right edges are
-glued together on the globe.
-
-WebGL viewers may also notice some polar distortion that dissipates as the plot is zoomed in
-(less noticeable in Canvas renderings). We're working on improving that...
-
-
-### Example 3: Adding bars to make a spiky globe
+### Example 2: Adding bars to make a spiky globe
 
 Our motivation for this package was the well-known spiky globe visualization 
 http://data-arts.appspot.com/globe/. We can use the *globejs* function to plot
 bars over the globe on arbitrary points with just a few lines of code.
 
-The example also illustrates using a custom map generated by R, highlighting a
-country (Brazil), and adjusting the initial map rotation to bring the highlighted
-country to the front.
-
 <aside>
 ```{r  echo=FALSE, marginfigure=TRUE, fig.width=4.5, fig.height=4.5}
+suppressMessages({
 library("threejs")
 library("maptools")
 library("maps")
-data(wrld_simpl, package="maptools")
 data(world.cities, package="maps")
 cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
 value  <- 100 * cities$pop / max(cities$pop)
 
-
-bgcolor <- "#000025"
-earth <- tempfile(fileext=".jpg")
-jpeg(earth, width=2048, height=1024, quality=100, bg=bgcolor, antialias="default")
-par(mar = c(0,0,0,0), pin = c(4,2), pty = "m", xaxs = "i",
-    xaxt = "n", xpd = FALSE, yaxs = "i", yaxt = "n")
-
-col <- rep("black",length(wrld_simpl$NAME))    # Set a default country color
-col[wrld_simpl$NAME=="Brazil"] <- "#003344"    # Highlight Brazil
-
-plot(wrld_simpl, col=col,          bg=bgcolor, border="#111111", ann=FALSE,  axes=FALSE, 
-     xpd=FALSE,  xlim=c(-180,180), ylim=c(-90,90),  setParUsrBB=TRUE)
-
-graphics.off()
-
-globejs(img=earth,         lat=cities$lat, long=cities$long, value=value, 
+globejs(lat=cities$lat, long=cities$long, value=value, 
         rotationlat=-0.34, rotationlong=-0.38)
+})
 ```
 </aside>
 
@@ -223,26 +102,10 @@ globejs(img=earth,         lat=cities$lat, long=cities$long, value=value,
 library("threejs")
 library("maptools")
 library("maps")
-data(wrld_simpl, package="maptools")
 data(world.cities, package="maps")
 cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:1000],]
 value  <- 100 * cities$pop / max(cities$pop)
 
-
-bgcolor <- "#000025"
-earth <- tempfile(fileext=".jpg")
-jpeg(earth, width=2048, height=1024, quality=100, bg=bgcolor, antialias="default")
-par(mar = c(0,0,0,0), pin = c(4,2), pty = "m", xaxs = "i",
-    xaxt = "n", xpd = FALSE, yaxs = "i", yaxt = "n")
-
-col <- rep("black",length(wrld_simpl$NAME))    # Set a default country color
-col[wrld_simpl$NAME=="Brazil"] <- "#003344"    # Highlight Brazil
-
-plot(wrld_simpl, col=col,          bg=bgcolor, border="#111111", ann=FALSE,  axes=FALSE, 
-     xpd=FALSE,  xlim=c(-180,180), ylim=c(-90,90),  setParUsrBB=TRUE)
-
-graphics.off()
-
-globejs(img=earth, bg="black", lat=cities$lat,     long=cities$long, value=value, 
+globejs(bg="black", lat=cities$lat,     long=cities$long, value=value, 
         rotationlat=-0.34,     rotationlong=-0.38, fov=30)
 ```
