@@ -192,7 +192,6 @@ scatterplot3js <- function(
   cex.symbols = 1,
   xlim, ylim, zlim, pch="@", ...)
 {
-  # save call state for points3d below
   .callcon <- rawConnection(raw(0), "r+")
   save(file=.callcon, list=ls())
   .call <- rawConnectionValue(.callcon)
@@ -231,7 +230,6 @@ scatterplot3js <- function(
 
   bg <- sub("^(#[[:xdigit:]]{6}+).*$", "\\1", bg, perl = TRUE)
 
-  # create options
   options <- c(as.list(environment()), list(...))
   options <- options[!(names(options) %in% c("x", "y", "z", "i", "j", "a"))]
 

@@ -190,7 +190,7 @@ Widget.scatter = function(w, h)
          }, false);
       } else if(el.closest('section.slide') !== null)
       {
-        el.closest('slide').addEventListener('slideenter', function() {
+        el.closest('section.slide').addEventListener('slideenter', function() {
           _this.width = _this.el.offsetWidth;
           _this.height = _this.el.offsetHeight;
           _this.camera.aspect = _this.width / _this.height;
