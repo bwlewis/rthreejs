@@ -176,10 +176,9 @@ Widget.scatter = function(w, h)
         _this.animate();
        });
     } else {
-// Using 'slideenter' event here as 'show' did not work here. ???
       if(el.closest('slide') !== null)
       {
-        el.closest('slide').addEventListener('slideenter', function() {
+        el.closest('slide').addEventListener('slideenter', function(ev) {
           _this.width = _this.el.offsetWidth;
           _this.height = _this.el.offsetHeight;
           _this.camera.aspect = _this.width / _this.height;
@@ -190,7 +189,14 @@ Widget.scatter = function(w, h)
          }, false);
       } else if(el.closest('section.slide') !== null)
       {
-        el.closest('section.slide').addEventListener('slideenter', function() {
+// see https://github.com/hakimel/reveal.js/tree/master#slide-changed-event
+// XXX this seems wrong -- is triggered on every slide change. But I could
+// not find a way to make this work on a per-slide basis without this (the
+// code in the else block below didn't trigger). These JS frameworks give
+// me headaches.
+        if (typeof Reveal != 'undefined')
+        {
+         Reveal.addEventListener('slidechanged', function(ev) {
           _this.width = _this.el.offsetWidth;
           _this.height = _this.el.offsetHeight;
           _this.camera.aspect = _this.width / _this.height;
@@ -199,6 +205,18 @@ Widget.scatter = function(w, h)
           controls.handleResize();
           _this.animate();
          }, false);
+        } else
+        {
+         el.closest('slide').addEventListener('slideenter', function(ev) {
+          _this.width = _this.el.offsetWidth;
+          _this.height = _this.el.offsetHeight;
+          _this.camera.aspect = _this.width / _this.height;
+          _this.camera.updateProjectionMatrix();
+          _this.renderer.setSize(_this.width, _this.height);
+          controls.handleResize();
+          _this.animate();
+         }, false);
+        }
       }
     }
 
