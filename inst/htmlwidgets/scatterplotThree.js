@@ -187,7 +187,7 @@ Widget.scatter = function(w, h)
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
       raycaster.setFromCamera(mouse, _this.camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
-      if(I.length > 0)
+      if(I && I.length > 0)
       {
         if(I[0].object.type == "Points")
         {
@@ -588,13 +588,14 @@ Widget.scatter = function(w, h)
 // helper function to add text to 'object'
     function addText(object, string, scale, x, y, z, color)
     {
+      var log2 = function(x) {return Math.log(x) / Math.log(2);};  // no Math.log2 function in RStudio on Windows :(
       var canvas = document.createElement('canvas');
       var context = canvas.getContext('2d');
       scale = scale / 4;
       context.fillStyle = "#" + color.getHexString();
       context.textAlign = 'center';
       context.font = fontaxis;
-      var size = Math.max(64, Math.pow(2, Math.ceil(Math.log2(context.measureText(string).width))));
+      var size = Math.max(64, Math.pow(2, Math.ceil(log2(context.measureText(string).width))));
       canvas.width = size;
       canvas.height = size;
       scale = scale * (size / 128);
