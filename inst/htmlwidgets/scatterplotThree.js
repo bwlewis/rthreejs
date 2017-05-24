@@ -193,8 +193,10 @@ Widget.scatter = function(w, h)
         {
           /* discard vertices with tiny alpha */
           var idx = I.map(function(x) {
-            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
-          }).findIndex(function(v) {return(v > 0.1);});
+            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3] > 0.1;
+          }).indexOf(true);
+//            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
+//          }).findIndex(function(v) {return(v > 0.1);});
           if(idx > -1 && I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo(I[idx].object.geometry.labels[I[idx].index]);
         } else if(I[0].object.type == "Mesh")
         {
@@ -229,8 +231,9 @@ Widget.scatter = function(w, h)
       {
         /* ignore vertices with tiny alpha */
         var idx = I.map(function(x) {
-          return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
-        }).findIndex(function(v) {return(v > 0.1);});
+          return I[0].object.geometry.attributes.color.array[x.index * 4 + 3] > 0.1;
+//        }).findIndex(function(v) {return(v > 0.1);});
+        }).indexOf(true);
         if(idx < 0) return;
 // XXX DEBUG raycasting
 //if(I[idx].object.geometry.labels[I[idx].index].length > 0) console.log("click " +I[idx].index+" "+ I[idx].object.geometry.labels[I[idx].index]);
