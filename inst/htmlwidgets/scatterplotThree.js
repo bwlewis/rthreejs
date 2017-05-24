@@ -148,7 +148,6 @@ Widget.scatter = function(w, h)
     info.style.left = "0px";
     el.appendChild(info);
 
-// semi-ugly hack for case:
 // subscribe to custom shown event (fired by ioslides to trigger
 // shiny reactivity but we can use it as well). this is necessary
 // because if a widget starts out as display:none it has height
@@ -175,49 +174,6 @@ Widget.scatter = function(w, h)
         controls.handleResize();
         _this.animate();
        });
-    } else {
-      if(el.closest('slide') !== null)
-      {
-        el.closest('slide').addEventListener('slideenter', function(ev) {
-          _this.width = _this.el.offsetWidth;
-          _this.height = _this.el.offsetHeight;
-          _this.camera.aspect = _this.width / _this.height;
-          _this.camera.updateProjectionMatrix();
-          _this.renderer.setSize(_this.width, _this.height);
-          controls.handleResize();
-          _this.animate();
-         }, false);
-      } else if(el.closest('section.slide') !== null)
-      {
-// see https://github.com/hakimel/reveal.js/tree/master#slide-changed-event
-// XXX this seems wrong -- is triggered on every slide change. But I could
-// not find a way to make this work on a per-slide basis without this (the
-// code in the else block below didn't trigger). These JS frameworks give
-// me headaches.
-        if (typeof Reveal != 'undefined')
-        {
-         Reveal.addEventListener('slidechanged', function(ev) {
-          _this.width = _this.el.offsetWidth;
-          _this.height = _this.el.offsetHeight;
-          _this.camera.aspect = _this.width / _this.height;
-          _this.camera.updateProjectionMatrix();
-          _this.renderer.setSize(_this.width, _this.height);
-          controls.handleResize();
-          _this.animate();
-         }, false);
-        } else
-        {
-         el.closest('slide').addEventListener('slideenter', function(ev) {
-          _this.width = _this.el.offsetWidth;
-          _this.height = _this.el.offsetHeight;
-          _this.camera.aspect = _this.width / _this.height;
-          _this.camera.updateProjectionMatrix();
-          _this.renderer.setSize(_this.width, _this.height);
-          controls.handleResize();
-          _this.animate();
-         }, false);
-        }
-      }
     }
 
     el.onmousemove = function(ev)

@@ -1,4 +1,8 @@
 dependencies:
+  - name: jquery
+    version: 1.12.4
+    src: "htmlwidgets/lib/jquery"
+    script: jquery.min.js
   - name: threejs
     version: 83
     src: "htmlwidgets/lib/threejs-83"
