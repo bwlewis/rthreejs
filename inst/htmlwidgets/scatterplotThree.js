@@ -436,8 +436,20 @@ Widget.scatter = function(w, h)
       } // end of special sphere case
       if(npoints < _this.N)
       { // more points to draw
-        var unique_pch = [...new Set(x.pch)];
-        if(!Array.isArray(x.pch)) unique_pch = [...new Set([x.pch])];
+//        var unique_pch = [...new Set(x.pch)];
+//        if(!Array.isArray(x.pch)) unique_pch = [...new Set([x.pch])];
+        var unique_pch;
+        if(Array.isArray(x.pch))
+        {
+          unique_pch = x.pch.filter(function (x, i, a) { 
+            return a.indexOf(x) == i; 
+          });
+        } else
+        {
+          unique_pch = [x.pch].filter(function (x, i, a) { 
+            return a.indexOf(x) == i; 
+          });
+        }
         for(var j=0; j < unique_pch.length; j++)
         {
           npoints = 0;
