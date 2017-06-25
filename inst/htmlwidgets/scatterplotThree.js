@@ -215,8 +215,7 @@ Widget.scatter = function(w, h)
       }
     }
 
-
-//  triggr vertex-specific animation sequence
+//  trigger vertex-specific animation sequence
     el.onclick = function(ev)
     {
       if(ev.preventDefault) ev.preventDefault();
@@ -229,17 +228,24 @@ Widget.scatter = function(w, h)
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
       raycaster.setFromCamera(mouse, _this.camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
-      if(I.length > 0 && I[0].object.type == "Points")
+      if(I.length > 0 && (I[0].object.type == "Points" || I[0].object.type == "Mesh"))
       {
         /* ignore vertices with tiny alpha */
-        var idx = I.map(function(x) {
-          return I[0].object.geometry.attributes.color.array[x.index * 4 + 3] > 0.1;
-//        }).findIndex(function(v) {return(v > 0.1);});
-        }).indexOf(true);
-        if(idx < 0) return;
+        var idx, i;
+        if(I[0].object.type == "Points")
+        {
+          idx = I.map(function(x) {
+            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3] > 0.1;
+          }).indexOf(true);
+          if(idx < 0) return;
+          i = "" + I[idx].index;
+        } else
+        {
+          idx = I[0].object.index;
+          i = "" + idx;
+        }
 // XXX DEBUG raycasting
 //if(I[idx].object.geometry.labels[I[idx].index].length > 0) console.log("click " +I[idx].index+" "+ I[idx].object.geometry.labels[I[idx].index]);
-        var i = "" + I[idx].index;
         if(!_this.options.click[i]) return;
         _this.frame = -1;  // suspend animation
         var N = _this.options.vertices.length - 1;
