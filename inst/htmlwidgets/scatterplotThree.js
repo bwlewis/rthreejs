@@ -104,6 +104,8 @@ Widget.scatter = function(w, h)
       _this.renderer = new THREE.CanvasRenderer();
       _this.renderer.GL = false;
     }
+    _this.frame = -1;   //  reset animation too,
+    _this.scene = 0;    //  see issue #58
     _this.renderer.sortObjects = false;
     _this.renderer.autoClearColor = false;
     _this.renderer.setSize(width, height);
