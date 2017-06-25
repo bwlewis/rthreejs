@@ -447,7 +447,7 @@ Widget.scatter = function(w, h)
       } // end of special sphere case
       if(npoints < _this.N)
       { // more points to draw
-//        var unique_pch = [...new Set(x.pch)];
+//        var unique_pch = [...new Set(x.pch)]; // XXX doesn't work in some versions of RStudio
 //        if(!Array.isArray(x.pch)) unique_pch = [...new Set([x.pch])];
         var unique_pch;
         if(Array.isArray(x.pch))
