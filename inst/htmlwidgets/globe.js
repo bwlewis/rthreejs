@@ -150,6 +150,8 @@ HTMLWidgets.widget(
     var group = new THREE.Geometry();
     if(x.lat != null)
     {
+      if(!Array.isArray(x.lat)) x.lat = [x.lat];
+      if(!Array.isArray(x.long)) x.long = [x.long];
       var phi, theta, lat, lng, colr, size;
       var bg = new THREE.BoxGeometry(1, 1, 1);
       var bm = new THREE.MeshBasicMaterial({color: 0xffffff, vertexColors: THREE.FaceColors});

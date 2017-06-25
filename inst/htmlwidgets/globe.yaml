@@ -1,7 +1,7 @@
 dependencies:
   - name: threejs
-    version: 83
-    src: "htmlwidgets/lib/threejs-83"
+    version: 86
+    src: "htmlwidgets/lib/threejs-86"
     script:
       - three.min.js
       - Detector.js
