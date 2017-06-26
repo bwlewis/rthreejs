@@ -89,11 +89,11 @@ scatterplot3js(x, y, z, color=rainbow(length(z)))
 ```
 
 The following example plots an undirected graph with 4039 vertices and 88234
-edges of a subset of Facebook social connections from the Stanford SNAP network
+edges from the Stanford SNAP network
 repository http://snap.stanford.edu/data/facebook_combined.txt.gz.
 ```r
 data(ego)
-graphjs(ego)
+graphjs(ego, bg="black")
 ```
 
 The next example illustrates the globe widget by plotting the relative
