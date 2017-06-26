@@ -28,13 +28,13 @@ function generally works as before but with more capabilities.  The `graphjs()`
 function is very different with a new API more closely tied to the igraph
 package.
 
-The threejs package now depends on igrah. Why igraph?
-
-1. If you're doing serious network analysis, you're probably already using igraph (or you should be).
-2. We now use external graph layouts (either from igraph or elsewhere). This gives much greater
-   graph layout flexibility, something I was looking for. But also removes the cute (but slow and
-   crude) force-directed JavaScript animation previously used. To partially make up for that, a
-   very basic but flexible graph animation scheme is now in place that's easy to use.
+The threejs package now depends on igrah.  If you're doing serious network
+analysis, you're probably already using igraph (or you should be).  We now use
+external graph layouts (either from igraph or elsewhere). This gives much
+greater graph layout flexibility, something I was looking for. But also removes
+the cute (but slow and crude) force-directed JavaScript animation previously
+used. To partially make up for that, a very basic but flexible graph animation
+scheme is now in place that's easy to use.
 
 See https://bwlewis.github.io/rthreejs/animation/animation.html
 and https://bwlewis.github.io/rthreejs/advanced/advanced.html for short tutorials on the
@@ -58,7 +58,16 @@ The `graphjs()` function is completely new.
   and much higher-performance options for large graphs.
 - Graph layout is now external; for instance use one of the many superb
   igraph package graph layout options.
-- Basic graph animation is supported.
+- Graph animation is supported.
+- Interactive (click-able) graph animation is supported, see `demo(package="threejs")` for examples.
+
+**NOTE**
+
+RStudio on Windows systems may not be able to render the WebGL graphics emitted
+by threejs. RStudio users running on Windows systems may need to use the plot
+"pop out" button to see visualizations in an external browser. We expect this
+to be a temporary problem until the underlying graphics rendering system used
+by RStudio is updated later in 2017.
 
 ## Install
 
