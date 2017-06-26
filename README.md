@@ -88,6 +88,14 @@ y <- sin(z)
 scatterplot3js(x, y, z, color=rainbow(length(z)))
 ```
 
+The following example plots an undirected graph with 4039 vertices and 88234
+edges of a subset of Facebook social connections from the Stanford SNAP network
+repository http://snap.stanford.edu/data/facebook_combined.txt.gz.
+```r
+data(ego)
+graphjs(ego)
+```
+
 The next example illustrates the globe widget by plotting the relative
 population of some cities using data from the R maps package on a globe. It's
 based on the JavaScript WebGL Globe Toolkit (https://github.com/dataarts) by
@@ -100,6 +108,7 @@ For detailed help on the widgets and additional examples, see
 ```r
 ?scatterplot3js
 ?globejs
+?graphjs
 ```
 
 
