@@ -61,13 +61,13 @@ The `graphjs()` function is completely new.
 - Graph animation is supported.
 - Interactive (click-able) graph animation is supported, see `demo(package="threejs")` for examples.
 
-**NOTE**
+## NOTE
 
-RStudio on Windows systems may not be able to render the WebGL graphics emitted
+**RStudio on Windows systems may not be able to render the WebGL graphics emitted
 by threejs. RStudio users running on Windows systems may need to use the plot
 "pop out" button to see visualizations in an external browser. We expect this
 to be a temporary problem until the underlying graphics rendering system used
-by RStudio is updated later in 2017.
+by RStudio is updated later in 2017.**
 
 ## Install
 
