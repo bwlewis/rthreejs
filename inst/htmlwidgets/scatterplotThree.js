@@ -535,7 +535,7 @@ Widget.scatter = function(w, h)
 
           var material = new THREE.ShaderMaterial({
               uniforms: {
-                texture: { value: txtur }
+                texture1: { type: 't',  value: txtur }
               },
               vertexShader: [
                 "attribute float size;",
@@ -547,13 +547,13 @@ Widget.scatter = function(w, h)
                   "gl_PointSize = size * ( 300.0 / -mvPosition.z );",
                   "gl_Position = projectionMatrix * mvPosition; }"].join("\n"),
               fragmentShader: [
-                "uniform sampler2D texture;",
+                "uniform sampler2D texture1;",
                 "varying vec4 vColor;",
                 "void main() {",
                   "gl_FragColor = vec4( vColor );",
-                  "gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );",
+                  "gl_FragColor = gl_FragColor * texture2D( texture1, gl_PointCoord.xy );",
                   "if ( gl_FragColor.a < ALPHATEST ) discard; }"].join("\n"),
-              alphaTest: 0.1, // NB ALPHATEST in the shader :(
+              alphaTest: 0.1, // NB ALPHATEST in the shader
               transparent: true
           });
 

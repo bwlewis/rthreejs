@@ -98,6 +98,6 @@ For detailed help on the widgets and additional examples, see
 <a href="https://travis-ci.org/bwlewis/rthreejs">
 <img src="https://travis-ci.org/bwlewis/rthreejs.svg?branch=master" alt="Travis CI status"></img>
 </a>
-[![codecov.io](https://codecov.io/github/bwlewis/rthreejs/coverage.svg?branch=master)](https://codecov.io/github/bwlewis/rthreejs?branch=master)
-[![CRAN version](http://www.r-pkg.org/badges/version/threejs)]
-![](http://cranlogs.r-pkg.org/badges/threejs)
+[![Coverage Status](https://codecov.io/github/bwlewis/rthreejs/coverage.svg?branch=master)](https://codecov.io/github/bwlewis/rthreejs?branch=master)
+[![CRAN Version](http://www.r-pkg.org/badges/version/rthreejs)](https://cran.r-project.org/package=rthreejs)
+[![CRAN Download Rate](http://cranlogs.r-pkg.org/badges/threejs)](http://cranlogs.r-pkg.org/badges/threejs)
