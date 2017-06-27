@@ -227,7 +227,6 @@ Widget.scatter = function(w, h)
     el.onclick = function(ev)
     {
       if(ev.preventDefault) ev.preventDefault();
-      if(!_this.options.click) return;
       var mouse = new THREE.Vector2();
       var raycaster = new THREE.Raycaster();
       raycaster.params.Points.threshold = _this.mousethreshold;
@@ -254,6 +253,8 @@ Widget.scatter = function(w, h)
         }
 // XXX DEBUG raycasting
 //if(I[idx].object.geometry.labels[I[idx].index].length > 0) console.log("click " +I[idx].index+" "+ I[idx].object.geometry.labels[I[idx].index]);
+        _this.brush(i);
+        if(!_this.options.click) return;
         if(!_this.options.click[i]) return;
         _this.frame = -1;  // suspend animation
         var N = _this.options.vertices.length - 1;
@@ -318,9 +319,15 @@ Widget.scatter = function(w, h)
           _this.idle = false;
           _this.animate();
         }
-      }
+      } else _this.brush(null);
     }
   }
+
+  _this.brush = function(i)
+  {
+//    console.log("brush " + i);
+    if(!true) return;  // XXX set option to enable/disable (say, _this.options.brush or whatever)
+  };
 
   // create_plot
   _this.create_plot = function(x)
@@ -360,9 +367,14 @@ Widget.scatter = function(w, h)
     if(x.fontsymbols) fontsymbols = x.fontsymbols;
     // caching for convenient vertex lookup in update_lines function
     _this.data = x.vertices[0].slice();
+    // also cache (current) colors for convenience later
     if(x.color && Array.isArray(x.color[0]))
     {
+      // array of colors
       _this.datacolor = x.color[0].slice();
+    } else {
+      // default data color cache for each vertex
+      _this.datacolor = Array.apply(null, {length: _this.data.length / 3}).map(function() {return "#ffa500";})
     }
 
     // circle sprite for pch='@'
@@ -439,11 +451,7 @@ Widget.scatter = function(w, h)
           sphereGeo.applyMatrix (
             new THREE.Matrix4().makeTranslation(x.vertices[0][i*3], x.vertices[0][i*3 + 1], x.vertices[0][i*3 + 2]));
           // Color
-          if(x.color) {
-            if(Array.isArray(x.color[0])) col = new THREE.Color(x.color[0][i]);
-            else col = new THREE.Color(x.color[0]);
-          }
-          else col = new THREE.Color("steelblue");
+          col = new THREE.Color(_this.datacolor[i]);
         /** FIXME: figure out how to embed this mesh in the buffer geometry below
          */
           var mesh = new THREE.Mesh(sphereGeo, new THREE.MeshLambertMaterial({color : col}));
@@ -524,10 +532,7 @@ Widget.scatter = function(w, h)
               positions[k * 3 ] = x.vertices[0][i * 3];
               positions[k * 3 + 1 ] = x.vertices[0][i * 3 + 1];
               positions[k * 3 + 2 ] = x.vertices[0][i * 3 + 2];
-              if(x.color) {
-                if(Array.isArray(x.color[0])) col = new THREE.Color(x.color[0][i]);
-                else col = new THREE.Color(x.color[0]);
-              }
+              col = new THREE.Color(_this.datacolor[i]);
               colors[k * 4] = col.r;
               colors[k * 4 + 1] = col.g;
               colors[k * 4 + 2] = col.b;
