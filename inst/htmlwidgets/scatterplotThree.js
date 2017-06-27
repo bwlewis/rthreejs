@@ -131,14 +131,22 @@ Widget.scatter = function(w, h)
     _this.camera.position.y = 1.2;
 
     controls = new THREE.TrackballControls(_this.camera, el);
-    controls.rotateSpeed = 0.5;
-    controls.zoomSpeed = 4.2;
-    controls.panSpeed = 1;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = false;
+    controls.rotateSpeed = 4.6;
+    controls.zoomSpeed = 1.5;
+    controls.panSpeed = 0.8;
     controls.dynamicDampingFactor = 0.2;
     controls.addEventListener('change', render);
+/* *** Alternatively, use OrbitControls. But zoom is not damped and vertical rotation is restricted.
+    controls = new THREE.OrbitControls(_this.camera, el);
+    controls.rotateSpeed = 0.6;
+    controls.zoomSpeed = 1.5;
+    controls.panSpeed = 1;
+    controls.enableZoom = true;
+    controls.enablePan = true;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.15;
+    controls.addEventListener('change', render);
+*/
 
     scene = new THREE.Scene();
     while (el.hasChildNodes()) {
