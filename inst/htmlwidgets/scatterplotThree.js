@@ -325,8 +325,8 @@ Widget.scatter = function(w, h)
 
   _this.brush = function(i)
   {
-//    console.log("brush " + i);
-    if(!true) return;  // XXX set option to enable/disable (say, _this.options.brush or whatever)
+    if(!_this.options.brush) return;
+    console.log("brush " + i); // XXX
   };
 
   // create_plot
@@ -372,9 +372,19 @@ Widget.scatter = function(w, h)
     {
       // array of colors
       _this.datacolor = x.color[0].slice();
+    } else if(x.color) {
+      // only a single color specified
+      var XC;
+      if(Array.isArray(x.color)) XC = "#" + new THREE.Color(x.color[0]).getHexString();
+      else XC = "#" + new THREE.Color(x.color).getHexString();
+      _this.datacolor = [];
+      _this.datacolor.length = x.NROW;
+      _this.datacolor.fill(XC);
     } else {
-      // default data color cache for each vertex
-      _this.datacolor = Array.apply(null, {length: _this.data.length / 3}).map(function() {return "#ffa500";})
+      // no color specified, use a default data color cache for each vertex
+      _this.datacolor = [];
+      _this.datacolor.length = x.NROW;
+      _this.datacolor.fill("#ffa500");
     }
 
     // circle sprite for pch='@'
@@ -462,7 +472,7 @@ Widget.scatter = function(w, h)
         }
       } // end of special sphere case
       if(npoints < _this.N)
-      { // more points to draw
+      { // more points (that are not spheres)
 //        var unique_pch = [...new Set(x.pch)]; // XXX doesn't work in some versions of RStudio
 //        if(!Array.isArray(x.pch)) unique_pch = [...new Set([x.pch])];
         var unique_pch;
@@ -470,12 +480,12 @@ Widget.scatter = function(w, h)
         {
           unique_pch = x.pch.filter(function (x, i, a) { 
             return a.indexOf(x) == i; 
-          });
+          }).filter(function(x){return (x != 'o')});
         } else
         {
           unique_pch = [x.pch].filter(function (x, i, a) { 
             return a.indexOf(x) == i; 
-          });
+          }).filter(function(x){return (x != 'o')});
         }
         for(var j=0; j < unique_pch.length; j++)
         {
@@ -488,6 +498,7 @@ Widget.scatter = function(w, h)
           var positions = new Float32Array(npoints * 3);
           var colors = new Float32Array(npoints * 4);
           var sizes = new Float32Array(npoints);
+          var indices = new Int32Array(npoints);
           var col = new THREE.Color("steelblue");
           scale = 0.3;
           // generic pch sprite (text)
@@ -529,6 +540,7 @@ Widget.scatter = function(w, h)
             {
               if(x.labels && Array.isArray(x.labels)) geometry.labels.push(x.labels[i]);
               else geometry.labels.push("");
+              indices[k] = i; // track vertex index
               positions[k * 3 ] = x.vertices[0][i * 3];
               positions[k * 3 + 1 ] = x.vertices[0][i * 3 + 1];
               positions[k * 3 + 2 ] = x.vertices[0][i * 3 + 2];
@@ -571,6 +583,7 @@ Widget.scatter = function(w, h)
           });
 
           var particleSystem = new THREE.Points(geometry, material);
+          particleSystem.indices = indices; // vertex indices
           _this.pointgroup.add(particleSystem);
         }
       }
@@ -746,12 +759,13 @@ Widget.scatter = function(w, h)
     if(_this.frame > -1)
     { // animate
       var h = _this.frame / _this.fps;
-      var k = 0; // vertex id
+      var k;
       // update vertices and possibly vertex colors
       for(var j = 0; j < _this.pointgroup.children.length; j++)
       {
         if(_this.pointgroup.children[j].type == "Mesh") // spheres
         {
+          k = _this.pointgroup.children[j].index; // the vertex id
           var x  = _this.options.vertices[_this.scene][k * 3];
           var y  = _this.options.vertices[_this.scene][k * 3 + 1];
           var z  = _this.options.vertices[_this.scene][k * 3 + 2];
@@ -766,11 +780,31 @@ Widget.scatter = function(w, h)
           _this.data[k * 3] = _this.data[k * 3] + dx;
           _this.data[k * 3 + 1] = _this.data[k * 3 + 1] + dy;
           _this.data[k * 3 + 2] = _this.data[k * 3 + 2] + dz;
+          if(_this.options.color.length > 1)
+          {
+            var col1, col2;
+            var a1 = 1; var a2 = 1;
+            if(Array.isArray(_this.options.color[_this.scene]))
+            {
+              col1 = new THREE.Color(_this.options.color[_this.scene][k]);
+            }
+            else col1 = new THREE.Color(_this.options.color[_this.scene]);
+            if(Array.isArray(_this.options.color[_this.scene + 1]))
+            {
+              col2 = new THREE.Color(_this.options.color[_this.scene + 1][k]);
+            } else col2 = new THREE.Color(_this.options.color[_this.scene + 1]);
+            _this.pointgroup.children[j].material.color = new THREE.Color(
+                                         col1.r + (col2.r - col1.r) * h,
+                                         col1.g + (col2.g - col1.g) * h,
+                                         col1.b + (col2.b - col1.b) * h);
+            _this.datacolor[k] = "#" + _this.pointgroup.children[j].material.color.getHexString(); // cache vertex color
+          }
           k++;
         } else if(_this.pointgroup.children[j].type == "Points") // buffered
         {
           for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
           {
+            k = _this.pointgroup.children[j].indices[i]; // vertex id
             var x  = _this.options.vertices[_this.scene][k * 3];
             var y  = _this.options.vertices[_this.scene][k * 3 + 1];
             var z  = _this.options.vertices[_this.scene][k * 3 + 2];
@@ -796,12 +830,10 @@ Widget.scatter = function(w, h)
               if(Array.isArray(_this.options.color[_this.scene + 1]))
               {
                 col2 = new THREE.Color(_this.options.color[_this.scene + 1][k]);
-                var col3 = new THREE.Color(col1.r + (col2.r - col1.r) * h,
+              } else col2 = new THREE.Color(_this.options.color[_this.scene + 1]);
+              _this.datacolor[k] = "#" + new THREE.Color(col1.r + (col2.r - col1.r) * h,
                                            col1.g + (col2.g - col1.g) * h,
-                                           col1.b + (col2.b - col1.b) * h);
-                _this.datacolor[k] = "#" + col3.getHexString(); // cache
-              }
-              else col2 = new THREE.Color(_this.options.color[_this.scene + 1]);
+                                           col1.b + (col2.b - col1.b) * h).getHexString(); // cache color
               if(_this.options.alpha.length > 1)
               {
                 if(Array.isArray(_this.options.alpha[_this.scene])) a1 = parseFloat(_this.options.alpha[_this.scene][k]);
