@@ -17,7 +17,8 @@ URL: http://bwlewis.github.io/rthreejs
 BugReports: https://github.com/bwlewis/rthreejs/issues
 License: MIT + file LICENSE
 Depends:
-    R (>= 3.0.0), igraph (>= 1.0.0)
+    R (>= 3.0.0),
+    igraph (>= 1.0.0)
 Imports:
     htmlwidgets (>= 0.3.2),
     base64enc,
@@ -26,4 +27,4 @@ Suggests:
     htmltools (>= 0.2.6),
     maps
 Enhances: knitr, shiny
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1

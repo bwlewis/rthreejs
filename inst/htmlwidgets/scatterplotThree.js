@@ -353,8 +353,10 @@ Widget.scatter = function(w, h)
       _this.brushed = null;
       return;
     }
-    var off = new THREE.Color("lightgray"); // XXX make option
+    var off = new THREE.Color("lightgray");
     var on = new THREE.Color("red");
+    if(_this.options.highlight) on = new THREE.Color(_this.options.highlight);
+    if(_this.options.lowlight) off = new THREE.Color(_this.options.lowlight);
     if(! Array.isArray(vertices)) vertices = [vertices]; // XXX why does this become a string?
     var k;
     for(var j = 0; j < _this.pointgroup.children.length; j++)

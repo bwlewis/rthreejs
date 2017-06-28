@@ -89,7 +89,6 @@ The latitude and longitude rotation values are relative to the center of
 the map image. Their default values of zero radians result in the front of the
 globe corresponding to the center of the flat map image.
 }
-
 \examples{
 # Plot flights to frequent destinations from Callum Prentice's
 # global flight data set,
@@ -175,3 +174,4 @@ An excellent overview of available map coordinate reference systems (PDF):
 Includes images adapted from the NASA Earth Observatory and NASA Jet Propulsion Laboratory.
 World image link: \url{http://goo.gl/GVjxJ}.
 }
+

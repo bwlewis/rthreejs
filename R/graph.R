@@ -81,6 +81,12 @@
 #' clicked, include list entries labeled \code{"1"} and \code{"5"}.
 #' See the demos in \code{demo(package="threejs")} for detailed examples.
 #'
+#' @section Other interactions:
+#' Specify the argument \code{brush=TRUE} to highlight a clicked vertex and
+#' its directly connected edges (click off of a vertex to reset the display).
+#' Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
+#' to manually control the brushing display colors.
+#'
 #' @note
 #' Edge transparency values specified as part of \code{edge.color} are ignored, however
 #' you can set an overall transparency for edges with \code{edge.alpha}.

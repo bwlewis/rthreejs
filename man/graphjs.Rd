@@ -107,11 +107,13 @@ Specify the option \code{click=list} to animate the graph when specified vertice
 are clicked interactively, where \code{list} is a named list of animation entries.
 Each entry must itself be a list with the following entries
 \itemize{
-\item{}{ optional a single igraph object with the same number of vertices as \code{g} above (if specified this must be the first entry)}
+\item{}{ optional a single igraph object with the same number of vertices
+   as \code{g} above (if specified this must be the first entry)}
 \item{layout}{ - optional a single igraph layout, or differential layout if \code{cumulative=TRUE}}
 \item{vertex.color}{ - optional single vector of vertex colors}
 \item{edge.color}{ - optional single vector of edge colors}
-\item{cumulative}{ - optional boolean entry, if \code{TRUE} then vertex positions are added to current plot, default is \code{FALSE}}
+\item{cumulative}{ - optional boolean entry, if \code{TRUE} then vertex positions are
+  added to current plot, default is \code{FALSE}}
 }
 At least one of \code{g} or \code{layout} must be specified in each animation list entry.
 The layouts and colors may be alternatively imbedded in the igraph object itself.
@@ -122,6 +124,13 @@ clicked, include list entries labeled \code{"1"} and \code{"5"}.
 See the demos in \code{demo(package="threejs")} for detailed examples.
 }
 
+\section{Other interactions}{
+
+Specify the argument \code{brush=TRUE} to highlight a clicked vertex and
+its directly connected edges (click off of a vertex to reset the display).
+Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
+to manually control the brushing display colors.
+}
 \examples{
 set.seed(1)
 g <- sample_islands(3, 10, 5/10, 1)
@@ -175,3 +184,4 @@ The three.js project \url{http://threejs.org}.
 \seealso{
 \code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 }
+

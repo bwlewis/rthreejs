@@ -160,7 +160,6 @@ the following new plot options.
      defaulting to 1.}
 }
 }
-
 \examples{
 # Example 1 from the scatterplot3d package (cf.)
 z <- seq(-10, 10, 0.1)
@@ -215,3 +214,4 @@ The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{h
 \seealso{
 scatterplot3d, rgl, points3d, lines3d
 }
+
