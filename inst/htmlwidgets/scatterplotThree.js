@@ -1,4 +1,3 @@
-/* Standard HTML widgets interface */
 HTMLWidgets.widget(
 {
   name: "scatterplotThree",
@@ -38,7 +37,7 @@ HTMLWidgets.widget(
  * animate()                 internal threejs animation function
  * render()                  internal threejs draw function
  * update()                  internal vertex update function
- * update_lines()            internal lines update function
+ * update_lines(lcol)        internal lines update function
  * ...  other miscellaneous internal functions
  *
  * The htmlwidgets interface resides in the init() function.
@@ -242,10 +241,10 @@ Widget.scatter = function(w, h)
         if(I[0].object.type == "Points")
         {
           idx = I.map(function(x) {
-            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3] > 0.1;
+            return I[0].object.geometry.attributes.color.array[x.object.indices[x.index] * 4 + 3] > 0.1;
           }).indexOf(true);
           if(idx < 0) return;
-          i = "" + I[idx].index;
+          i = "" + I[idx].object.indices[I[idx].index];
         } else
         {
           idx = I[0].object.index;
@@ -323,10 +322,83 @@ Widget.scatter = function(w, h)
     }
   }
 
-  _this.brush = function(i)
+/* TODO clean this up; consolidate vertex and line color setting code
+ */
+  _this.brush = function(vertices)
   {
     if(!_this.options.brush) return;
-    console.log("brush " + i); // XXX
+    if(!vertices && !_this.brushed) return; // nothing to do
+    if(!vertices) // reset brush and return
+    {
+      for(var j = 0; j < _this.pointgroup.children.length; j++)
+      {
+        if(_this.pointgroup.children[j].type == "Mesh") // spheres
+        {
+          k = _this.pointgroup.children[j].index; // the vertex id
+          _this.pointgroup.children[j].material.color = new THREE.Color(_this.datacolor[k]);
+        } else if(_this.pointgroup.children[j].type == "Points") // buffered
+        {
+          for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
+          {
+            k = _this.pointgroup.children[j].indices[i]; // vertex id
+            var col = new THREE.Color(_this.datacolor[k]);
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = col.r;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = col.g;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] = col.b;
+          }
+          _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
+        }
+      }
+      update_lines(null);
+      _this.brushed = null;
+      return;
+    }
+    var off = new THREE.Color("lightgray"); // XXX make option
+    var on = new THREE.Color("red");
+    if(! Array.isArray(vertices)) vertices = [vertices]; // XXX why does this become a string?
+    var k;
+    for(var j = 0; j < _this.pointgroup.children.length; j++)
+    {
+      if(_this.pointgroup.children[j].type == "Mesh") // spheres
+      {
+        k = _this.pointgroup.children[j].index; // the vertex id
+        if(vertices.indexOf(k + "") >= 0) _this.pointgroup.children[j].material.color = on;
+        else _this.pointgroup.children[j].material.color = off;
+      } else if(_this.pointgroup.children[j].type == "Points") // buffered
+      {
+        for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
+        {
+          k = _this.pointgroup.children[j].indices[i]; // vertex id
+          if(vertices.indexOf(k + "") >= 0)
+          {
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = on.r;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = on.g;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] = on.b;
+          } else
+          {
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = off.r;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = off.g;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] = off.b;
+          }
+        }
+        _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
+      }
+    }
+    // now brush edges
+    var s = _this.scene;
+    if(_this.options.from.length <= s)  s = 0;
+    var lcol = [];
+    lcol.length = _this.options.from[s].length;
+    lcol.fill("#" + off.getHexString());
+    for(var j = 0; j < lcol.length; j++)
+    {
+      if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
+      if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
+    }
+    update_lines(lcol);
+
+
+    _this.brushed = true;
   };
 
   // create_plot
@@ -426,6 +498,7 @@ Widget.scatter = function(w, h)
     if(_this.renderer.GL)
     {
       _this.N = x.vertices[0].length / 3;       // number of vertices
+
       if(x.fpl) _this.fps = x.fpl;
       if(x.fps) _this.fps = x.fps;              // alternative notation
       if(!_this.fps) _this.fps = 200;           // default frames per scene
@@ -489,17 +562,17 @@ Widget.scatter = function(w, h)
         }
         for(var j=0; j < unique_pch.length; j++)
         {
-          npoints = 0;
+          var pchpoints = 0;
           for (var i = 0; i < _this.N; i++)
           {
-            if(x.pch[i] == unique_pch[j]) npoints++;
+            if(x.pch[i] == unique_pch[j]) pchpoints++;
           }
           var geometry = new THREE.BufferGeometry();
-          var positions = new Float32Array(npoints * 3);
-          var colors = new Float32Array(npoints * 4);
-          var sizes = new Float32Array(npoints);
-          var indices = new Int32Array(npoints);
-          var col = new THREE.Color("steelblue");
+          var positions = new Float32Array(pchpoints * 3);
+          var colors = new Float32Array(pchpoints * 4);
+          var sizes = new Float32Array(pchpoints);
+          var indices = new Int32Array(pchpoints);
+          var col = new THREE.Color("orange");
           scale = 0.3;
           // generic pch sprite (text)
           var canvas = document.createElement("canvas");
@@ -534,10 +607,11 @@ Widget.scatter = function(w, h)
           var k = 0;
           for (var i = 0; i < _this.N; i++)
           {
-            if(Array.isArray(x.size)) sizes[i] = x.size[i] * scalefactor;
-            else sizes[i] = scale * scalefactor;
             if(x.pch[i] == unique_pch[j])
             {
+              npoints++;
+              if(Array.isArray(x.size)) sizes[k] = x.size[i] * scalefactor;
+              else sizes[k] = scale * scalefactor;
               if(x.labels && Array.isArray(x.labels)) geometry.labels.push(x.labels[i]);
               else geometry.labels.push("");
               indices[k] = i; // track vertex index
@@ -746,7 +820,7 @@ Widget.scatter = function(w, h)
  */
     if(x.from && _this.renderer.GL)
     {
-      update_lines();
+      update_lines(null);
     }
     if(x.vertices.length > 1) _this.frame = 0; // animate
     _this.idle = false;
@@ -865,12 +939,12 @@ Widget.scatter = function(w, h)
         if(_this.scene >= _this.options.vertices.length - 1) _this.frame = -1; // done!
         else _this.frame = 0; // more scenes to animate, reset frame counter
       }
-      if(_this.options.from) update_lines();
+      if(_this.options.from) update_lines(null);
     }
   }
 
   /* buffered lines */
-  function update_lines()
+  function update_lines(l)
   {
     var s = _this.scene;
     if(_this.options.from.length <= s)  s = 0;
@@ -883,7 +957,11 @@ Widget.scatter = function(w, h)
       var from = _this.options.from[s][i];
       var to = _this.options.to[s][i];
       var c1, c2;
-      if(_this.options.lcol)
+      if(l)
+      {
+        c1 = new THREE.Color(l[i]);
+        c2 = c1;
+      } else if(_this.options.lcol)
       {
         if(Array.isArray(_this.options.lcol))
         {
