@@ -160,6 +160,24 @@ the following new plot options.
      defaulting to 1.}
 }
 }
+
+\section{Highlighting selected points}{
+
+Specify the argument \code{brush=TRUE} to highlight a clicked point (currently
+limited to single-point selection).
+Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
+to manually control the brushing display colors. This feature works with
+crosstalk.
+}
+
+\section{Crosstalk}{
+
+The \code{scatterplot3js()} and \code{graphjs()} functions work with
+crosstalk selection (but not filtering yet); see https://rstudio.github.io/crosstalk/.
+Enable crosstalk with the optional agrument \code{crosstalk=df}, where \code{df} is a
+crosstalk-SharedData data.frame-like object with the same number of rows as points
+(\code{scatterplot3js()}) or graph vertices (\code{graphjs()}) (see the examples).
+}
 \examples{
 # Example 1 from the scatterplot3d package (cf.)
 z <- seq(-10, 10, 0.1)
@@ -196,7 +214,7 @@ col <- c( rainbow(length(phi))[order(i)],
 M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
 scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 
-# Plot text using 'pch' (we label some points in this example)
+# Plot generic text using 'pch' (we label some points in this example)
 set.seed(1)
 x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
 scatterplot3js(x, y, z, pch="@") \%>\%
@@ -205,6 +223,20 @@ scatterplot3js(x, y, z, pch="@") \%>\%
 \dontrun{
   # A shiny example
   shiny::runApp(system.file("examples/scatterplot", package="threejs"))
+}
+
+\dontrun{
+  # A crosstalk example
+  library(crosstalk)
+  library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
+  z <- seq(-10, 10, 0.1)
+  x <- cos(z)
+  y <- sin(z)
+  sd <- SharedData$new(data.frame(x=x, y=y, z=z))
+  print(bscols(
+    scatterplot3js(x, y, z, color=rainbow(length(z)), brush=TRUE, crosstalk=sd),
+    d3scatter(sd, ~x, ~y, width="100\%", height=300)
+  ))
 }
 
 }

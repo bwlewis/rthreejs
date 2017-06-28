@@ -131,6 +131,15 @@ its directly connected edges (click off of a vertex to reset the display).
 Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
 to manually control the brushing display colors.
 }
+
+\section{Crosstalk}{
+
+\code{graphjs()} works with
+crosstalk selection (but not filtering yet); see https://rstudio.github.io/crosstalk/.
+Enable crosstalk by supplying the optional agrument \code{crosstalk=df}, where \code{df} is a
+crosstalk-SharedData data.frame-like object with the same number of rows as graph vertices
+(see the examples).
+}
 \examples{
 set.seed(1)
 g <- sample_islands(3, 10, 5/10, 1)
