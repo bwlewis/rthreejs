@@ -199,6 +199,7 @@
 #'
 #' @seealso scatterplot3d, rgl, points3d, lines3d
 #' @importFrom stats na.omit
+#' @importFrom crosstalk is.SharedData
 #' @export
 scatterplot3js <- function(
   x, y, z,
