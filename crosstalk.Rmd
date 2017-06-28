@@ -1,0 +1,66 @@
+---
+title: "threejs and crosstalk"
+author: "bwlewis"
+date: "1/31/2017"
+output:
+  html_document:
+    css: cross.css
+---
+
+The `scatterplotjs()` and `graphjs()` functions now (version 0.3.0) include
+support for crosstalk selection (not yet filtering), enabling cross-widget
+interaction.  See https://rstudio.github.io/crosstalk/ for details on the
+crosstalk package.
+
+Because the primary argument to `graphjs()` is an igraph object (not a data
+frame), the threejs package uses an extra `crosstalk=` argument to supply the
+shared, keyed data frame used by crosstalk. This data frame should have the
+same number of rows and ordering as graph vertices, or scatter plot points
+in the case of `scatterplot3js()`.
+
+## A graphjs/DT example
+
+```{r, fig.width=9}
+suppressMessages({
+  library(threejs)
+  library(crosstalk)
+  library(DT)
+})
+
+data(LeMis)
+
+sd = SharedData$new(data.frame(Name = V(LeMis)$label))
+bscols(
+  graphjs(LeMis, brush=TRUE, crosstalk=sd, width=450),
+  datatable(sd, rownames=FALSE, options=list(dom='tp'), width=450)
+)
+```
+
+## A scatterplot3js/d3scatter example
+
+```{r, fig.width=9}
+suppressMessages({
+  library(threejs)
+  library(crosstalk)
+  library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
+})
+z <- seq(-10, 10, 0.1)
+x <- cos(z)
+y <- sin(z)
+sd <- SharedData$new(data.frame(x=x, y=y, z=z))
+bscols(
+  scatterplot3js(x, y, z, color=rainbow(length(z)), brush=TRUE, crosstalk=sd, width=450),
+  d3scatter(sd, ~x, ~y, width=450)
+)
+```
+
+
+## Help wanted
+
+I'm looking for ideas and help implementing the crosstalk filter! And cleaning up the old
+JavaScript code in general -- I think quite a lot of it can be made redundant by combining
+key bits into functions, etc.
+
+Also feel free to contribute crosstalk to the `globejs()` function if you really want to.
+
+/bwl
