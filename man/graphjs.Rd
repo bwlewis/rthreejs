@@ -184,6 +184,16 @@ graph_list <- list(
    vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
 
 # see `demo(package="threejs") for more animation demos.
+
+# A crosstalk example
+library(crosstalk)
+library(DT)
+data(LeMis)
+sd = SharedData$new(data.frame(Name = V(LeMis)$label))
+print(bscols(
+  graphjs(LeMis, brush=TRUE, crosstalk=sd),
+  datatable(sd, rownames=FALSE, options=list(dom='tp'))
+))
 }
 
 }
