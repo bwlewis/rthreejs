@@ -110,7 +110,7 @@ is not available. The default setting \code{auto} automatically chooses
 between
 the two. The two renderers produce slightly different-looking output
 and have different available options (see above). The WebGL renderer
-can exhibit much better performance.
+can exhibit much better performance, stability, and feature support.
 
 Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below. A few additional
