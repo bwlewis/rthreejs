@@ -93,7 +93,7 @@
 #' following special cases:
 #' \itemize{
 #'   \item{"o"}{ Plotted points appear as 3-d spheres.}
-#'   \item{"@"}{ Plotted points appear as nice circles.}
+#'   \item{"@"}{ Plotted points appear as stroked disks.}
 #'   \item{"."}{ Points appear as tiny squares.}
 #' }
 #' Character strings of more than one character are supported--see the examples.

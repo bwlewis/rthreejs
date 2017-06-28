@@ -349,7 +349,7 @@ Widget.scatter = function(w, h)
           _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
         }
       }
-      update_lines(null);
+      if(_this.options.from) update_lines(null);
       _this.brushed = null;
       return;
     }
@@ -387,17 +387,20 @@ Widget.scatter = function(w, h)
       }
     }
     // now brush edges
-    var s = _this.scene;
-    if(_this.options.from.length <= s)  s = 0;
-    var lcol = [];
-    lcol.length = _this.options.from[s].length;
-    lcol.fill("#" + off.getHexString());
-    for(var j = 0; j < lcol.length; j++)
+    if(_this.options.from)
     {
-      if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
-      if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
+      var s = _this.scene;
+      if(_this.options.from.length <= s)  s = 0;
+      var lcol = [];
+      lcol.length = _this.options.from[s].length;
+      lcol.fill("#" + off.getHexString());
+      for(var j = 0; j < lcol.length; j++)
+      {
+        if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
+        if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
+      }
+      update_lines(lcol);
     }
-    update_lines(lcol);
 
 
     _this.brushed = true;
