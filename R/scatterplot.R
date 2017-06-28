@@ -115,6 +115,20 @@
 #'      defaulting to 1.}
 #' }
 #'
+#' @section Highlighting selected points:
+#' Specify the argument \code{brush=TRUE} to highlight a clicked point (currently
+#' limited to single-point selection).
+#' Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
+#' to manually control the brushing display colors. This feature works with
+#' crosstalk.
+#'
+#' @section Crosstalk:
+#' The \code{scatterplot3js()} and \code{graphjs()} functions work with
+#' crosstalk selection (but not filtering yet); see https://rstudio.github.io/crosstalk/.
+#' Enable crosstalk with the optional agrument \code{crosstalk=df}, where \code{df} is a
+#' crosstalk-SharedData data.frame-like object with the same number of rows as points
+#' (\code{scatterplot3js()}) or graph vertices (\code{graphjs()}) (see the examples).
+#'
 #' @note
 #' Points with missing values are omitted from the plot, please try to avoid missing values
 #' in \code{x, y, z}.
@@ -158,7 +172,7 @@
 #' M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
 #' scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 #'
-#' # Plot text using 'pch' (we label some points in this example)
+#' # Plot generic text using 'pch' (we label some points in this example)
 #' set.seed(1)
 #' x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
 #' scatterplot3js(x, y, z, pch="@") %>%
@@ -167,6 +181,20 @@
 #' \dontrun{
 #'   # A shiny example
 #'   shiny::runApp(system.file("examples/scatterplot", package="threejs"))
+#' }
+#'
+#' \dontrun{
+#'   # A crosstalk example
+#'   library(crosstalk)
+#'   library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
+#'   z <- seq(-10, 10, 0.1)
+#'   x <- cos(z)
+#'   y <- sin(z)
+#'   sd <- SharedData$new(data.frame(x=x, y=y, z=z))
+#'   print(bscols(
+#'     scatterplot3js(x, y, z, color=rainbow(length(z)), brush=TRUE, crosstalk=sd),
+#'     d3scatter(sd, ~x, ~y, width="100%", height=300)
+#'   ))
 #' }
 #'
 #' @seealso scatterplot3d, rgl, points3d, lines3d
@@ -351,6 +379,16 @@ scatterplot3js <- function(
     options$vertices <- c(options$vertices, replicate(N, options$vertices[[length(options$vertices)]], FALSE))
   }
 
+  # crosstalk
+  options$crosstalk_key <- NULL
+  options$crosstalk_group <- NULL
+  if(is.SharedData(options$crosstalk))
+  {
+    options$crosstalk_key <- options$crosstalk$key()
+    options$crosstalk_group <- options$crosstalk$groupName()
+  }
+  options$crosstalk <- NULL
+
   # Don't create the widget; instead only return the options
   if (!is.null(options$options) && options$options) return(options)
 
@@ -361,6 +399,7 @@ scatterplot3js <- function(
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+          dependencies = crosstalk::crosstalkLibs(),
           package = "threejs")
   ans$call <- match.call()
   ans$.call <- .call

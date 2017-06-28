@@ -21,10 +21,11 @@ Depends:
     igraph (>= 1.0.0)
 Imports:
     htmlwidgets (>= 0.3.2),
+    htmltools (>= 0.2.6),
     base64enc,
+    crosstalk,
     stats
 Suggests:
-    htmltools (>= 0.2.6),
     maps
 Enhances: knitr, shiny
 RoxygenNote: 5.0.1

@@ -90,6 +90,9 @@ Widget.scatter = function(w, h)
   this.init_width = w;
   this.init_height = h;
 
+  var ct_sel = new crosstalk.SelectionHandle();
+  var ct_filter = new crosstalk.FilterHandle();
+
   var controls, scene;
   var _this = this;
 
@@ -250,8 +253,6 @@ Widget.scatter = function(w, h)
           idx = I[0].object.index;
           i = "" + idx;
         }
-// XXX DEBUG raycasting
-//if(I[idx].object.geometry.labels[I[idx].index].length > 0) console.log("click " +I[idx].index+" "+ I[idx].object.geometry.labels[I[idx].index]);
         _this.brush(i);
         if(!_this.options.click) return;
         if(!_this.options.click[i]) return;
@@ -322,6 +323,17 @@ Widget.scatter = function(w, h)
     }
   }
 
+  ct_sel.on("change", function(e)
+  {
+    if(e.sender === ct_sel) return;
+    if(e.value.length == 0)
+    {
+      _this.brush(null);
+      return;
+    }
+    _this.brush(e.value.map(function(i){return "" + _this.options.crosstalk_key.indexOf(i)}));
+  });
+
 /* TODO clean this up; consolidate vertex and line color setting code
  */
   _this.brush = function(vertices)
@@ -350,6 +362,10 @@ Widget.scatter = function(w, h)
         }
       }
       if(_this.options.from) update_lines(null);
+      if(_this.options.crosstalk_key)
+      {
+        ct_sel.set([]);
+      }
       _this.brushed = null;
       return;
     }
@@ -358,6 +374,10 @@ Widget.scatter = function(w, h)
     if(_this.options.highlight) on = new THREE.Color(_this.options.highlight);
     if(_this.options.lowlight) off = new THREE.Color(_this.options.lowlight);
     if(! Array.isArray(vertices)) vertices = [vertices]; // XXX why does this become a string?
+    if(_this.options.crosstalk_key)
+    {
+      ct_sel.set(vertices.map(function(i) {return _this.options.crosstalk_key[i];}));
+    }
     var k;
     for(var j = 0; j < _this.pointgroup.children.length; j++)
     {
@@ -409,6 +429,11 @@ Widget.scatter = function(w, h)
   // create_plot
   _this.create_plot = function(x)
   {
+    if(x.crosstalk_group)
+    {
+      ct_sel.setGroup(x.crosstalk_group);
+      ct_filter.setGroup(x.crosstalk_group);
+    }
     _this.options = x;
     if(x.renderer == "canvas" && _this.renderer.GL)
     {

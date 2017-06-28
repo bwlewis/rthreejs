@@ -87,6 +87,13 @@
 #' Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
 #' to manually control the brushing display colors.
 #'
+#' @section Crosstalk:
+#' \code{graphjs()} works with
+#' crosstalk selection (but not filtering yet); see https://rstudio.github.io/crosstalk/.
+#' Enable crosstalk by supplying the optional agrument \code{crosstalk=df}, where \code{df} is a
+#' crosstalk-SharedData data.frame-like object with the same number of rows as graph vertices
+#' (see the examples).
+#'
 #' @note
 #' Edge transparency values specified as part of \code{edge.color} are ignored, however
 #' you can set an overall transparency for edges with \code{edge.alpha}.
@@ -237,5 +244,6 @@ graphjs <- function(g, layout,
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+          dependencies = crosstalk::crosstalkLibs(),
           package = "threejs")
 }
