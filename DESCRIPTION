@@ -13,7 +13,7 @@ Authors@R: c(
     person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de"),
     person("B.",  "Thieurmel", role=("ctb"), email="bthieurmel@gmail.com")
     )
-URL: http://bwlewis.github.io/rthreejs
+URL: https://bwlewis.github.io/rthreejs
 BugReports: https://github.com/bwlewis/rthreejs/issues
 License: MIT + file LICENSE
 Depends:
