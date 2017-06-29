@@ -1,0 +1,48 @@
+# Threejs example: "stacked" scatterplots
+
+```{r}
+suppressMessages({
+  library(threejs)
+})
+
+# xy data for 2-d plot 1
+x1 = runif(10)
+y1 = runif(10)
+
+# xy data for 2-d plot 3
+x2 = rnorm(30)
+y2 = rnorm(30)
+
+# xy data for 2-d plot 3
+x3 = rpois(20, 5) / 6
+y3 = rpois(20, 5) / 6
+
+# put them together
+data = data.frame(x=x1, y=y1, plot=1)
+data = rbind(data, data.frame(x=x2, y=y2, plot=2))
+data = rbind(data, data.frame(x=x3, y=y3, plot=3))
+
+xlim = range(data$x)
+ylim = range(data$y)
+
+# Add 5 special bounding box points for each level
+# (these points will be invisible -- used to draw a rectange)
+box = data.frame(x=c(xlim[1], xlim[1], xlim[2], xlim[2], xlim[1]),
+                 y=c(ylim[1], ylim[2], ylim[2], ylim[1], ylim[1]))
+box$plot = 3
+data = rbind(box, data)
+box$plot = 2
+data = rbind(box, data)
+box$plot = 1
+data = rbind(box, data)
+
+# colors of each point, setting bounding box points transparent.
+col = c(rep("#ffffff00", 15), rep("blue", 10), rep("red", 30), rep("orange", 20))
+
+# make the plot
+scatterplot3js(as.matrix(data), col=col, pch='@',
+               grid=FALSE, num.ticks=c(5,5,3),
+               z.ticklabs=c("plot1", "plot2", "plot3"), height=900, width=900) %>% 
+  lines3d(from=c(1,2,3,4,5, 6,7,8,9,10, 11,12,13,14,15),
+            to=c(2,3,4,5,1, 7,8,9,10,6, 12,13,14,15,11), color="black")
+```
