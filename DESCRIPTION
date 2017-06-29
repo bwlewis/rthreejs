@@ -21,9 +21,9 @@ Depends:
     igraph (>= 1.0.0)
 Imports:
     htmlwidgets (>= 0.3.2),
-    htmltools (>= 0.2.6),
     base64enc,
     crosstalk,
+    methods,
     stats
 Suggests:
     maps

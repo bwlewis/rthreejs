@@ -373,7 +373,7 @@ scatterplot3js <- function(
   # crosstalk
   options$crosstalk_key <- NULL
   options$crosstalk_group <- NULL
-  if(is.SharedData(options$crosstalk))
+  if (is.SharedData(options$crosstalk))
   {
     options$crosstalk_key <- options$crosstalk$key()
     options$crosstalk_group <- options$crosstalk$groupName()
@@ -404,6 +404,7 @@ setOldClass("scatterplotThree")
 #' @param ... a \code{scatterplotThree} object from the threejs package.
 #' @seealso points3d
 #' @importFrom igraph vertices
+#' @importFrom methods setOldClass setMethod
 #' @export
 setMethod("vertices", signature(...="scatterplotThree"),
   function(...) {
@@ -490,24 +491,24 @@ points3d <- function(s, x, y, z, color="orange", pch="@", size=1, labels="")
   args <- list(x=x, center=center, flip.y=options$flipy, options=TRUE, axis=options$axis,
                color=color, num.ticks=options$numticks, x.ticklabs=options$xticklabs,
                y.ticklabs=options$yticklabs, z.ticklabs=options$zticklabs)
-  if(!is.null(options$xlim) || !is.symbol(options$xlim)) args$xlim <- options$xlim
-  if(!is.null(options$ylim) || !is.symbol(options$ylim)) args$ylim <- options$ylim
-  if(!is.null(options$zlim) || !is.symbol(options$zlim)) args$zlim <- options$zlim
+  if (!is.null(options$xlim) || !is.symbol(options$xlim)) args$xlim <- options$xlim
+  if (!is.null(options$ylim) || !is.symbol(options$ylim)) args$ylim <- options$ylim
+  if (!is.null(options$zlim) || !is.symbol(options$zlim)) args$zlim <- options$zlim
   t <- do.call("scatterplot3js", args=args)
 
   # update animated options
   options$vertices[[N]] <- t$vertices[[1]]
-  if(is.null(options$color[[N]])) options$color[[N]] <- rep_len("orange", oldlen)
-  if(length(options$color[[N]]) < oldlen) options$color[[N]] <- rep_len(options$color[[N]], oldlen)
+  if (is.null(options$color[[N]])) options$color[[N]] <- rep_len("orange", oldlen)
+  if (length(options$color[[N]]) < oldlen) options$color[[N]] <- rep_len(options$color[[N]], oldlen)
   options$color[[N]] <- c(options$color[[N]], t$color[[1]])
-  if(length(options$alpha[[N]]) < oldlen) options$alpha[[N]] <- rep_len(options$alpha[[N]], oldlen)
+  if (length(options$alpha[[N]]) < oldlen) options$alpha[[N]] <- rep_len(options$alpha[[N]], oldlen)
   options$alpha[[N]] <- c(options$alpha[[N]], t$alpha[[1]])
   # update static options
-  if(length(options$pch) < oldlen) options$pch <- rep_len(options$pch, oldlen)
+  if (length(options$pch) < oldlen) options$pch <- rep_len(options$pch, oldlen)
   options$pch <- c(options$pch, pch)
-  if(length(options$size) < oldlen) options$size <- rep_len(options$size, oldlen)
+  if (length(options$size) < oldlen) options$size <- rep_len(options$size, oldlen)
   options$size <- c(options$size, size)
-  if(is.null(options$labels)) options$labels <- rep_len("", oldlen)
+  if (is.null(options$labels)) options$labels <- rep_len("", oldlen)
   options$labels <- c(options$labels, labels)
   options$xticklab <- t$xticklab
   options$yticklab <- t$yticklab
@@ -563,15 +564,15 @@ lines3d <- function(s, from, to, lwd=1, alpha=1, color)
     lc <- Map(function(x) col2rgb(x, alpha=FALSE), lcol)
     lcol <- Map(function(x) apply(x, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), lc)
   }
-  if(is.null(options$from))
+  if (is.null(options$from))
   {
     options$from <- from
     options$to <- to
-    if(!missing(color)) options$lcol <- lcol
+    if (!missing(color)) options$lcol <- lcol
   } else {
     options$from[[N]] <- unlist(from)
     options$to[[N]] <- unlist(to)
-    if(!missing(color)) options$lcol[[N]] <- unlist(lcol)
+    if (!missing(color)) options$lcol[[N]] <- unlist(lcol)
   }
   options$lwd <- lwd
   options$linealpha <- alpha
