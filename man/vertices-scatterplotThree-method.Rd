@@ -8,7 +8,7 @@
 \S4method{vertices}{scatterplotThree}(...)
 }
 \arguments{
-\item{x}{a \code{scatterplotThree} object from the threejs package.}
+\item{...}{a \code{scatterplotThree} object from the threejs package.}
 }
 \description{
 Extract a matrix of vertex coordinates from a threejs widget

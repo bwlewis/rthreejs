@@ -23,6 +23,8 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 or a vector of  hex or named color names as long as the number of data
 points to plot.}
 
+\item{pch}{Optional point glyphs or text strings, see \code{\link{scatterplot3js}}.}
+
 \item{size}{The plot point radius, either as a single number or a
 vector of sizes of length \code{nrow(x)}.}
 
@@ -46,7 +48,7 @@ This function replaces the old \code{points3d} approach used by \code{scatterplo
    points3d(x + 0.1, y + 0.1, z, color="red", pch=paste("point", 1:5))
 
 data(LeMis)
-graphjs(LeMis) \%>\% points3d(x=g$vcache[[1]], color="red", pch=V(LeMis)$label)
+graphjs(LeMis) \%>\% points3d(vertices(g), color="red", pch=V(LeMis)$label)
 }
 }
 

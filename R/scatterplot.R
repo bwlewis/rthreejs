@@ -401,7 +401,7 @@ scatterplot3js <- function(
 setOldClass("scatterplotThree")
 #' Extract a matrix of vertex coordinates from a threejs widget
 #'
-#' @param x a \code{scatterplotThree} object from the threejs package.
+#' @param ... a \code{scatterplotThree} object from the threejs package.
 #' @seealso points3d
 #' @importFrom igraph vertices
 #' @export
@@ -430,6 +430,7 @@ indexline <- function(x) # zero index and make sure each element is an array in 
 #' @param color Either a single hex or named color name (all points same color),
 #' or a vector of  hex or named color names as long as the number of data
 #' points to plot.
+#' @param pch Optional point glyphs or text strings, see \code{\link{scatterplot3js}}.
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}.
 #' @param labels Character vector of length \code{x} of point labels displayed when the mouse moves over the points.

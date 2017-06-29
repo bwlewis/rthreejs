@@ -93,12 +93,23 @@ Specifying a list of three-column layout matrices in \code{layout} displays
 a linear interpolation from one layout to the next, providing a simple mechanism
 for graph animation. Each layout must have the same number of rows as the number
 of vertices in the graph.
+
 Specify the optional \code{fpl} (frames per layout) parameter to control the
 number of interpolating animation frames between layouts. See the examples.
 
 Optionally specify a list of graph objects in \code{g} to vary the displayed edges
 and edge colors from one layout to the next, with the restriction that each graph
 object must refer to a uniform number of vertices.
+
+The lists of graphs may optionally include varying vertex and edge colors.
+Alternatively, specify a list of \code{vertex.color} vectors (one
+for each layout) to animate vertex colors. Similarly, optionally specify a
+list of \code{edge.color} vectors to animate edge colors.
+
+Optionally provide a list of \code{main} title text strings to vary the
+title with each animation layout.
+
+None of the other plot parameters may be animated.
 }
 
 \section{Click animation}{
