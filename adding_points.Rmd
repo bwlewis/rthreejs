@@ -1,0 +1,30 @@
+# Labeling graph vertices
+
+You can use the `points3d()` function to add labels to a plot, including graph
+visualizations, in threejs. Labels are really just extra points in the plot
+that happen to contain text.
+
+Here is a simple example that adds names to the vertices of  the Les
+Mis&eacute;rables character co-occurence graph.
+
+The example below uses the new `vertices()` function to extract the plot vertex
+coordinates from the widget. The `V(LeMis)$label` argument extracts the vertex
+label names from the LeMis igraph graph object.
+
+```{r, echo=TRUE, eval=FALSE}
+library(threejs)
+data(LeMis)
+graphjs(LeMis) %>% points3d(vertices(.), color="red", pch=V(LeMis)$label)
+
+# or equivalently without using the pipe:
+g <- graphjs(LeMis)
+points3d(g, vertices(g), color="red", pch=V(LeMis)$label)
+```
+```{r, echo=FALSE, eval=TRUE, fig.height=9, fig.width=15}
+suppressMessages(
+{
+  library(threejs)
+  data(LeMis)
+  graphjs(LeMis) %>% points3d(vertices(.), color="red", pch=V(LeMis)$label)
+})
+```

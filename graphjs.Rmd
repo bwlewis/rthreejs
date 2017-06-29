@@ -37,10 +37,14 @@ mouse operations.
 * Hold the right mouse button down and move the mouse to pan.
 * Use the mouse scroll wheel to zoom in and out.
 * Double-click on the plot to reset the view.
+* Set the `brush=TRUE` argument to highlight clicked vertices.
 
 An attempt is made to support touch equivalents to the mouse operations,
 but touch interfaces will likely not work as well as a traditional mouse
 or trackpad set up.
+
+Also see the vignette on crosstalk interaction here:
+https://bwlewis.github.io/rthreejs/crosstalk.html .
 
 ## A force directed graph
 
