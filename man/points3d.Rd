@@ -41,14 +41,18 @@ This function replaces the old \code{points3d} approach used by \code{scatterplo
 }
 \examples{
 \dontrun{
+ # Adding point labels to a scatterplot:
  x <- rnorm(5)
  y <- rnorm(5)
  z <- rnorm(5)
  scatterplot3js(x, y, z, pch="o") \%>\%
    points3d(x + 0.1, y + 0.1, z, color="red", pch=paste("point", 1:5))
 
+# Adding point labels to a graph, obtaining the graph vertex coordinates
+# with the `vertices()` function:
 data(LeMis)
-graphjs(LeMis) \%>\% points3d(vertices(g), color="red", pch=V(LeMis)$label)
+graphjs(LeMis) \%>\% points3d(vertices(.), color="red", pch=V(LeMis)$label)
+
 }
 }
 
