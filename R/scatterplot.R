@@ -221,11 +221,6 @@ scatterplot3js <- function(
   cex.symbols = 1,
   xlim, ylim, zlim, pch="@", ...)
 {
-  .callcon <- rawConnection(raw(0), "r+")
-  save(file=.callcon, list=ls())
-  .call <- rawConnectionValue(.callcon)
-  close(.callcon)
-
   # validate input
   if (!missing(y) && !missing(z)) {
     if (is.matrix(x))
@@ -246,6 +241,7 @@ scatterplot3js <- function(
     if (!is.matrix(x)) stop("x must be a three column matrix")
     x <- list(na.omit(x))
   }
+  vcache <- x # cache un-transformed points for re-use
   NROW <- nrow(x[[1]])
   if (missing(pch)) pch <- rep("o", NROW)
   if (length(pch) != NROW) pch <- rep_len(pch, NROW)
@@ -356,14 +352,8 @@ scatterplot3js <- function(
     if (!("to" %in% names(options))) stop("both from and to must be specified")
     if (!is.list(options$from)) options$from <- list(options$from)
     if (!is.list(options$to)) options$to <- list(options$to)
-    f <- function(x) # zero index and make sure each element is an array in JavaScript
-    {
-      a <- as.integer(x) - 1
-      if (length(a) == 1) a <- list(a)
-      a
-    }
-    options$from <- Map(f, options$from)
-    options$to <- Map(f, options$to)
+    options$from <- Map(indexline, options$from)
+    options$to <- Map(indexline, options$to)
     if (!("lwd" %in% names(options))) options$lwd <- 1L
     if ("lcol" %in% names(options)) # discard alpha, normalize line colors
     {
@@ -393,7 +383,6 @@ scatterplot3js <- function(
   # Don't create the widget; instead only return the options
   if (!is.null(options$options) && options$options) return(options)
 
-  # create widget
   ans <- htmlwidgets::createWidget(
           name = "scatterplotThree",
           x = options,
@@ -403,15 +392,47 @@ scatterplot3js <- function(
           dependencies = crosstalk::crosstalkLibs(),
           package = "threejs")
   ans$call <- match.call()
-  ans$.call <- .call
+  ans$vcache <- vcache # cached, un-transformed points for re-use (see points3d)
   ans$points3d <- function(...) stop("Syntax for adding points has changed: See ?points3d for examples.")
   ans
 }
 
+
+setOldClass("scatterplotThree")
+#' Extract a matrix of vertex coordinates from a threejs widget
+#'
+#' @param x a \code{scatterplotThree} object from the threejs package.
+#' @seealso points3d
+#' @importFrom igraph vertices
+#' @export
+setMethod("vertices", signature(...="scatterplotThree"),
+  function(...) {
+    list(...)[[1]]$vcache
+  })
+
+indexline <- function(x) # zero index and make sure each element is an array in JavaScript
+{
+  a <- as.integer(x) - 1L
+  if (length(a) == 1) a <- list(a)
+  a
+}
+
 #' Add points to a 3D scatterplot
 #'
-#' @param s A scatterplot object returned by \code{\link{scatterplot3js}}.
-#' @param ... Optional new point arguments (see examples) following \code{\link{scatterplot3js}} syntax.
+#' @param s A non-animated scatterplot object returned by \code{\link{scatterplot3js}}.
+#' @param x Either a vector of x-coordinate values or a  three-column
+#' data matrix with columns corresponding to the x,y,z
+#' coordinate axes. Column labels, if present, are used as axis labels.
+#' @param y (Optional) vector of y-coordinate values, not required if
+#' \code{x} is a matrix.
+#' @param z (Optional) vector of z-coordinate values, not required if
+#' \code{x} is a matrix.
+#' @param color Either a single hex or named color name (all points same color),
+#' or a vector of  hex or named color names as long as the number of data
+#' points to plot.
+#' @param size The plot point radius, either as a single number or a
+#' vector of sizes of length \code{nrow(x)}.
+#' @param labels Character vector of length \code{x} of point labels displayed when the mouse moves over the points.
 #' @return A new scatterplot htmlwidget object.
 #' @note This function replaces the old \code{points3d} approach used by \code{scatterplot3d}.
 #' @examples
@@ -420,60 +441,92 @@ scatterplot3js <- function(
 #'  y <- rnorm(5)
 #'  z <- rnorm(5)
 #'  scatterplot3js(x, y, z, pch="o") %>%
-#'    points3d(x + 0.2, y + 0.2, z, color="red", pch=paste("point", 1:5))
+#'    points3d(x + 0.1, y + 0.1, z, color="red", pch=paste("point", 1:5))
+#'
+#' data(LeMis)
+#' graphjs(LeMis) %>% points3d(vertices(g), color="red", pch=V(LeMis)$label)
 #' }
 #' @export
-points3d <- function(s, ...)
+points3d <- function(s, x, y, z, color="orange", pch="@", size=1, labels="")
 {
   stopifnot("scatterplotThree" %in% class(s))
-  n <- list(...)
-  if (names(n)[1] == "") names(n)[1] <- "x"
-  if (names(n)[2] == "") names(n)[2] <- "y"
-  if (names(n)[3] == "") names(n)[3] <- "z"
-  if (is.null(n$x)) return(s)
-  e <- new.env()
-  con <- rawConnection(s$.call, "r")
-  load(file=con, envir=e)
-  close(con)
-  e <- as.list(e)
-  if (is.data.frame(e$x)) e$x <- as.matrix(e$x)
-  if (!is.null(e$y))
-  {
-    e$x <- cbind(e$x, e$y, e$z)
-    e$y <- NULL
-    e$z <- NULL
+  options <- s$x
+  N <- length(options$vertices)  # number of animation frames, update last one
+  # validate input
+  if (!missing(y) && !missing(z)) {
+    if (is.matrix(x))
+      stop("Specify either: A three-column matrix x or, Three vectors x, y, and z. See ?scatterplot3js for help.")
+    x <- cbind(x = x, y = y, z = z)
   }
-  if (is.data.frame(n$x)) n$x <- as.matrix(n$x)
-  if (!is.null(n$y))
+  if (is.list(x))
   {
-    n$x <- cbind(n$x, n$y, n$z)
-    n$y <- NULL
-    n$z <- NULL
+    if (!all(lapply(x, ncol) == 3)) stop("x must be a three column matrix")
+    x <- lapply(x, function(y) {
+        ans <- if (is.data.frame(y)) as.matrix(y) else y
+        na.omit(ans)
+      })
+  } else
+  {
+    if (ncol(x) != 3) stop("x must be a three column matrix")
+    if (is.data.frame(x)) x <- as.matrix(x)
+    if (!is.matrix(x)) stop("x must be a three column matrix")
+    x <- list(na.omit(x))
   }
-  N <- nrow(e$x)
-  if (length(e$color) != N) e$color <- rep(e$color, length.out=N)
-  if (length(e$pch) != N) e$pch <- rep(e$pch, length.out=N)
-  if (length(e$size) != N) e$size <- rep(e$size, length.out=N)
-  if (is.null(e$labels)) e$labels <- ""
-  if (length(e$labels) != N) e$labels <- rep(e$labels, length.out=N)
-  M <- nrow(n$x)
-  if (is.null(n$color)) n$color <- "steelblue"
-  if (is.null(n$pch)) n$pch <- "@"
-  if (is.null(n$size)) n$size <- 1
-  if (length(n$color) != M) n$color <- rep(n$color, length.out=M)
-  if (length(n$pch) != M) n$pch <- rep(n$pch, length.out=M)
-  if (length(n$size) != M) n$size <- rep(n$size, length.out=M)
-  if (is.null(n$labels)) n$labels <- ""
-  if (length(n$labels) != M) n$labels <- rep(n$labels, length.out=M)
+  if (length(x) > 1) warning("Animation not supported, only last frame used")
+  x <- x[[1]]
+  colnames(x) <- NULL
+  NROW <- nrow(x)
+  if (length(color) != NROW) color <- rep_len(color, NROW)
+  if (length(pch) != NROW) pch <- rep_len(pch, NROW)
+  if (length(size) != NROW) size <- rep_len(size, NROW)
+  if (length(labels) != NROW) labels <- rep_len(labels, NROW)
 
-  # Combine old and new arguments...
-  e$x <- rbind(e$x, n$x)
-  e$color <- c(e$color, n$color)
-  e$pch <- c(e$pch, n$pch)
-  e$size <- c(e$size, n$size)
-  e$labels <- c(e$labels, n$labels)
+  # use scatterplot3js to scale/transform vertices as required
+  oldlen <- length(options$vertices[[N]]) / 3
+  x <- rbind(s$vcache[[N]], x)
+  center <- options$center
+  if (is.null(center)) center <- FALSE
+  args <- list(x=x, center=center, flip.y=options$flipy, options=TRUE, axis=options$axis,
+               color=color, num.ticks=options$numticks, x.ticklabs=options$xticklabs,
+               y.ticklabs=options$yticklabs, z.ticklabs=options$zticklabs)
+  if(!is.null(options$xlim) || !is.symbol(options$xlim)) args$xlim <- options$xlim
+  if(!is.null(options$ylim) || !is.symbol(options$ylim)) args$ylim <- options$ylim
+  if(!is.null(options$zlim) || !is.symbol(options$zlim)) args$zlim <- options$zlim
+  t <- do.call("scatterplot3js", args=args)
 
-  do.call("scatterplot3js", args=e)
+  # update animated options
+  options$vertices[[N]] <- t$vertices[[1]]
+  if(is.null(options$color[[N]])) options$color[[N]] <- rep_len("orange", oldlen)
+  if(length(options$color[[N]]) < oldlen) options$color[[N]] <- rep_len(options$color[[N]], oldlen)
+  options$color[[N]] <- c(options$color[[N]], t$color[[1]])
+  if(length(options$alpha[[N]]) < oldlen) options$alpha[[N]] <- rep_len(options$alpha[[N]], oldlen)
+  options$alpha[[N]] <- c(options$alpha[[N]], t$alpha[[1]])
+  # update static options
+  if(length(options$pch) < oldlen) options$pch <- rep_len(options$pch, oldlen)
+  options$pch <- c(options$pch, pch)
+  if(length(options$size) < oldlen) options$size <- rep_len(options$size, oldlen)
+  options$size <- c(options$size, size)
+  if(is.null(options$labels)) options$labels <- rep_len("", oldlen)
+  options$labels <- c(options$labels, labels)
+  options$xticklab <- t$xticklab
+  options$yticklab <- t$yticklab
+  options$zticklab <- t$zticklab
+  options$xtick <- t$xtick
+  options$ytick <- t$ytick
+  options$ztick <- t$ztick
+
+
+  ans <- htmlwidgets::createWidget(
+          name = "scatterplotThree",
+          x = options,
+          width = s$width,
+          height = s$height,
+          htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+          dependencies = crosstalk::crosstalkLibs(),
+          package = "threejs")
+  ans$call <- match.call()
+  ans$vcache <- x
+  ans
 }
 
 #' Add lines to a 3D scatterplot
@@ -499,17 +552,39 @@ points3d <- function(s, ...)
 lines3d <- function(s, from, to, lwd=1, alpha=1, color)
 {
   stopifnot("scatterplotThree" %in% class(s))
-  e <- new.env()
-  con <- rawConnection(s$.call, "r")
-  load(file=con, envir=e)
-  close(con)
-  e <- as.list(e)
-  e$from <- from
-  e$to <- to
-  if (! missing(color)) e$lcol <- color
-  e$lwd <- lwd
-  e$linealpha <- alpha
-  do.call("scatterplot3js", args=e)
+  options <- s$x
+  N <- length(options$vertices)  # number of animation frames, update last one
+  from <- Map(indexline, list(from))
+  to <- Map(indexline, list(to))
+  if (! missing(color)) # discard alpha, normalize line colors
+  {
+    lcol <- list(color)
+    lc <- Map(function(x) col2rgb(x, alpha=FALSE), lcol)
+    lcol <- Map(function(x) apply(x, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), lc)
+  }
+  if(is.null(options$from))
+  {
+    options$from <- from
+    options$to <- to
+    if(!missing(color)) options$lcol <- lcol
+  } else {
+    options$from[[N]] <- unlist(from)
+    options$to[[N]] <- unlist(to)
+    if(!missing(color)) options$lcol[[N]] <- unlist(lcol)
+  }
+  options$lwd <- lwd
+  options$linealpha <- alpha
+  ans <- htmlwidgets::createWidget(
+          name = "scatterplotThree",
+          x = options,
+          width = s$width,
+          height = s$height,
+          htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
+          dependencies = crosstalk::crosstalkLibs(),
+          package = "threejs")
+  ans$vcache <- s$vcache
+  ans$call <- match.call()
+  ans
 }
 
 

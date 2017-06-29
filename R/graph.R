@@ -247,13 +247,16 @@ graphjs <- function(g, layout,
   if (!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if (!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   options$options <- TRUE
-  options <- do.call("scatterplot3js", args=options)
-  htmlwidgets::createWidget(
+  opt <- do.call("scatterplot3js", args=options)
+  ans <- htmlwidgets::createWidget(
           name = "scatterplotThree",
-          x = options,
+          x = opt,
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           dependencies = crosstalk::crosstalkLibs(),
           package = "threejs")
+  ans$call <- match.call()
+  ans$vcache <- layout
+  ans
 }
