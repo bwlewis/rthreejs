@@ -419,7 +419,7 @@ scatterplot3js <- function(
 #'  x <- rnorm(5)
 #'  y <- rnorm(5)
 #'  z <- rnorm(5)
-#'  scatterplot3js(x, y, z, pch=".", xlim=lim, ylim=lim, zlim=lim) %>%
+#'  scatterplot3js(x, y, z, pch="o") %>%
 #'    points3d(x + 0.2, y + 0.2, z, color="red", pch=paste("point", 1:5))
 #' }
 #' @export
