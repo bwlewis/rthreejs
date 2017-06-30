@@ -850,7 +850,7 @@ Widget.scatter = function(w, h)
     {
       draw_lines(null);
     }
-    if(x.vertices.length > 1) _this.frame = 0; // animate
+    if(x.vertices.length > 1 && _this.fps > 0) _this.frame = 0; // animate
     _this.idle = false;
     render();
   }; // end of create_plot
