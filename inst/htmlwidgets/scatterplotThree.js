@@ -381,6 +381,11 @@ Widget.scatter = function(w, h)
   ct_sel.on("change", function(e)
   {
     if(e.sender === ct_sel) return;
+    if(!Array.isArray(e.value))
+    {
+// FIXME HANDLE SPECIAL CONTROL OUTPUT...prefer to use extraInfo object but couldn't get set(a, xtra) to work in crosstalk FIXME
+      return;
+    }
     if(e.value.length == 0)
     {
       _this.brush(null);
