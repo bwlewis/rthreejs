@@ -426,7 +426,6 @@ Widget.scatter = function(w, h)
     _this.brushed = true;
   };
 
-  // create_plot
   _this.create_plot = function(x)
   {
     if(x.crosstalk_group)
@@ -855,9 +854,9 @@ Widget.scatter = function(w, h)
     if(x.vertices.length > 1) _this.frame = 0; // animate
     _this.idle = false;
     render();
-  }
+  }; // end of create_plot
 
-/** FIXME There is probably a better/more efficient threejs way to animate, help appreciated */
+/** FIXME Help improving animation performance appreciated */
   _this.update = function()
   {
     if(_this.frame > -1)
@@ -971,7 +970,7 @@ Widget.scatter = function(w, h)
       }
       if(_this.options.from) update_lines(null);
     }
-  }
+  };
 
   /* buffered lines */
   function update_lines(l)

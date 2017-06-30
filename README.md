@@ -63,13 +63,17 @@ The `graphjs()` function is completely new.
 - Interactive (click-able) graph animation is supported, see `demo(package="threejs")` for examples.
 - Limited brushing is available to highlight portions of the graph, see the `brush=TRUE` option.
 
-## NOTE
+## Known issues
 
-**RStudio on Windows systems may not be able to render the WebGL graphics emitted
-by threejs. RStudio users running on Windows systems may need to use the plot
-"pop out" button to see visualizations in an external browser. We expect this
-to be a temporary problem until the underlying graphics rendering system used
-by RStudio is updated later in 2017.**
+- RStudio on Windows systems may not be able to render the WebGL graphics emitted
+  by threejs. RStudio users running on Windows systems may need to use the plot
+  "pop out" button to see visualizations in an external browser. We expect this
+  to be a temporary problem until the underlying graphics rendering system used
+  by RStudio is updated later in 2017.
+- The fallback Canvas rendering code has diverged too much from the baseline
+  WebGL code and no longer works. We have temporarily disabled Canvas
+  rendering with an error message. See https://github.com/bwlewis/rthreejs/issues/67
+  for details.
 
 ## Install
 
