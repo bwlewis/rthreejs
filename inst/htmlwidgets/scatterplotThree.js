@@ -37,7 +37,8 @@ HTMLWidgets.widget(
  * animate()                 internal threejs animation function
  * render()                  internal threejs draw function
  * update()                  internal vertex update function
- * update_lines(lcol)        internal lines update function
+ * draw_lines(lcol)          internal buffered lines creation function
+ * update_lines(lcol)        internal buffered lines update function
  * ...  other miscellaneous internal functions
  *
  * The htmlwidgets interface resides in the init() function.
@@ -361,7 +362,7 @@ Widget.scatter = function(w, h)
           _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
         }
       }
-      if(_this.options.from) update_lines(null);
+      if(_this.options.from) draw_lines(null);
       if(_this.options.crosstalk_key)
       {
         ct_sel.set([]);
@@ -419,10 +420,8 @@ Widget.scatter = function(w, h)
         if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
         if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
       }
-      update_lines(lcol);
+      draw_lines(lcol);
     }
-
-
     _this.brushed = true;
   };
 
@@ -466,7 +465,7 @@ Widget.scatter = function(w, h)
     if(x.cexlab) cexlab = parseFloat(x.cexlab);
     if(x.fontaxis) fontaxis = x.fontaxis;
     if(x.fontsymbols) fontsymbols = x.fontsymbols;
-    // caching for convenient vertex lookup in update_lines function
+    // caching for convenient vertex lookup in *_lines functions
     _this.data = x.vertices[0].slice();
     // also cache (current) colors for convenience later
     if(x.color && Array.isArray(x.color[0]))
@@ -849,7 +848,7 @@ Widget.scatter = function(w, h)
  */
     if(x.from && _this.renderer.GL)
     {
-      update_lines(null);
+      draw_lines(null);
     }
     if(x.vertices.length > 1) _this.frame = 0; // animate
     _this.idle = false;
@@ -879,7 +878,7 @@ Widget.scatter = function(w, h)
           var dy = (y1 - y) / (_this.fps + 1);
           var dz = (z1 - z) / (_this.fps + 1);
           _this.pointgroup.children[j].geometry.translate(dx, dy, dz);
-          // cache for posterity (easy lookup in update_lines)
+          // cache for posterity (easy lookup in *_lines)
           _this.data[k * 3] = _this.data[k * 3] + dx;
           _this.data[k * 3 + 1] = _this.data[k * 3 + 1] + dy;
           _this.data[k * 3 + 2] = _this.data[k * 3 + 2] + dz;
@@ -917,7 +916,7 @@ Widget.scatter = function(w, h)
             _this.pointgroup.children[j].geometry.attributes.position.array[i * 3] = x + (x1 - x) * h;
             _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1] = y + (y1 - y) * h;
             _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2] = z + (z1 - z) * h;
-            // cache for posterity (easy lookup in update_lines)
+            // cache for posterity (easy lookup in *_lines)
             _this.data[k*3] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3];
             _this.data[k*3 + 1] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1];
             _this.data[k*3 + 2] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2];
@@ -965,15 +964,19 @@ Widget.scatter = function(w, h)
           _this.main = _this.options.main[_this.scene];
           printInfo(_this.main);
         }
-        if(_this.scene >= _this.options.vertices.length - 1) _this.frame = -1; // done!
-        else _this.frame = 0; // more scenes to animate, reset frame counter
+        if(_this.scene >= _this.options.vertices.length - 1)
+        {
+          _this.frame = -1; // done!
+          if(_this.options.from) draw_lines(null); // one last set of lines to draw
+          return;
+        } else _this.frame = 0; // more scenes to animate, reset frame counter
       }
-      if(_this.options.from) update_lines(null);
+      if(_this.options.from) draw_lines(null);
     }
   };
 
-  /* buffered lines */
-  function update_lines(l)
+  /* create or replace a set of buffered lines */
+  function draw_lines(l)
   {
     var s = _this.scene;
     if(_this.options.from.length <= s)  s = 0;
