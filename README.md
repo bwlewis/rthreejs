@@ -28,10 +28,10 @@ function generally works as before but with more capabilities.  The `graphjs()`
 function is very different with a new API more closely tied to the igraph
 package.
 
-The threejs package now depends on igrah.  If you're doing serious network
-analysis, you're probably already using igraph (or you should be). We now use
-external graph layouts (either from igraph or elsewhere). This gives much
-greater graph layout flexibility, something I was looking for. But also removes
+The threejs package now depends on igraph.  If you're doing serious network
+analysis, you're probably already using igraph (or you should be). Threejs now
+uses external graph layouts (either from igraph or elsewhere). This gives much
+greater graph layout flexibility, something I was looking for, but also removes
 the cute (but slow and crude) force-directed JavaScript animation previously
 used. To partially make up for that, several new graph animation and
 interaction schemes are newly available.
@@ -52,6 +52,7 @@ The `scatterplot3js()` function was substantially improved and updated.
 - Mouse over labels are supported in WebGL renderings.
 - The \code{points3d} interface was modified to support pipelining.
 - Lines are supported too, see \code{lines3d}.
+- Support for crosstalk selection (see `demo("crosstalk", package="threejs")`).
 
 The `graphjs()` function is completely new.
 
@@ -62,6 +63,7 @@ The `graphjs()` function is completely new.
 - Graph animation is supported, see the examples.
 - Interactive (click-able) graph animation is supported, see `demo(package="threejs")` for examples.
 - Limited brushing is available to highlight portions of the graph, see the `brush=TRUE` option.
+- Support for crosstalk selection.
 
 ## Known issues
 

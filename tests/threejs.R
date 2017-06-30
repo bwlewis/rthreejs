@@ -1,10 +1,5 @@
 library(threejs)
 # scatterplots
-N <- 100
-i <- sample(3, N, replace=TRUE)
-x <- matrix(rnorm(N * 3), ncol=3)
-scatterplot3js(x, color=rainbow(N), size=i, renderer="canvas")
-
 z <- seq(-10, 10, 0.1)
 x <- cos(z)
 y <- sin(z)
@@ -26,3 +21,4 @@ globejs(lat=ll[, 1], long=ll[, 2], arcs=frequent_flights,
 # graphs
 data(LeMis, package="threejs")
 g <- graphjs(LeMis, main="Les Mis&eacute;rables")
+g <- graphjs(LeMis, main="Les Mis&eacute;rables", brush=TRUE)
