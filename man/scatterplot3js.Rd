@@ -103,16 +103,6 @@ a point will display the label.
 
 \section{Detailed plot options}{
 
-Use the \code{renderer} option to manually select from the available
-rendering options.
-The \code{canvas} renderer is the fallback rendering option when WebGL
-is not available. The default setting \code{auto} automatically chooses
-between
-the two. The two renderers produce slightly different-looking output
-and have different available options (see above). The WebGL renderer
-exhibits much better performance, stability, and feature support.
-Support for Canvas rendering may be dropped in a future version.
-
 Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below. A few additional
 plot options are also supported:
