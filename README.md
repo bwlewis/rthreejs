@@ -127,7 +127,7 @@ For detailed help on the widgets and additional examples, see
 <a href="https://codecov.io/github/bwlewis/rthreejs/">
 <img src="https://codecov.io/github/bwlewis/rthreejs/coverage.svg?branch=master"/>
 </a>
-<a href="https://www.r-pkg.org/threejs">
+<a href="https://www.r-pkg.org/pkg/threejs">
 <img src="https://www.r-pkg.org/badges/version/threejs"/>
 </a>
 <a href="https://cranlogs.r-pkg.org/badges/threejs">
