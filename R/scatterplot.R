@@ -241,7 +241,6 @@ scatterplot3js <- function(
     if (!is.matrix(x)) stop("x must be a three column matrix")
     x <- list(na.omit(x))
   }
-  vcache <- x # cache un-transformed points for re-use
   NROW <- nrow(x[[1]])
   if (missing(pch)) pch <- rep("o", NROW)
   if (length(pch) != NROW) pch <- rep_len(pch, NROW)
@@ -257,6 +256,7 @@ scatterplot3js <- function(
 
   options <- c(as.list(environment()), list(...))
   options <- options[!(names(options) %in% c("x", "y", "z", "i", "j", "a"))]
+  vcache <- x # cache un-transformed points for re-use
 
   # javascript does not like dots in names
   names(options) <- gsub("\\.", "", names(options))
