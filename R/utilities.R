@@ -96,7 +96,7 @@ gopts <- function(g)
   if (!is.null(ans$cumulative) && !ans$cumulative) ans$cumulative <- NULL
   ans <- ans[!vapply(ans, is.null, TRUE)]
   if (!("layout" %in% names(ans))) stop("missing layout")
-  # re-order y, z, flip y, and center
+  # re-order y, z, flip y, convert to vector (centering handled by JavaScript)
   ans$layout <- ans$layout[, c(1, 3, 2), drop=FALSE]
   ans$layout[, 3] <- 1 - ans$layout[, 3]
   ans$layout <- signif(as.vector(t(ans$layout)), 8)

@@ -156,7 +156,7 @@ the following new plot options.
 
 Specify the argument \code{brush=TRUE} to highlight a clicked point (currently
 limited to single-point selection).
-Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
+Optionally set the \code{highlight=<color>} and \code{lowlight=<color>}
 to manually control the brushing display colors. This feature works with
 crosstalk.
 }

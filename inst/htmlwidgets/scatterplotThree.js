@@ -99,6 +99,7 @@ Widget.scatter = function(w, h)
 
   _this.init = function (el, width, height)
   {
+HOMER=_this; // XXX DEBUG
     if(Detector.webgl)
     {
       _this.renderer = new THREE.WebGLRenderer({alpha: true});
@@ -322,7 +323,7 @@ Widget.scatter = function(w, h)
         }
       } else _this.brush(null);
     }
-  }
+  };
 
   ct_sel.on("change", function(e)
   {

@@ -109,7 +109,7 @@
 #' @section Highlighting selected points:
 #' Specify the argument \code{brush=TRUE} to highlight a clicked point (currently
 #' limited to single-point selection).
-#' Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
+#' Optionally set the \code{highlight=<color>} and \code{lowlight=<color>}
 #' to manually control the brushing display colors. This feature works with
 #' crosstalk.
 #'
@@ -255,6 +255,9 @@ scatterplot3js <- function(
 
   # javascript does not like dots in names
   names(options) <- gsub("\\.", "", names(options))
+
+  if (!is.null(options$highlight)) options$highlight <- gcol(options$highlight)$color
+  if (!is.null(options$lowlight)) options$lowlight <- gcol(options$lowlight)$color
 
   # re-order so z points up as expected.
   x <- lapply(x, function(y) y[, c(1, 3, 2), drop=FALSE])
