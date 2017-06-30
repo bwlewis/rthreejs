@@ -99,7 +99,6 @@ Widget.scatter = function(w, h)
 
   _this.init = function (el, width, height)
   {
-HOMER=_this; // XXX DEBUG
     if(Detector.webgl)
     {
       _this.renderer = new THREE.WebGLRenderer({alpha: true});
@@ -325,6 +324,60 @@ HOMER=_this; // XXX DEBUG
     }
   };
 
+
+/* Experimental scene animation transition function. Animate from the
+ * current plot state to the new state in options.defer[i].
+ * TODO Adjust click animation to use this interface and consolidate code.
+ */
+  _this.transition = function(i)
+  {
+    if(!_this.options.defer) return;
+    if(i >= _this.options.defer.vertices.length) return;
+    var N = _this.options.vertices.length - 1;
+    _this.options.vertices = [_this.options.vertices[N], _this.options.defer.vertices[i]]; // new animation sequence
+    if(_this.options.defer.alpha.length > 1)
+      _this.options.alpha = [_this.options.alpha[N], _this.options.defer.alpha[i]]; // new alpha sequence
+    if(_this.options.defer.alpha.length > 1)
+      _this.options.color = [_this.options.color[N], _this.options.defer.color[i]]; // new color sequence
+
+    if(_this.options.defer.from && i < _this.options.defer.from.length)
+    {
+      if(_this.options.from)
+      {
+        N = _this.options.from.length - 1;
+        _this.options.from = [_this.options.from[N], _this.options.defer.from[i]]; // new lines
+        _this.options.to = [_this.options.to[N], _this.options.defer.to[i]];
+      } else
+      {
+         _this.options.from = [[], _this.options.defer.from[i]]; // new lines
+         _this.options.to = [[], _this.options.defer.to[i]];
+      }
+    } else
+    {
+      if(_this.options.from)
+      {
+        N = _this.options.from.length - 1;
+        _this.options.from = [_this.options.from[N]];
+        _this.options.to = [_this.options.to[N]];
+      } else
+      {
+        _this.options.from = [[]];
+        _this.options.to = [[]];
+      }
+    }
+    if(_this.options.defer.lcol && i < _this.options.defer.lcol.length) 
+      _this.options.lcol = _this.options.defer.lcol[i];
+    _this.scene = 0; // reset animation
+    _this.fps = 50;
+    if(_this.options.deferfps) _this.fps = _this.options.deferfps;
+    _this.frame = 0; // start
+    if(_this.idle)
+    {
+      _this.idle = false;
+      _this.animate();
+    }
+  };
+
   ct_sel.on("change", function(e)
   {
     if(e.sender === ct_sel) return;
@@ -363,7 +416,7 @@ HOMER=_this; // XXX DEBUG
           _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
         }
       }
-      if(_this.options.from) draw_lines(null);
+      if(_this.options.from) draw_lines(null, null);
       if(_this.options.crosstalk_key)
       {
         ct_sel.set([]);
@@ -421,7 +474,7 @@ HOMER=_this; // XXX DEBUG
         if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
         if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
       }
-      draw_lines(lcol);
+      draw_lines(lcol, null);
     }
     _this.brushed = true;
   };
@@ -849,7 +902,7 @@ HOMER=_this; // XXX DEBUG
  */
     if(x.from && _this.renderer.GL)
     {
-      draw_lines(null);
+      draw_lines(null, null);
     }
     if(x.vertices.length > 1 && _this.fps > 0) _this.frame = 0; // animate
     _this.idle = false;
@@ -921,6 +974,9 @@ HOMER=_this; // XXX DEBUG
             _this.data[k*3] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3];
             _this.data[k*3 + 1] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1];
             _this.data[k*3 + 2] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2];
+/* Note: The list of colors and alphas is _either_ length one (same colors for all scenes),
+ * _or_ a list of the same length as the number of scenes specifying per-scene colors.
+ */
             if(_this.options.color.length > 1)
             {
               var col1, col2;
@@ -957,10 +1013,11 @@ HOMER=_this; // XXX DEBUG
       }
 // increase frame and scene counters
       _this.frame++;
+      if(_this.options.from && _this.options.fastforward && _this.frame == 1) draw_lines(null, true);
       if(_this.frame > _this.fps)
       {
         _this.scene++;
-        if(_this.options.from) draw_lines(null);
+        if(_this.options.from && !_this.options.fastforward) draw_lines(null, null);
         if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length > _this.scene)
         {
           _this.main = _this.options.main[_this.scene];
@@ -970,17 +1027,20 @@ HOMER=_this; // XXX DEBUG
         {
           _this.frame = -1; // done!
           return;
-        } else _this.frame = 0; // more scenes to animate, reset frame counter
+        } else {
+          _this.frame = 0; // more scenes to animate, reset frame counter
+        }
       }
-      if(_this.options.from) update_lines(null);
+      if(_this.options.from) update_lines(null, _this.options.fastforward);
     }
   };
 
   /* create or replace a set of buffered lines */
-  function draw_lines(l)
+  function draw_lines(l, ff)
   {
     var s = _this.scene;
-    if(_this.options.from.length <= s)  s = 0;
+    if(ff) s = _this.scene + 1;
+    if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
     var segments = _this.options.from[s].length;
     var geometry = new THREE.BufferGeometry();
     var positions = new Float32Array(segments * 6);
@@ -1046,10 +1106,11 @@ HOMER=_this; // XXX DEBUG
 
 
   /* update an existing set of buffered lines */
-  function update_lines(l)
+  function update_lines(l, ff)
   {
     var s = _this.scene;
-    if(_this.options.from.length <= s)  s = 0;
+    if(ff) s = _this.scene + 1;
+    if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
     var segments = _this.options.from[s].length;
     for(var i = 0; i < segments; i++)
     {

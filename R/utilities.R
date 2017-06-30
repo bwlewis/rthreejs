@@ -114,3 +114,11 @@ gcol <- function(x)
   a <- as.vector(c[4, ] / 255)   # alpha values
   list(color = apply(c, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), alpha = a)
 }
+
+# internal function used in scatterplot3js
+indexline <- function(x) # zero index and make sure each element is an array in JavaScript
+{
+  a <- as.integer(x) - 1L
+  if (length(a) == 1) a <- list(a)
+  a
+}

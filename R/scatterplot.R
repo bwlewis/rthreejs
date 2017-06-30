@@ -378,6 +378,29 @@ scatterplot3js <- function(
   }
   options$crosstalk <- NULL
 
+  # Experimental deferred animation, desgined for interactive use with crosstalk
+  # (this is not documented yet and may change significantly)
+  if (!is.null(options$defer) && options$defer)
+  {
+    options$defer <- list(
+      vertices=options$vertices,
+      color=options$color,
+      alpha=options$alpha,
+      from=options$from,
+      to=options$to
+    )
+    options$fpl <- -1
+    options$fps <- NULL
+    options$vertices <- options$vertices[1]
+    options$color <- options$color[1]
+    options$alpha <- options$alpha[1]
+    if(!is.null(options$from))
+    {
+      options$from <- options$from[1]
+      options$to <- options$to[1]
+    }
+  }
+
   # Don't create the widget; instead only return the options
   if (!is.null(options$options) && options$options) return(options)
 
@@ -408,13 +431,6 @@ setMethod("vertices", signature(...="scatterplotThree"),
   function(...) {
     list(...)[[1]]$vcache
   })
-
-indexline <- function(x) # zero index and make sure each element is an array in JavaScript
-{
-  a <- as.integer(x) - 1L
-  if (length(a) == 1) a <- list(a)
-  a
-}
 
 #' Add points to a 3D scatterplot
 #'
