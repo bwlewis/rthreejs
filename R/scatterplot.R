@@ -242,7 +242,7 @@ scatterplot3js <- function(
     x <- list(na.omit(x))
   }
   NROW <- nrow(x[[1]])
-  if (missing(pch)) pch <- rep("o", NROW)
+  if (missing(pch)) pch <- rep("@", NROW)
   if (length(pch) != NROW) pch <- rep_len(pch, NROW)
   renderer <- match.arg(renderer)
 
