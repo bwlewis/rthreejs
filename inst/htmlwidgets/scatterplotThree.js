@@ -853,6 +853,7 @@ Widget.scatter = function(w, h)
     if(x.vertices.length > 1) _this.frame = 0; // animate
     _this.idle = false;
     render();
+HOMER=_this;
   }; // end of create_plot
 
 /** FIXME Help improving animation performance appreciated */
@@ -959,6 +960,7 @@ Widget.scatter = function(w, h)
       if(_this.frame > _this.fps)
       {
         _this.scene++;
+        if(_this.options.from) draw_lines(null);
         if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length > _this.scene)
         {
           _this.main = _this.options.main[_this.scene];
@@ -967,17 +969,17 @@ Widget.scatter = function(w, h)
         if(_this.scene >= _this.options.vertices.length - 1)
         {
           _this.frame = -1; // done!
-          if(_this.options.from) draw_lines(null); // one last set of lines to draw
           return;
         } else _this.frame = 0; // more scenes to animate, reset frame counter
       }
-      if(_this.options.from) draw_lines(null);
+      if(_this.options.from) update_lines(null);
     }
   };
 
   /* create or replace a set of buffered lines */
   function draw_lines(l)
   {
+console.log("Draw lines!");
     var s = _this.scene;
     if(_this.options.from.length <= s)  s = 0;
     var segments = _this.options.from[s].length;
@@ -1041,6 +1043,59 @@ Widget.scatter = function(w, h)
       _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
       _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
     }
+  }
+
+
+  /* update an existing set of buffered lines */
+  function update_lines(l)
+  {
+    var s = _this.scene;
+    if(_this.options.from.length <= s)  s = 0;
+    var segments = _this.options.from[s].length;
+    for(var i = 0; i < segments; i++)
+    {
+      var from = _this.options.from[s][i];
+      var to = _this.options.to[s][i];
+      var c1, c2;
+      if(l)
+      {
+        c1 = new THREE.Color(l[i]);
+        c2 = c1;
+      } else if(_this.options.lcol)
+      {
+        if(Array.isArray(_this.options.lcol))
+        {
+          if(Array.isArray(_this.options.lcol[_this.scene]))
+            c1 = new THREE.Color(_this.options.lcol[_this.scene][i]);
+          else
+            c1 = new THREE.Color(_this.options.lcol[_this.scene]);
+        } else c1 = new THREE.Color(_this.options.lcol);
+        c2 = c1;
+      } else {
+        if(_this.datacolor)
+        { // interpolate line colors
+          c1 = new THREE.Color(_this.datacolor[from]);
+          c2 = new THREE.Color(_this.datacolor[to]);
+        } else {
+          c1 = new THREE.Color(_this.options.color[Math.min(s, _this.options.color.length - 1)]);
+          c2 = c1;
+        }
+      }
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6] = c1.r;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 1] = c1.g;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 2] = c1.b;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 3] = c2.r;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 4] = c2.g;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 5] = c2.b;
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6] = _this.data[from * 3];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 1] = _this.data[from * 3 + 1];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 2] = _this.data[from * 3 + 2];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 3] = _this.data[to * 3];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 4] = _this.data[to * 3 + 1];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 5] = _this.data[to * 3 + 2];
+    }
+    _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
+    _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
   }
 
   function printInfo(text)
