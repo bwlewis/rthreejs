@@ -979,7 +979,6 @@ HOMER=_this;
   /* create or replace a set of buffered lines */
   function draw_lines(l)
   {
-console.log("Draw lines!");
     var s = _this.scene;
     if(_this.options.from.length <= s)  s = 0;
     var segments = _this.options.from[s].length;
