@@ -853,7 +853,6 @@ Widget.scatter = function(w, h)
     if(x.vertices.length > 1) _this.frame = 0; // animate
     _this.idle = false;
     render();
-HOMER=_this;
   }; // end of create_plot
 
 /** FIXME Help improving animation performance appreciated */
