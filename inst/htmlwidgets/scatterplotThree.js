@@ -367,6 +367,10 @@ Widget.scatter = function(w, h)
     }
     if(_this.options.defer.lcol && i < _this.options.defer.lcol.length) 
       _this.options.lcol = _this.options.defer.lcol[i];
+    if(_this.options.defer.main && Array.isArray(_this.options.defer.main) && i < _this.options.defer.main.length)
+        {
+          _this.options.main = [_this.main, _this.options.main[i]];
+        }
     _this.scene = 0; // reset animation
     _this.fps = 50;
     if(_this.options.deferfps) _this.fps = _this.options.deferfps;

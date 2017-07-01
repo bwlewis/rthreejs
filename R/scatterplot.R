@@ -387,7 +387,8 @@ scatterplot3js <- function(
       color=options$color,
       alpha=options$alpha,
       from=options$from,
-      to=options$to
+      to=options$to,
+      main=options$main
     )
     options$fpl <- -1
     options$fps <- NULL
