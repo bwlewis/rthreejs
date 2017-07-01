@@ -384,6 +384,14 @@ Widget.scatter = function(w, h)
     if(!Array.isArray(e.value))
     {
 // FIXME HANDLE SPECIAL CONTROL OUTPUT...prefer to use extraInfo object but couldn't get set(a, xtra) to work in crosstalk FIXME
+// See the experimental controls here: https://github.com/bwlewis/uiwidgets
+      console.log("Warning: dodgy, experimental code. Use at your own risk!");
+      var i = parseInt(e.value.object);
+      if(!_this.lasti) _this.options.fastforward = false;
+      else if(i < _this.lasti) _this.options.fastforward = true;
+      else _this.options.fastforward = false;
+      _this.transition(i);
+      _this.lasti = i;
       return;
     }
     if(e.value.length == 0)
