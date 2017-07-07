@@ -13,13 +13,12 @@ high-quality interactive visualizations with just a few lines of R code.
 Visualizations optionally use accelerated WebGL graphics, falling back to
 non-accelerated graphics for systems without WebGL when possible.
 
-See http://threejs.org for details on three.js.
+See https://threejs.org for details on three.js.
 
-See http://bwlewis.github.io/rthreejs for R examples.
+See https://bwlewis.github.io/rthreejs for R examples.
 
-This project is based on the htmlwidgets package. See
-https://github.com/ramnathv/htmlwidgets for details and links to amazingly cool
-visualization widgets for R.
+This project is based on the htmlwidgets package. See http://htmlwidgets.org
+for details and links to many other visualization widgets for R.
 
 # New in version 0.3.0 (June, 2017)
 
