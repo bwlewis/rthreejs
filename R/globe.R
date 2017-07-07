@@ -72,7 +72,7 @@
 #' \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 #'
 #' Includes images adapted from the NASA Earth Observatory and NASA Jet Propulsion Laboratory.
-#' World image link: \url{http://goo.gl/GVjxJ}.
+#' World image link: \url{https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg}.
 #'
 #' @examples
 #' # Plot flights to frequent destinations from Callum Prentice's
@@ -111,10 +111,6 @@
 #' globejs(img=moon, bodycolor="#555555", lightcolor="#aaaaaa",
 #'         lat=cities$lat, long=cities$long,
 #'         value=value, color=col)
-#'
-#' # Plot a high-resolution NASA MODIS globe, setting colors to more closely reproduce
-#' # the natural image colors. Note that this example can can take a while to download!
-#' globejs("http://goo.gl/GVjxJ")
 #'
 #' # Using global plots from the maptools, rworldmap, or sp packages.
 #'
