@@ -351,8 +351,10 @@ Widget.scatter = function(w, h)
          _this.options.from = [[], _this.options.defer.from[i]]; // new lines
          _this.options.to = [[], _this.options.defer.to[i]];
       }
+      _this.phase = _this.options.from[0].length > _this.options.from[1].length;
     } else
     {
+      _this.phase = false;
       if(_this.options.from)
       {
         N = _this.options.from.length - 1;
@@ -915,7 +917,7 @@ Widget.scatter = function(w, h)
  */
     if(x.from && _this.renderer.GL)
     {
-      draw_lines(null);
+      draw_lines(0, null);
     }
     if(x.vertices.length > 1 && _this.fps > 0) _this.frame = 0; // animate
     _this.idle = false;
@@ -1024,12 +1026,19 @@ Widget.scatter = function(w, h)
           if(_this.options.color.length > 1) _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
         }
       }
+      var s = _this.scene;
+      if(_this.phase && _this.frame == 0)
+      {
+        s = Math.min(_this.scene + 1, _this.options.from.length - 1);
+        draw_lines(s, null);
+      }
 // increase frame and scene counters
       _this.frame++;
       if(_this.frame > _this.fps)
       {
         _this.scene++;
-        if(_this.options.from)  draw_lines(null);
+        s = Math.min(_this.scene, _this.options.from.length - 1);
+        if(_this.options.from) draw_lines(s, null);
         if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length > _this.scene)
         {
           _this.main = _this.options.main[_this.scene];
@@ -1043,18 +1052,17 @@ Widget.scatter = function(w, h)
           _this.frame = 0; // more scenes to animate, reset frame counter
         }
       }
-      var s = _this.scene;
-      if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
       update_line_positions(s);
+      update_line_colors(s, null);
     }
   };
 
   /* create or update a set of buffered lines
    * l: optional array of line colors
+   * s: scene
    */
-  var draw_lines = function(l)
+  var draw_lines = function(s, l)
   {
-    var s = _this.scene;
     if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
 
     if(! _this.linegroup.children || !_this.linegroup.children[0])
