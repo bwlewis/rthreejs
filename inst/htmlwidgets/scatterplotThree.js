@@ -1026,13 +1026,8 @@ Widget.scatter = function(w, h)
           if(_this.options.color.length > 1) _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
         }
       }
-      var s = _this.scene;
-      if(_this.phase && _this.frame == 0)
-      {
-        s = Math.min(_this.scene + 1, _this.options.from.length - 1);
-        draw_lines(s, null);
-      }
 // increase frame and scene counters
+      if(_this.phase && _this.frame == 0) _this.linegroup.children[0].geometry.setDrawRange(0, 0);
       _this.frame++;
       if(_this.frame > _this.fps)
       {
@@ -1052,8 +1047,8 @@ Widget.scatter = function(w, h)
           _this.frame = 0; // more scenes to animate, reset frame counter
         }
       }
-      update_line_positions(s);
-      update_line_colors(s, null);
+      update_line_positions(_this.scene);
+      update_line_colors(_this.scene, null);
     }
   };
 
