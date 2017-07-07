@@ -560,7 +560,7 @@ Widget.scatter = function(w, h)
 
     // circle sprite for pch='@'
     var sz = 512;
-    if(_this.options.strokewidth === null) _this.options.strokewidth = 0.75;
+    if(_this.options.strokewidth == null || typeof(_this.options.strokewidth) === undefined) _this.options.strokewidth = 0.75;
     else _this.options.strokewidth = Math.max(0, Math.min(1, 1 - _this.options.strokewidth));
     var dataColor = new Uint8Array( sz * sz * 4 );
     for(var i = 0; i < sz * sz * 4; i++) dataColor[i] = 0;
