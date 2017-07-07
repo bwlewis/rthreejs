@@ -89,11 +89,12 @@ Widget.scatter = function(w, h)
   this.scene = 0;    // current animation scene
   this.init_width = w;
   this.init_height = h;
+HOMER=this;
 
   var ct_sel = new crosstalk.SelectionHandle();
   var ct_filter = new crosstalk.FilterHandle();
 
-  var controls, scene;
+  var scene;
   var _this = this;
 
   _this.init = function (el, width, height)
@@ -132,23 +133,12 @@ Widget.scatter = function(w, h)
     _this.camera.position.x = 2.5;
     _this.camera.position.y = 1.2;
 
-    controls = new THREE.TrackballControls(_this.camera, el);
-    controls.rotateSpeed = 4.6;
-    controls.zoomSpeed = 1.5;
-    controls.panSpeed = 0.8;
-    controls.dynamicDampingFactor = 0.2;
-    controls.addEventListener('change', render);
-/* *** Alternatively, use OrbitControls. But zoom is not damped and vertical rotation is restricted.
-    controls = new THREE.OrbitControls(_this.camera, el);
-    controls.rotateSpeed = 0.6;
-    controls.zoomSpeed = 1.5;
-    controls.panSpeed = 1;
-    controls.enableZoom = true;
-    controls.enablePan = true;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.15;
-    controls.addEventListener('change', render);
-*/
+    _this.controls = new THREE.TrackballControls(_this.camera, el);
+    _this.controls.rotateSpeed = 4.6;
+    _this.controls.zoomSpeed = 1.5;
+    _this.controls.panSpeed = 0.8;
+    _this.controls.dynamicDampingFactor = 0.2;
+    _this.controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
     while (el.hasChildNodes()) {
@@ -172,7 +162,7 @@ Widget.scatter = function(w, h)
         _this.camera.aspect = _this.width / _this.height;
         _this.camera.updateProjectionMatrix();
         _this.renderer.setSize(_this.width, _this.height);
-        controls.handleResize();
+        _this.controls.handleResize();
         _this.animate();
        });
 
@@ -183,7 +173,7 @@ Widget.scatter = function(w, h)
         _this.camera.aspect = _this.width / _this.height;
         _this.camera.updateProjectionMatrix();
         _this.renderer.setSize(_this.width, _this.height);
-        controls.handleResize();
+        _this.controls.handleResize();
         _this.animate();
        });
     }
@@ -507,6 +497,19 @@ Widget.scatter = function(w, h)
       _this.renderer = new THREE.CanvasRenderer();
       _this.renderer.GL = false;
       _this.el.appendChild(_this.renderer.domElement);
+    }
+    if(x.useorbitcontrols)
+    {
+/* *** Alternatively, use OrbitControls. But zoom is not damped and vertical rotation is restricted. */
+      _this.controls = new THREE.StateOrbitControls(_this.camera, _this.el);
+      _this.controls.rotateSpeed = 0.6;
+      _this.controls.zoomSpeed = 1.5;
+      _this.controls.panSpeed = 1;
+      _this.controls.enableZoom = true;
+      _this.controls.enablePan = true;
+      _this.controls.enableDamping = true;
+      _this.controls.dampingFactor = 0.15;
+      _this.controls.addEventListener('change', render);
     }
     var group = new THREE.Object3D();        // contains non-point plot elements (axes, etc.)
     _this.pointgroup = new THREE.Object3D(); // contains plot points
@@ -1162,7 +1165,7 @@ Widget.scatter = function(w, h)
 
   _this.animate = function ()
   {
-    controls.update();
+    _this.controls.update();
     render();
     if(_this.renderer.GL) _this.update();
     if(! _this.idle)  requestAnimationFrame(_this.animate); // (hogs CPU)
@@ -1170,7 +1173,10 @@ Widget.scatter = function(w, h)
 
   function render()
   {
-    if(controls.idle && _this.frame < 0) _this.idle = true; // Conserve CPU by terminating render loop when not needed
+    if(_this.controls.state && _this.controls.state < 0 && _this.frame < 0)
+    {
+      _this.idle = true; // Conserve CPU by terminating render loop when not needed
+    }
     // render scenes
     _this.renderer.clear();
     _this.renderer.render(scene, _this.camera);

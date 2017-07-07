@@ -133,6 +133,9 @@ following special cases:
 Character strings of more than one character are supported--see the examples.
 The \code{@} and {.} option exhibit the best performance, consider using
 one of those to plot large numbers of points.
+
+Set the optional experimental \code{use.orbitcontrols=TRUE} argument to
+use a more CPU-efficient but somewhat less fluid mouse/touch interface.
 }
 
 \section{Plotting lines}{

@@ -12,3 +12,4 @@ dependencies:
       - Projector.js
       - CanvasRenderer.js
       - TrackballControls.js
+      - StateOrbitControls.js

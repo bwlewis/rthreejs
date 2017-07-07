@@ -1,3 +1,7 @@
+/* StateOrbitControls
+ * Modified from the original to expose the state value, used by the
+ * threejs R package to suspend requestAnimationFrame when not needed.
+ */
 /**
  * @author qiao / https://github.com/qiao
  * @author mrdoob / http://mrdoob.com
@@ -13,7 +17,7 @@
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finger swipe
 
-THREE.OrbitControls = function ( object, domElement ) {
+THREE.StateOrbitControls = function ( object, domElement ) {
 
   this.object = object;
 
@@ -107,7 +111,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     scope.update();
 
-    state = STATE.NONE;
+    scope.state = STATE.NONE;
 
   };
 
@@ -135,7 +139,7 @@ THREE.OrbitControls = function ( object, domElement ) {
       // angle from z-axis around y-axis
       spherical.setFromVector3( offset );
 
-      if ( scope.autoRotate && state === STATE.NONE ) {
+      if ( scope.autoRotate && scope.state === STATE.NONE ) {
 
         rotateLeft( getAutoRotationAngle() );
 
@@ -239,7 +243,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
   var STATE = { NONE: - 1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
 
-  var state = STATE.NONE;
+  this.state = STATE.NONE;
 
   var EPS = 0.000001;
 
@@ -660,7 +664,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
       handleMouseDownRotate( event );
 
-      state = STATE.ROTATE;
+      scope.state = STATE.ROTATE;
 
     } else if ( event.button === scope.mouseButtons.ZOOM ) {
 
@@ -668,7 +672,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
       handleMouseDownDolly( event );
 
-      state = STATE.DOLLY;
+      scope.state = STATE.DOLLY;
 
     } else if ( event.button === scope.mouseButtons.PAN ) {
 
@@ -676,11 +680,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
       handleMouseDownPan( event );
 
-      state = STATE.PAN;
+      scope.state = STATE.PAN;
 
     }
 
-    if ( state !== STATE.NONE ) {
+    if ( scope.state !== STATE.NONE ) {
 
       document.addEventListener( 'mousemove', onMouseMove, false );
       document.addEventListener( 'mouseup', onMouseUp, false );
@@ -697,19 +701,19 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     event.preventDefault();
 
-    if ( state === STATE.ROTATE ) {
+    if ( scope.state === STATE.ROTATE ) {
 
       if ( scope.enableRotate === false ) return;
 
       handleMouseMoveRotate( event );
 
-    } else if ( state === STATE.DOLLY ) {
+    } else if ( scope.state === STATE.DOLLY ) {
 
       if ( scope.enableZoom === false ) return;
 
       handleMouseMoveDolly( event );
 
-    } else if ( state === STATE.PAN ) {
+    } else if ( scope.state === STATE.PAN ) {
 
       if ( scope.enablePan === false ) return;
 
@@ -730,13 +734,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     scope.dispatchEvent( endEvent );
 
-    state = STATE.NONE;
+    scope.state = STATE.NONE;
 
   }
 
   function onMouseWheel( event ) {
 
-    if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
+    if ( scope.enabled === false || scope.enableZoom === false || ( scope.state !== STATE.NONE && scope.state !== STATE.ROTATE ) ) return;
 
     event.preventDefault();
     event.stopPropagation();
@@ -768,7 +772,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
         handleTouchStartRotate( event );
 
-        state = STATE.TOUCH_ROTATE;
+        scope.state = STATE.TOUCH_ROTATE;
 
         break;
 
@@ -778,7 +782,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
         handleTouchStartDolly( event );
 
-        state = STATE.TOUCH_DOLLY;
+        scope.state = STATE.TOUCH_DOLLY;
 
         break;
 
@@ -788,17 +792,17 @@ THREE.OrbitControls = function ( object, domElement ) {
 
         handleTouchStartPan( event );
 
-        state = STATE.TOUCH_PAN;
+        scope.state = STATE.TOUCH_PAN;
 
         break;
 
       default:
 
-        state = STATE.NONE;
+        scope.state = STATE.NONE;
 
     }
 
-    if ( state !== STATE.NONE ) {
+    if ( scope.state !== STATE.NONE ) {
 
       scope.dispatchEvent( startEvent );
 
@@ -818,7 +822,7 @@ THREE.OrbitControls = function ( object, domElement ) {
       case 1: // one-fingered touch: rotate
 
         if ( scope.enableRotate === false ) return;
-        if ( state !== STATE.TOUCH_ROTATE ) return; // is this needed?...
+        if ( scope.state !== STATE.TOUCH_ROTATE ) return; // is this needed?...
 
         handleTouchMoveRotate( event );
 
@@ -827,7 +831,7 @@ THREE.OrbitControls = function ( object, domElement ) {
       case 2: // two-fingered touch: dolly
 
         if ( scope.enableZoom === false ) return;
-        if ( state !== STATE.TOUCH_DOLLY ) return; // is this needed?...
+        if ( scope.state !== STATE.TOUCH_DOLLY ) return; // is this needed?...
 
         handleTouchMoveDolly( event );
 
@@ -836,7 +840,7 @@ THREE.OrbitControls = function ( object, domElement ) {
       case 3: // three-fingered touch: pan
 
         if ( scope.enablePan === false ) return;
-        if ( state !== STATE.TOUCH_PAN ) return; // is this needed?...
+        if ( scope.state !== STATE.TOUCH_PAN ) return; // is this needed?...
 
         handleTouchMovePan( event );
 
@@ -844,7 +848,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
       default:
 
-        state = STATE.NONE;
+        scope.state = STATE.NONE;
 
     }
 
@@ -858,7 +862,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     scope.dispatchEvent( endEvent );
 
-    state = STATE.NONE;
+    scope.state = STATE.NONE;
 
   }
 
@@ -887,16 +891,16 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 };
 
-THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
+THREE.StateOrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+THREE.StateOrbitControls.prototype.constructor = THREE.StateOrbitControls;
 
-Object.defineProperties( THREE.OrbitControls.prototype, {
+Object.defineProperties( THREE.StateOrbitControls.prototype, {
 
   center: {
 
     get: function () {
 
-      console.warn( 'THREE.OrbitControls: .center has been renamed to .target' );
+      console.warn( 'THREE.StateOrbitControls: .center has been renamed to .target' );
       return this.target;
 
     }
@@ -909,14 +913,14 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
     get: function () {
 
-      console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
       return ! this.enableZoom;
 
     },
 
     set: function ( value ) {
 
-      console.warn( 'THREE.OrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noZoom has been deprecated. Use .enableZoom instead.' );
       this.enableZoom = ! value;
 
     }
@@ -927,14 +931,14 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
     get: function () {
 
-      console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
       return ! this.enableRotate;
 
     },
 
     set: function ( value ) {
 
-      console.warn( 'THREE.OrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noRotate has been deprecated. Use .enableRotate instead.' );
       this.enableRotate = ! value;
 
     }
@@ -945,14 +949,14 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
     get: function () {
 
-      console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
       return ! this.enablePan;
 
     },
 
     set: function ( value ) {
 
-      console.warn( 'THREE.OrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noPan has been deprecated. Use .enablePan instead.' );
       this.enablePan = ! value;
 
     }
@@ -963,14 +967,14 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
     get: function () {
 
-      console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
       return ! this.enableKeys;
 
     },
 
     set: function ( value ) {
 
-      console.warn( 'THREE.OrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
+      console.warn( 'THREE.StateOrbitControls: .noKeys has been deprecated. Use .enableKeys instead.' );
       this.enableKeys = ! value;
 
     }
@@ -981,14 +985,14 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
     get: function () {
 
-      console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
+      console.warn( 'THREE.StateOrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
       return ! this.enableDamping;
 
     },
 
     set: function ( value ) {
 
-      console.warn( 'THREE.OrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
+      console.warn( 'THREE.StateOrbitControls: .staticMoving has been deprecated. Use .enableDamping instead.' );
       this.enableDamping = ! value;
 
     }
@@ -999,14 +1003,14 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 
     get: function () {
 
-      console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
+      console.warn( 'THREE.StateOrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
       return this.dampingFactor;
 
     },
 
     set: function ( value ) {
 
-      console.warn( 'THREE.OrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
+      console.warn( 'THREE.StateOrbitControls: .dynamicDampingFactor has been renamed. Use .dampingFactor instead.' );
       this.dampingFactor = value;
 
     }

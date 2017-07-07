@@ -24,6 +24,8 @@
 #' If \code{vertex.label}s are specified (see below), moving the mouse pointer over
 #' a point will display the label. Altenatively use \code{vertex.shape} to plot
 #' character names as shown in the examples below.
+#' Set the optional experimental \code{use.orbitcontrols=TRUE} argument to
+#' use a more CPU-efficient but somewhat less fluid mouse/touch interface.
 #'
 #' @section Layout options:
 #' Use the \code{layout} parameter to control the visualization layout by supplying

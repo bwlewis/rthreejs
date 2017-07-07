@@ -91,6 +91,9 @@
 #' The \code{@} and {.} option exhibit the best performance, consider using
 #' one of those to plot large numbers of points.
 #'
+#' Set the optional experimental \code{use.orbitcontrols=TRUE} argument to
+#' use a more CPU-efficient but somewhat less fluid mouse/touch interface.
+#'
 #' @section Plotting lines:
 #' See \code{\link{lines3d}} for an alternative interface.
 #' Lines are optionally drawn between points specified in \code{x, y, z} using
