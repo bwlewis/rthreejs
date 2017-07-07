@@ -42,6 +42,9 @@ new graph animation capabilities.
 
 Performance is generally much improved using extensive buffering and custom
 WebGL shaders where needed. See https://bwlewis.github.io/rthreejs/ego/index.html for an example.
+_Renderings now generally default to a very responsive but CPU-demanding mode._ Set
+the experimental `use.orbitcontrols=TRUE` option for more CPU-efficient and easy on your
+laptop battery renderings.
 
 ## Summary of changes
 
@@ -50,9 +53,10 @@ The `scatterplot3js()` function was substantially improved and updated.
 - The new `pch` option supports many point styles with size control.
 - Interactive rotation and zooming are greatly improved and panning is now supported: press and hold the right mouse button (or touch equivalent) and move the mouse to pan.
 - Mouse over labels are supported in WebGL renderings.
-- The \code{points3d} interface was modified to support pipelining.
-- Lines are supported too, see \code{lines3d}.
+- The `points3d()` interface has changed to support pipelining.
+- Lines are supported too, see `lines3d()`.
 - Support for crosstalk selection (see `demo("crosstalk", package="threejs")`).
+- Set the experimental `use.orbitcontrols=TRUE` option for more CPU-efficient (but less fluid) rendering (good for laptops), also applies to `graphjs()`.
 
 The `graphjs()` function is completely new.
 
