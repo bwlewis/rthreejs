@@ -2,7 +2,7 @@ Package: threejs
 Type: Package
 Title: Interactive 3D Scatter Plots, Networks and Globes
 Description: Create interactive 3D scatter plots, network plots, and
-    globes using the 'three.js' visualization library ("https://threejs.org").
+    globes using the 'three.js' visualization library (<https://threejs.org>).
 Version: 0.3.0
 Date: 2017-06-30
 Authors@R: c(
