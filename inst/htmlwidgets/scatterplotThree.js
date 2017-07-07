@@ -89,7 +89,6 @@ Widget.scatter = function(w, h)
   this.scene = 0;    // current animation scene
   this.init_width = w;
   this.init_height = h;
-HOMER=this;
 
   var ct_sel = new crosstalk.SelectionHandle();
   var ct_filter = new crosstalk.FilterHandle();
