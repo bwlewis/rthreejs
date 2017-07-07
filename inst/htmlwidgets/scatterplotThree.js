@@ -37,8 +37,7 @@ HTMLWidgets.widget(
  * animate()                 internal threejs animation function
  * render()                  internal threejs draw function
  * update()                  internal vertex update function
- * draw_lines(lcol)          internal buffered lines creation function
- * update_lines(lcol)        internal buffered lines update function
+ * draw_lines()              internal buffered lines creation function
  * ...  other miscellaneous internal functions
  *
  * The htmlwidgets interface resides in the init() function.
@@ -326,7 +325,7 @@ Widget.scatter = function(w, h)
 
 
 /* Experimental scene animation transition function. Animate from the
- * current plot state to the new state in options.defer[i].
+ * current plot state to the new state in _this.options.defer[i].
  * TODO Adjust click animation to use this interface and consolidate code.
  */
   _this.transition = function(i)
@@ -391,11 +390,7 @@ Widget.scatter = function(w, h)
 // See the experimental controls here: https://github.com/bwlewis/uiwidgets
       console.log("Warning: dodgy, experimental code. Use at your own risk!");
       var i = parseInt(e.value.object);
-      if(!_this.lasti) _this.options.fastforward = false;
-      else if(i < _this.lasti) _this.options.fastforward = true;
-      else _this.options.fastforward = false;
       _this.transition(i);
-      _this.lasti = i;
       return;
     }
     if(e.value.length == 0)
@@ -419,13 +414,14 @@ Widget.scatter = function(w, h)
         if(_this.pointgroup.children[j].type == "Mesh") // spheres
         {
           k = _this.pointgroup.children[j].index; // the vertex id
-          _this.pointgroup.children[j].material.color = new THREE.Color(_this.datacolor[k]);
+          _this.pointgroup.children[j].material.color = _this.datacolor[k];
         } else if(_this.pointgroup.children[j].type == "Points") // buffered
         {
+          var col;
           for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
           {
             k = _this.pointgroup.children[j].indices[i]; // vertex id
-            var col = new THREE.Color(_this.datacolor[k]);
+            col = _this.datacolor[k];
             _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = col.r;
             _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = col.g;
             _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] = col.b;
@@ -433,7 +429,7 @@ Widget.scatter = function(w, h)
           _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
         }
       }
-      if(_this.options.from) draw_lines(null, null);
+      if(_this.options.from) update_line_colors(_this.scene, null);
       if(_this.options.crosstalk_key)
       {
         ct_sel.set([]);
@@ -491,7 +487,7 @@ Widget.scatter = function(w, h)
         if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
         if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
       }
-      draw_lines(lcol, null);
+      update_line_colors(_this.scene, lcol);
     }
     _this.brushed = true;
   };
@@ -542,12 +538,12 @@ Widget.scatter = function(w, h)
     if(x.color && Array.isArray(x.color[0]))
     {
       // array of colors
-      _this.datacolor = x.color[0].slice();
+      _this.datacolor = x.color[0].slice().map(function(x) {return new THREE.Color(x);});
     } else if(x.color) {
       // only a single color specified
       var XC;
       if(Array.isArray(x.color)) XC = "#" + new THREE.Color(x.color[0]).getHexString();
-      else XC = "#" + new THREE.Color(x.color).getHexString();
+      else XC = new THREE.Color(x.color);
       _this.datacolor = [];
       _this.datacolor.length = x.NROW;
       _this.datacolor.fill(XC);
@@ -555,7 +551,7 @@ Widget.scatter = function(w, h)
       // no color specified, use a default data color cache for each vertex
       _this.datacolor = [];
       _this.datacolor.length = x.NROW;
-      _this.datacolor.fill("#ffa500");
+      _this.datacolor.fill(new THREE.Color("#ffa500"));
     }
 
     // circle sprite for pch='@'
@@ -633,7 +629,7 @@ Widget.scatter = function(w, h)
           sphereGeo.applyMatrix (
             new THREE.Matrix4().makeTranslation(x.vertices[0][i*3], x.vertices[0][i*3 + 1], x.vertices[0][i*3 + 2]));
           // Color
-          col = new THREE.Color(_this.datacolor[i]);
+          col = _this.datacolor[i];
         /** FIXME: figure out how to embed this mesh in the buffer geometry below
          */
           var mesh = new THREE.Mesh(sphereGeo, new THREE.MeshLambertMaterial({color : col}));
@@ -717,7 +713,7 @@ Widget.scatter = function(w, h)
               positions[k * 3 ] = x.vertices[0][i * 3];
               positions[k * 3 + 1 ] = x.vertices[0][i * 3 + 1];
               positions[k * 3 + 2 ] = x.vertices[0][i * 3 + 2];
-              col = new THREE.Color(_this.datacolor[i]);
+              col = _this.datacolor[i];
               colors[k * 4] = col.r;
               colors[k * 4 + 1] = col.g;
               colors[k * 4 + 2] = col.b;
@@ -970,7 +966,7 @@ Widget.scatter = function(w, h)
                                          col1.r + (col2.r - col1.r) * h,
                                          col1.g + (col2.g - col1.g) * h,
                                          col1.b + (col2.b - col1.b) * h);
-            _this.datacolor[k] = "#" + _this.pointgroup.children[j].material.color.getHexString(); // cache vertex color
+            _this.datacolor[k] = _this.pointgroup.children[j].material.color; // cache vertex color
           }
           k++;
         } else if(_this.pointgroup.children[j].type == "Points") // buffered
@@ -1007,9 +1003,9 @@ Widget.scatter = function(w, h)
               {
                 col2 = new THREE.Color(_this.options.color[_this.scene + 1][k]);
               } else col2 = new THREE.Color(_this.options.color[_this.scene + 1]);
-              _this.datacolor[k] = "#" + new THREE.Color(col1.r + (col2.r - col1.r) * h,
+              _this.datacolor[k] = new THREE.Color(col1.r + (col2.r - col1.r) * h,
                                            col1.g + (col2.g - col1.g) * h,
-                                           col1.b + (col2.b - col1.b) * h).getHexString(); // cache color
+                                           col1.b + (col2.b - col1.b) * h); // cache color
               if(_this.options.alpha.length > 1)
               {
                 if(Array.isArray(_this.options.alpha[_this.scene])) a1 = parseFloat(_this.options.alpha[_this.scene][k]);
@@ -1030,11 +1026,10 @@ Widget.scatter = function(w, h)
       }
 // increase frame and scene counters
       _this.frame++;
-      if(_this.options.from && _this.options.fastforward && _this.frame == 1) draw_lines(null, true);
       if(_this.frame > _this.fps)
       {
         _this.scene++;
-        if(_this.options.from && !_this.options.fastforward) draw_lines(null, null);
+        if(_this.options.from)  draw_lines(null, null);
         if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length > _this.scene)
         {
           _this.main = _this.options.main[_this.scene];
@@ -1048,86 +1043,67 @@ Widget.scatter = function(w, h)
           _this.frame = 0; // more scenes to animate, reset frame counter
         }
       }
-      if(_this.options.from) update_lines(null, _this.options.fastforward);
+      var s = _this.scene;
+      if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
+      update_line_positions(s);
     }
   };
 
-  /* create or replace a set of buffered lines */
-  function draw_lines(l, ff)
+  /* create or update a set of buffered lines
+   * l: optional array of line colors
+   * ff: logical, if true then use _this.scene + 1, else use _this.scene (fast forward)
+   */
+  var draw_lines = function(l, ff)
   {
     var s = _this.scene;
     if(ff) s = _this.scene + 1;
     if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
-    var segments = _this.options.from[s].length;
-    var geometry = new THREE.BufferGeometry();
-    var positions = new Float32Array(segments * 6);
-    var colors = new Float32Array(segments * 6);
-    for(var i = 0; i < segments; i++)
+
+    if(! _this.linegroup.children || !_this.linegroup.children[0])
     {
-      var from = _this.options.from[s][i];
-      var to = _this.options.to[s][i];
-      var c1, c2;
-      if(l)
+      // need to create buffers
+      var maxlen = Math.max.apply(Math, _this.options.from.map(function(x) {return x.length;}));
+      if(_this.options.defer && _this.options.defer.from)
       {
-        c1 = new THREE.Color(l[i]);
-        c2 = c1;
-      } else if(_this.options.lcol)
-      {
-        if(Array.isArray(_this.options.lcol))
-        {
-          if(Array.isArray(_this.options.lcol[_this.scene]))
-            c1 = new THREE.Color(_this.options.lcol[_this.scene][i]);
-          else
-            c1 = new THREE.Color(_this.options.lcol[_this.scene]);
-        } else c1 = new THREE.Color(_this.options.lcol);
-        c2 = c1;
-      } else {
-        if(_this.datacolor)
-        { // interpolate line colors
-          c1 = new THREE.Color(_this.datacolor[from]);
-          c2 = new THREE.Color(_this.datacolor[to]);
-        } else {
-          c1 = new THREE.Color(_this.options.color[Math.min(s, _this.options.color.length - 1)]);
-          c2 = c1;
-        }
+        maxlen = Math.max.apply(Math, _this.options.defer.from.map(function(x) {return x.length;}).concat(maxlen));
       }
-      colors[i * 6] = c1.r;
-      colors[i * 6 + 1] = c1.g;
-      colors[i * 6 + 2] = c1.b;
-      colors[i * 6 + 3] = c2.r;
-      colors[i * 6 + 4] = c2.g;
-      colors[i * 6 + 5] = c2.b;
-      positions[i * 6] = _this.data[from * 3];
-      positions[i * 6 + 1] = _this.data[from * 3 + 1];
-      positions[i * 6 + 2] = _this.data[from * 3 + 2];
-      positions[i * 6 + 3] = _this.data[to * 3];
-      positions[i * 6 + 4] = _this.data[to * 3 + 1];
-      positions[i * 6 + 5] = _this.data[to * 3 + 2];
-    }
-    geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.computeBoundingSphere();
-    if(_this.linegroup.children && _this.linegroup.children[0])
-    {
-      _this.linegroup.children[0].geometry = geometry;
-      _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
-      _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
-    } else {
+      var geometry = new THREE.BufferGeometry();
+      var positions = new Float32Array(maxlen * 6);
+      var colors = new Float32Array(maxlen * 6);
+      geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.computeBoundingSphere();
       var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.options.lwd, opacity: _this.options.linealpha, transparent: true});
       var lines = new THREE.LineSegments(geometry, material);
       _this.linegroup.add(lines);
-      _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
-      _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
     }
-  }
+    var segments = _this.options.from[s].length;
+    _this.linegroup.children[0].geometry.setDrawRange(0, 2 * segments);
+    update_line_positions(s);
+    update_line_colors(s, l);
+  };
 
-
-  /* update an existing set of buffered lines */
-  function update_lines(l, ff)
+  /* s: scene index */
+  var update_line_positions = function (s)
   {
-    var s = _this.scene;
-    if(ff) s = _this.scene + 1;
-    if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
+    var segments = _this.options.from[s].length;
+    for(var i = 0; i < segments; i++)
+    {
+      var from = _this.options.from[s][i];
+      var to = _this.options.to[s][i];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6] = _this.data[from * 3];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 1] = _this.data[from * 3 + 1];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 2] = _this.data[from * 3 + 2];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 3] = _this.data[to * 3];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 4] = _this.data[to * 3 + 1];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 5] = _this.data[to * 3 + 2];
+    }
+    _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
+  };
+
+  /* s: scene index, l: optional array of line colors */
+  var update_line_colors = function(s, l)
+  {
     var segments = _this.options.from[s].length;
     for(var i = 0; i < segments; i++)
     {
@@ -1151,8 +1127,8 @@ Widget.scatter = function(w, h)
       } else {
         if(_this.datacolor)
         { // interpolate line colors
-          c1 = new THREE.Color(_this.datacolor[from]);
-          c2 = new THREE.Color(_this.datacolor[to]);
+          c1 = _this.datacolor[from];
+          c2 = _this.datacolor[to];
         } else {
           c1 = new THREE.Color(_this.options.color[Math.min(s, _this.options.color.length - 1)]);
           c2 = c1;
@@ -1164,16 +1140,11 @@ Widget.scatter = function(w, h)
       _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 3] = c2.r;
       _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 4] = c2.g;
       _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 5] = c2.b;
-      _this.linegroup.children[0].geometry.attributes.position.array[i * 6] = _this.data[from * 3];
-      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 1] = _this.data[from * 3 + 1];
-      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 2] = _this.data[from * 3 + 2];
-      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 3] = _this.data[to * 3];
-      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 4] = _this.data[to * 3 + 1];
-      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 5] = _this.data[to * 3 + 2];
     }
-    _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
     _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
-  }
+  };
+
+
 
   function printInfo(text)
   {
