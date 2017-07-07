@@ -915,7 +915,7 @@ Widget.scatter = function(w, h)
  */
     if(x.from && _this.renderer.GL)
     {
-      draw_lines(null, null);
+      draw_lines(null);
     }
     if(x.vertices.length > 1 && _this.fps > 0) _this.frame = 0; // animate
     _this.idle = false;
@@ -1029,7 +1029,7 @@ Widget.scatter = function(w, h)
       if(_this.frame > _this.fps)
       {
         _this.scene++;
-        if(_this.options.from)  draw_lines(null, null);
+        if(_this.options.from)  draw_lines(null);
         if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length > _this.scene)
         {
           _this.main = _this.options.main[_this.scene];
@@ -1051,12 +1051,10 @@ Widget.scatter = function(w, h)
 
   /* create or update a set of buffered lines
    * l: optional array of line colors
-   * ff: logical, if true then use _this.scene + 1, else use _this.scene (fast forward)
    */
-  var draw_lines = function(l, ff)
+  var draw_lines = function(l)
   {
     var s = _this.scene;
-    if(ff) s = _this.scene + 1;
     if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
 
     if(! _this.linegroup.children || !_this.linegroup.children[0])
