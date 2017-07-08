@@ -42,7 +42,7 @@ HTMLWidgets.widget(
  *
  * The htmlwidgets interface resides in the init() function.
  * The user plot interface is in create_plot() with options JavaScript array:
- * [vertices]  an array of vectors, each vector length a multiple of 3 (flattened out coordinates)
+ * [vertices]  an array of vectors, each vector length a multiple of 3 (flattened out coordinates by xyz triples (byrow))
  *             when vertices.length = 1 no animation, otherwise vertices.length = number of scenes
  * [color]     optional array of colors, one for each scene. each element can be scalar or vector
  * [alpha]     optional array of alphas, one for each scene. each element either scalar or vector
@@ -485,6 +485,7 @@ Widget.scatter = function(w, h)
 
   _this.create_plot = function(x)
   {
+HOMER=x;
     if(x.crosstalk_group)
     {
       ct_sel.setGroup(x.crosstalk_group);

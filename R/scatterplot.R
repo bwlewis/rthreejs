@@ -385,6 +385,12 @@ scatterplot3js <- function(
   # (this is not documented yet and may change significantly)
   if (!is.null(options$defer) && options$defer)
   {
+    names(options$vertices) = NULL
+    names(options$color) = NULL
+    names(options$alpha) = NULL
+    names(options$from) = NULL
+    names(options$to) = NULL
+    names(options$main) = NULL
     options$defer <- list(
       vertices=options$vertices,
       color=options$color,
@@ -395,13 +401,13 @@ scatterplot3js <- function(
     )
     options$fpl <- -1
     options$fps <- NULL
-    options$vertices <- options$vertices[1]
-    options$color <- options$color[1]
-    options$alpha <- options$alpha[1]
+    options$vertices <- list(options$vertices[[1]])
+    options$color <- list(options$color[[1]])
+    options$alpha <- list(options$alpha[[1]])
     if(!is.null(options$from))
     {
-      options$from <- options$from[1]
-      options$to <- options$to[1]
+      options$from <- list(options$from[[1]])
+      options$to <- list(options$to[[1]])
     }
   }
 
