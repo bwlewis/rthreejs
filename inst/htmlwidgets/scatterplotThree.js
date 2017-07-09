@@ -380,8 +380,9 @@ Widget.scatter = function(w, h)
 // FIXME HANDLE SPECIAL CONTROL OUTPUT...prefer to use extraInfo object but couldn't get set(a, xtra) to work in crosstalk FIXME
 // See the experimental controls here: https://github.com/bwlewis/uiwidgets
       console.log("Warning: dodgy, experimental code. Use at your own risk!");
+      if(typeof(e.value.object) === undefined) return;
       var i = parseInt(e.value.object);
-      if(!i) return;
+      if(isNaN(i)) return;
       _this.transition(i);
       return;
     }
