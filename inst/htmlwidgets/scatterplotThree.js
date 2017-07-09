@@ -236,11 +236,11 @@ Widget.scatter = function(w, h)
             return I[0].object.geometry.attributes.color.array[x.object.indices[x.index] * 4 + 3] > 0.1;
           }).indexOf(true);
           if(idx < 0) return;
-          i = "" + I[idx].object.indices[I[idx].index];
+          i = I[idx].object.indices[I[idx].index];
         } else
         {
           idx = I[0].object.index;
-          i = "" + idx;
+          i = idx;
         }
         _this.brush(i);
         if(!_this.options.click) return;
