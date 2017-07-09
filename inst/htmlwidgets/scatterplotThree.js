@@ -321,6 +321,7 @@ Widget.scatter = function(w, h)
   {
     if(!_this.options.defer) return;
     if(i >= _this.options.defer.vertices.length) return;
+    _this.brush(null);
     var N = _this.options.vertices.length - 1;
     _this.options.vertices = [_this.options.vertices[N], _this.options.defer.vertices[i]]; // new animation sequence
     if(_this.options.defer.alpha.length > 1)
