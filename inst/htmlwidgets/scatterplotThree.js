@@ -389,10 +389,12 @@ Widget.scatter = function(w, h)
       _this.brush(null);
       return;
     }
-    _this.brush(e.value.map(function(i){return "" + _this.options.crosstalk_key.indexOf(i)}));
+    // Map crosstalk keys (strings) to integer indices in the key vector
+    _this.brush(e.value.map(function(i){return _this.options.crosstalk_key.indexOf(i)}));
   });
 
 /* TODO clean this up; consolidate vertex and line color setting code
+ * vertices a vector of int32 vertex ids or null to clear the brush
  */
   _this.brush = function(vertices)
   {
@@ -432,7 +434,7 @@ Widget.scatter = function(w, h)
     var on = new THREE.Color("red");
     if(_this.options.highlight) on = new THREE.Color(_this.options.highlight);
     if(_this.options.lowlight) off = new THREE.Color(_this.options.lowlight);
-    if(! Array.isArray(vertices)) vertices = [vertices]; // XXX why does this become a string?
+    if(! Array.isArray(vertices)) vertices = [vertices];
     if(_this.options.crosstalk_key)
     {
       ct_sel.set(vertices.map(function(i) {return _this.options.crosstalk_key[i];}));
@@ -450,7 +452,7 @@ Widget.scatter = function(w, h)
         for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
         {
           k = _this.pointgroup.children[j].indices[i]; // vertex id
-          if(vertices.indexOf(k + "") >= 0)
+          if(vertices.indexOf(k) >= 0)
           {
             _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = on.r;
             _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = on.g;
@@ -475,8 +477,8 @@ Widget.scatter = function(w, h)
       lcol.fill(off);
       for(var j = 0; j < lcol.length; j++)
       {
-        if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = on;
-        if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = on;
+        if(vertices.indexOf(_this.options.from[s][j] ) >= 0 ||
+           vertices.indexOf(_this.options.to[s][j] ) >= 0) lcol[j] = on;
       }
       update_line_colors(_this.scene, lcol);
     }
