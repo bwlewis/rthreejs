@@ -381,6 +381,7 @@ Widget.scatter = function(w, h)
 // See the experimental controls here: https://github.com/bwlewis/uiwidgets
       console.log("Warning: dodgy, experimental code. Use at your own risk!");
       var i = parseInt(e.value.object);
+      if(!i) return;
       _this.transition(i);
       return;
     }
