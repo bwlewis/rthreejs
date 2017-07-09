@@ -1093,11 +1093,12 @@ Widget.scatter = function(w, h)
   /* s: scene index */
   var update_line_positions = function (s)
   {
-    var segments = _this.options.from[s].length;
+    var si = Math.min(s, _this.options.from.length - 1);
+    var segments = _this.options.from[si].length;
     for(var i = 0; i < segments; i++)
     {
-      var from = _this.options.from[s][i];
-      var to = _this.options.to[s][i];
+      var from = _this.options.from[si][i];
+      var to = _this.options.to[si][i];
       _this.linegroup.children[0].geometry.attributes.position.array[i * 6] = _this.data[from * 3];
       _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 1] = _this.data[from * 3 + 1];
       _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 2] = _this.data[from * 3 + 2];
@@ -1111,11 +1112,12 @@ Widget.scatter = function(w, h)
   /* s: scene index, l: optional array of line colors */
   var update_line_colors = function(s, l)
   {
-    var segments = _this.options.from[s].length;
+    var si = Math.min(s, _this.options.from.length - 1);
+    var segments = _this.options.from[si].length;
     for(var i = 0; i < segments; i++)
     {
-      var from = _this.options.from[s][i];
-      var to = _this.options.to[s][i];
+      var from = _this.options.from[si][i];
+      var to = _this.options.to[si][i];
       var c1, c2;
       if(l)
       {
@@ -1125,10 +1127,10 @@ Widget.scatter = function(w, h)
       {
         if(Array.isArray(_this.options.lcol))
         {
-          if(Array.isArray(_this.options.lcol[_this.scene]))
-            c1 = new THREE.Color(_this.options.lcol[_this.scene][i]);
+          if(Array.isArray(_this.options.lcol[s]))
+            c1 = new THREE.Color(_this.options.lcol[s][i]);
           else
-            c1 = new THREE.Color(_this.options.lcol[_this.scene]);
+            c1 = new THREE.Color(_this.options.lcol[s]);
         } else c1 = new THREE.Color(_this.options.lcol);
         c2 = c1;
       } else {
