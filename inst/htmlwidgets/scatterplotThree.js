@@ -472,11 +472,11 @@ Widget.scatter = function(w, h)
       if(_this.options.from.length <= s)  s = 0;
       var lcol = [];
       lcol.length = _this.options.from[s].length;
-      lcol.fill("#" + off.getHexString());
+      lcol.fill(off);
       for(var j = 0; j < lcol.length; j++)
       {
-        if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
-        if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = "#" + on.getHexString();
+        if(vertices.indexOf(_this.options.from[s][j] + "") >= 0) lcol[j] = on;
+        if(vertices.indexOf(_this.options.to[s][j] + "") >= 0) lcol[j] = on;
       }
       update_line_colors(_this.scene, lcol);
     }
@@ -485,7 +485,6 @@ Widget.scatter = function(w, h)
 
   _this.create_plot = function(x)
   {
-HOMER=x;
     if(x.crosstalk_group)
     {
       ct_sel.setGroup(x.crosstalk_group);
@@ -1118,7 +1117,7 @@ HOMER=x;
       var c1, c2;
       if(l)
       {
-        c1 = new THREE.Color(l[i]);
+        c1 = l[i];
         c2 = c1;
       } else if(_this.options.lcol)
       {
