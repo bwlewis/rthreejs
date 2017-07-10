@@ -373,20 +373,20 @@ Widget.scatter = function(w, h)
     }
   };
 
+// Use (abuse) filter handle to control animation frame
+  ct_filter.on("change", function(e)
+  {
+    var i;
+    if(Array.isArray(e.value) && e.value.length > 0) i = parseInt(e.value[0]);
+    else i = parseInt(e.value);
+    if(isNaN(i)) return;
+    _this.transition(i);
+  });
+
+// The crosstalk select handle operates normally
   ct_sel.on("change", function(e)
   {
     if(e.sender === ct_sel) return;
-    if(!Array.isArray(e.value))
-    {
-// FIXME HANDLE SPECIAL CONTROL OUTPUT...prefer to use extraInfo object but couldn't get set(a, xtra) to work in crosstalk FIXME
-// See the experimental controls here: https://github.com/bwlewis/uiwidgets
-      console.log("Warning: dodgy, experimental code. Use at your own risk!");
-      if(typeof(e.value.object) === undefined) return;
-      var i = parseInt(e.value.object);
-      if(isNaN(i)) return;
-      _this.transition(i);
-      return;
-    }
     if(e.value.length == 0)
     {
       _this.brush(null);

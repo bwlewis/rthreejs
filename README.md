@@ -54,7 +54,7 @@ The `scatterplot3js()` function was substantially improved and updated.
 - Mouse over labels are supported in WebGL renderings.
 - The `points3d()` interface has changed to support pipelining.
 - Lines are supported too, see `lines3d()`.
-- Support for crosstalk selection (see `demo("crosstalk", package="threejs")`).
+- Support for crosstalk selection handles (see `demo("crosstalk", package="threejs")`).
 - Set the experimental `use.orbitcontrols=TRUE` option for more CPU-efficient (but less fluid) rendering (good for laptops), also applies to `graphjs()`.
 
 The `graphjs()` function is completely new.
@@ -66,7 +66,7 @@ The `graphjs()` function is completely new.
 - Graph animation is supported, see the examples.
 - Interactive (click-able) graph animation is supported, see `demo(package="threejs")` for examples.
 - Limited brushing is available to highlight portions of the graph, see the `brush=TRUE` option.
-- Support for crosstalk selection.
+- Support for crosstalk selection handles.
 
 ## Known issues
 
@@ -79,6 +79,8 @@ The `graphjs()` function is completely new.
   WebGL code and no longer works. We have temporarily disabled Canvas
   rendering with an error message. See https://github.com/bwlewis/rthreejs/issues/67
   for details.
+- Crosstalk filter handles are used in a non-standard and experimental way to
+  control graph animation. Don't rely on this experimental feature.
 
 ## Install
 
