@@ -166,8 +166,5 @@ The three.js project \url{http://threejs.org}.
 
 An excellent overview of available map coordinate reference systems (PDF):
 \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
-
-Includes images adapted from the NASA Earth Observatory and NASA Jet Propulsion Laboratory.
-World image link: \url{https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg}.
 }
 
