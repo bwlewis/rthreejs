@@ -5,7 +5,6 @@
 #' @name threejs-package
 #' @references
 #' \url{http://threejs.org}
-#' \url{http://www.html5rocks.com/en/tutorials/three/intro/}
 #' @aliases threejs
 #' @examples
 #' \dontrun{
