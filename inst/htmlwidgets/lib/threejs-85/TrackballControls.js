@@ -35,6 +35,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
 
+        this.state = STATE.NONE;
+
 	// internals
 
 	this.target = new THREE.Vector3();
@@ -295,6 +297,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.update = function () {
 
+                _this.state = 1;
+
 		_eye.subVectors( _this.object.position, _this.target );
 
 		if ( ! _this.noRotate ) {
@@ -327,7 +331,11 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 			lastPosition.copy( _this.object.position );
 
-		}
+		} else {
+
+                        _this.state = -1;
+
+                }
 
 	};
 
