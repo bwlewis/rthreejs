@@ -39,11 +39,9 @@ See https://bwlewis.github.io/rthreejs/animation/animation.html
 and https://bwlewis.github.io/rthreejs/advanced/advanced.html for short tutorials on the
 new graph animation capabilities.
 
-Performance is generally much improved using extensive buffering and custom
-WebGL shaders where needed. See https://bwlewis.github.io/rthreejs/ego/index.html for an example.
-_Renderings now generally default to a very responsive but CPU-demanding mode._ Set
-the experimental `use.orbitcontrols=TRUE` option for more CPU-efficient and easy on your
-laptop battery renderings.
+Performance of `graphjs()` is generally much improved using extensive buffering
+and custom WebGL shaders where needed. See
+https://bwlewis.github.io/rthreejs/ego/index.html for an example.
 
 ## Summary of changes
 
