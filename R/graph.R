@@ -210,13 +210,13 @@ graphjs <- function(g, layout,
     warn_upgrade <- TRUE
     if(! missing(g) && "color" %in% names(g)) edge.color <- g$color
     g <- igraph::graph_from_data_frame(edges[, 1:2])
-    V(g)$color <- "orange"
+    igraph::V(g)$color <- "orange"
   }
   if(! is.null(nodes))
   {
     warn_upgrade <- TRUE
     nodes <- nodes[order(nodes$id), ]
-    V(g)$name <- nodes$label
+    igraph::V(g)$name <- nodes$label
     vertex.label <- nodes$label
     vertex.size <- nodes$size
     vertex.color <- nodes$color
