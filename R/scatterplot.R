@@ -14,9 +14,11 @@
 #' @param height The container div height.
 #' @param axis A logical value that when \code{TRUE} indicates that the
 #' axes will be displayed.
-#' @param num.ticks A three-element vector with the suggested number of
-#' ticks to display per axis. Set to NULL to not display ticks. The number
-#' of ticks may be adjusted by the program.
+#' @param num.ticks A three-element or one-element vector with the suggested number of
+#' ticks to display per axis. If a one-element vector, this number of ticks will be used
+#' for the axis with the smallest \code{axis.scale}, and the number of ticks on the remaining 
+#' axes will be increased proportionally to the \code{axis.scale} values. Set to NULL to not display 
+#' ticks. The number of ticks may be adjusted by the program.
 #' @param x.ticklabs A vector of tick labels of length \code{num.ticks[1]}, or
 #' \code{NULL} to show numeric labels.
 #' @param y.ticklabs A vector of tick labels of length \code{num.ticks[2]}, or
@@ -46,12 +48,21 @@
 #' @param ylim Optional two-element vector of y-axis limits. Default auto-scales to data.
 #' @param zlim Optional two-element vector of z-axis limits. Default auto-scales to data.
 #' @param pch Optional point glyphs, see notes.
+#' @param axis.scale Three-element vector to scale each axis as displayed on the plot,
+#' after first scaling them all to a unit length. Default \code{c(1,1,1)} thus results
+#' in the axes of equal length. If \code{NA}, the displayed axes will be scaled to the
+#' ratios determined from \code{c(xlim,ylim,zlim)}.
 #' @param ... Additional options (see note).
 #'
 #' @return
 #' An htmlwidget object that is displayed using the object's show or print method.
 #' (If you don't see your widget plot, try printing it with the \code{print} function.)
 #'
+#' @section Scaling the axes:
+#' With the default values, the displayed axes are scaled to equal one-unit length. If
+#' you instead need to maintain the relative distances between points in the original data, 
+#' and the same distance between the tick labels, pass \code{num.ticks=6} (or any other single
+#' number) and \code{axis.scale=NA}
 #' @section Interacting with the plot:
 #' Press and hold the left mouse button (or touch or trackpad equivalent) and move
 #' the mouse to rotate the plot. Press and hold the right mouse button (or touch
@@ -213,7 +224,9 @@ scatterplot3js <- function(
   signif = 8,
   bg = "#ffffff",
   cex.symbols = 1,
-  xlim, ylim, zlim, pch="@", ...)
+  xlim, ylim, zlim,
+  axis.scale = c(1,1,1),
+  pch="@", ...)
 {
   # validate input
   if (!missing(y) && !missing(z)) {
@@ -258,7 +271,7 @@ scatterplot3js <- function(
 
   # javascript does not like dots in names
   names(options) <- gsub("\\.", "", names(options))
-
+  
   if (!is.null(options$highlight)) options$highlight <- gcol(options$highlight)$color
   if (!is.null(options$lowlight)) options$lowlight <- gcol(options$lowlight)$color
 
@@ -271,8 +284,7 @@ scatterplot3js <- function(
   # Avoid asJson named vector warning
   colnames(x[[1]]) <- NULL
 
-  # The Javascript code assumes a coordinate system in the unit box.  Scale x
-  # to fit in there.
+  # Scale x to the output axis.scale ratio.
   n <- NROW
   mn <- Reduce(pmin, lapply(x, function(y) apply(y[, 1:3, drop=FALSE], 2, min)))
   mx <- Reduce(pmax, lapply(x, function(y) apply(y[, 1:3, drop=FALSE], 2, max)))
@@ -288,20 +300,32 @@ scatterplot3js <- function(
     mn[2] <- zlim[1]
     mx[2] <- zlim[2]
   }
-  x <- lapply(x, function(x) (x[, 1:3, drop=FALSE] - rep(mn, each = n)) / (rep(mx - mn, each = n)))
+  if(any(is.na(axis.scale))) {
+    axis.scale <- mx - mn
+  } else {
+    if(length(axis.scale)!=3) {
+      stop("axis.scale must be a vector of length three")
+    }
+    #reorder like the x
+    axis.scale <- axis.scale[c(1,3,2)]
+  }
+  #scale axis.scale so that the min value == 1; code below depends on it
+  axis.scale <- axis.scale / min(axis.scale)
+
+  x <- lapply(x, function(x) ((x[, 1:3, drop=FALSE] - rep(mn, each = n)) / rep((mx - mn)/axis.scale, each = n)))
 
   if (flip.y)
   {
     x <- lapply(x, function(y)
       {
-        y[, 3] <- 1 - y[, 3]
+        y[, 3] <- axis.scale[3] - y[, 3]
         y
       })
   }
 
   if ("center" %in% names(options) && options$center) # not yet documented, useful for graph
   {
-    x <- lapply(x, function(y) 2 * (y - 0.5))
+    x <- lapply(x, function(y) 2 * (y - axis.scale/2))
 # FIXME adjust scale/tick marks
   }
   if (!("linealpha" %in% names(options))) options$linealpha <- 1
@@ -314,15 +338,22 @@ scatterplot3js <- function(
   # Ticks
   if (!is.null(num.ticks))
   {
-    if (length(num.ticks) != 3) stop("num.ticks must have length 3")
-    num.ticks <- pmax(1, num.ticks[c(1, 3, 2)])
+    if (length(num.ticks) != 3) {
+      if(length(num.ticks) != 1) {
+        stop("num.ticks must have length 3")
+      }
+      num.ticks <- round(max(1,num.ticks) * axis.scale)
+    }
+    else {
+      num.ticks <- pmax(1, num.ticks[c(1, 3, 2)])
+    }
 
     t1 <- seq(from=mn[1], to=mx[1], length.out=num.ticks[1])
-    p1 <- (t1 - mn[1]) / (mx[1] - mn[1])
+    p1 <- (t1 - mn[1]) / (mx[1] - mn[1]) * axis.scale[1]
     t2 <- seq(from=mn[2], to=mx[2], length.out=num.ticks[2])
-    p2 <- (t2 - mn[2]) / (mx[2] - mn[2])
+    p2 <- (t2 - mn[2]) / (mx[2] - mn[2]) * axis.scale[2]
     t3 <- seq(from=mn[3], to=mx[3], length.out=num.ticks[3])
-    p3 <- (t3 - mn[3]) / (mx[3] - mn[3])
+    p3 <- (t3 - mn[3]) / (mx[3] - mn[3]) * axis.scale[3]
     if (flip.y) t3 <- t3[length(t3):1]
 
     pfmt <- function(x, d=2)
@@ -346,7 +377,10 @@ scatterplot3js <- function(
     options$ytick <- p2
     options$ztick <- p3
   }
-
+  
+  names(axis.scale) <- NULL
+  options$axislength <- axis.scale
+  
   # lines
   if ("from" %in% names(options))
   {
@@ -518,7 +552,8 @@ points3d <- function(s, x, y, z, color="orange", pch="@", size=1, labels="")
   if (is.null(center)) center <- FALSE
   args <- list(x=x, center=center, flip.y=options$flipy, options=TRUE, axis=options$axis,
                color=color, num.ticks=options$numticks, x.ticklabs=options$xticklabs,
-               y.ticklabs=options$yticklabs, z.ticklabs=options$zticklabs)
+               y.ticklabs=options$yticklabs, z.ticklabs=options$zticklabs,
+               axis.scale=options$axisscale)
   if (!is.null(options$xlim) || !is.symbol(options$xlim)) args$xlim <- options$xlim
   if (!is.null(options$ylim) || !is.symbol(options$ylim)) args$ylim <- options$ylim
   if (!is.null(options$zlim) || !is.symbol(options$zlim)) args$zlim <- options$zlim

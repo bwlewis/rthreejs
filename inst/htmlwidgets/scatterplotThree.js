@@ -73,6 +73,7 @@ HTMLWidgets.widget(
  * zlim
  * ztick
  * zticklab
+ * axislength  length of each axis (float[3])
  * top         optional infobox top position (int)
  * left        optional infobox left position (int)
  * fontmain    optional infobox css font
@@ -128,6 +129,7 @@ Widget.scatter = function(w, h)
 
     if(height > 0) _this.camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
     else _this.camera = new THREE.PerspectiveCamera(40, 1, 1e-5, 100);
+
     _this.camera.position.z = 2.0;
     _this.camera.position.x = 2.5;
     _this.camera.position.y = 1.2;
@@ -612,10 +614,10 @@ Widget.scatter = function(w, h)
       // lights
       /* FIXME add user-defined lights */
       light = new THREE.DirectionalLight(0xffffff);
-      light.position.set(1, 1, 1);
+      light.position.set(x.axislength[0],x.axislength[1],x.axislength[3]);
       scene.add(light);
       light = new THREE.DirectionalLight(0x002255);
-      light.position.set(-1, -1, -1);
+      light.position.set(-x.axislength[0], -x.axislength[1], -x.axislength[2]);
       scene.add(light);
       light = new THREE.AmbientLight(0x444444);
       scene.add(light );
@@ -858,9 +860,9 @@ Widget.scatter = function(w, h)
       var xAxisGeo = new THREE.Geometry();
       var yAxisGeo = new THREE.Geometry();
       var zAxisGeo = new THREE.Geometry();
-      xAxisGeo.vertices.push(v(0, 0, 0), v(1, 0, 0));
-      yAxisGeo.vertices.push(v(0, 0, 0), v(0, 1, 0));
-      zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, 1));
+      xAxisGeo.vertices.push(v(0, 0, 0), v(x.axislength[0], 0, 0));
+      yAxisGeo.vertices.push(v(0, 0, 0), v(0, x.axislength[1], 0));
+      zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, x.axislength[2]));
       var xAxis = new THREE.Line(xAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
       var yAxis = new THREE.Line(yAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
       var zAxis = new THREE.Line(zAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
@@ -872,9 +874,9 @@ Widget.scatter = function(w, h)
       group.add(zAxis);
       if(x.axisLabels)
       {
-        addText(group, x.axisLabels[0], cexlab, 1.1, 0, 0, axisColor)
-        addText(group, x.axisLabels[1], cexlab, 0, 1.1, 0, axisColor)
-        addText(group, x.axisLabels[2], cexlab, 0, 0, 1.1, axisColor)
+        addText(group, x.axisLabels[0], cexlab, x.axislength[0] + .1, 0, 0, axisColor)
+        addText(group, x.axisLabels[1], cexlab, 0, x.axislength[1] + .1, 0, axisColor)
+        addText(group, x.axisLabels[2], cexlab, 0, 0, x.axislength[2] + .1, axisColor)
       }
 // Ticks and tick labels
       function tick(length, thickness, axis, ticks, ticklabels)
@@ -901,23 +903,30 @@ Widget.scatter = function(w, h)
     }
 
 // Grid
-    if(x.grid && x.xtick && x.ztick && x.xtick.length == x.ztick.length)
-    {
-      for(var j=1; j < x.xtick.length; j++)
+    function grid(ticks,axis,axislength) {
+      for(var j=1; j < ticks.length; j++)
       {
         var gridline = new THREE.Geometry();
-        gridline.vertices.push(v(x.xtick[j], 0, 0), v(x.xtick[j], 0, 1));
+        if(axis==0) {
+          gridline.vertices.push(v(ticks[j], 0, 0), v(ticks[j], 0, axislength[2]));
+        }
+        else if(axis==2) {
+          gridline.vertices.push(v(0,0,ticks[j]), v(axislength[0],0,ticks[j]));
+        }
         var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
         gl.type = THREE.Lines;
         group.add(gl);
-        gridline = new THREE.Geometry();
-        gridline.vertices.push(v(0, 0, x.ztick[j]), v(1, 0, x.ztick[j]));
-        gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
-        gl.type=THREE.Lines;
-        group.add(gl);
-      }
+      }      
     }
-
+    if(x.grid && x.xtick)
+    {
+      grid(x.xtick,0,x.axislength);
+    }
+    if(x.grid && x.ztick)
+    {
+      grid(x.ztick,2,x.axislength);
+    }
+    
 // Lines
 /* Note that variable line widths are not directly supported by buffered geometry, see for instance:
  * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
