@@ -874,9 +874,10 @@ Widget.scatter = function(w, h)
       group.add(zAxis);
       if(x.axisLabels)
       {
-        addText(group, x.axisLabels[0], cexlab, x.axislength[0] + .1, 0, 0, axisColor)
+        var dropOff = -0.08;
+        addText(group, x.axisLabels[0], cexlab, x.axislength[0] + .1, dropOff, dropOff, axisColor)
         addText(group, x.axisLabels[1], cexlab, 0, x.axislength[1] + .1, 0, axisColor)
-        addText(group, x.axisLabels[2], cexlab, 0, 0, x.axislength[2] + .1, axisColor)
+        addText(group, x.axisLabels[2], cexlab, dropOff, dropOff, x.axislength[2] + .1, axisColor)
       }
 // Ticks and tick labels
       function tick(length, thickness, axis, ticks, ticklabels)
