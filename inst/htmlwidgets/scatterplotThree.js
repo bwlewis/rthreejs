@@ -175,6 +175,19 @@ Widget.scatter = function(w, h)
         _this.controls.handleResize();
         _this.animate();
        });
+
+      // ...and the same for bootstrap tabs
+      $('.nav-tabs a').on('shown.bs.tab', function(event){
+        if (event.target.hash == '#'+$(el).closest('.tab-pane')[0].id) {
+          _this.width = _this.el.offsetWidth;
+          _this.height = _this.el.offsetHeight;
+          _this.camera.aspect = _this.width / _this.height;
+          _this.camera.updateProjectionMatrix();
+          _this.renderer.setSize(_this.width, _this.height);
+          _this.controls.handleResize();
+          _this.animate();
+        }
+       });
     }
 
     el.onmousemove = function(ev)
