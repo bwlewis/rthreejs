@@ -30,7 +30,11 @@ HTMLWidgets.widget(
     stuff.renderer.setSize( width, height );
     stuff.width = width;
     stuff.height = height;
-//    stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(stuff.camera.fov,  stuff.renderer.domElement.width/stuff.renderer.domElement.height, stuff.camera.near, stuff.camera.far); // XXX FIX ME
+    var ymax = stuff.camera.near * Math.tan((Math.PI / 180) * stuff.camera.fov * 0.5);
+    var ymin = - ymax;
+    var xmin = ymin * stuff.camera.aspect;
+    var xmax = ymax * stuff.camera.aspect;
+    stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(xmin, xmax, ymax, ymin, stuff.camera.near, stuff.camera.far);
     stuff.camera.lookAt(stuff.scene.position);
     stuff.renderer.render( stuff.scene, stuff.camera );
   },
@@ -273,7 +277,11 @@ HTMLWidgets.widget(
       if(GL) stuff.camera.fov -= event.wheelDeltaY * 0.02;
       else stuff.camera.fov -= event.wheelDeltaY * 0.0075;
       stuff.camera.fov = Math.max( Math.min( stuff.camera.fov, fovMAX ), fovMIN );
-//      stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(stuff.camera.fov,  stuff.renderer.domElement.width/stuff.renderer.domElement.height, stuff.camera.near, stuff.camera.far); // XXX FIX ME
+      var ymax = stuff.camera.near * Math.tan((Math.PI / 180) * stuff.camera.fov * 0.5);
+      var ymin = - ymax;
+      var xmin = ymin * stuff.camera.aspect;
+      var xmax = ymax * stuff.camera.aspect;
+      stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(xmin, xmax, ymax, ymin, stuff.camera.near, stuff.camera.far);
       render();
     }
     el.onmousewheel = function(ev) {ev.preventDefault();};
