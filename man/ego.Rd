@@ -21,4 +21,3 @@ A facebook social network subgraph obtained from the Stanford SNAP repository.
 J. McAuley and J. Leskovec. Learning to Discover Social Circles in Ego Networks. NIPS, 2012.
 }
 \keyword{datasets}
-

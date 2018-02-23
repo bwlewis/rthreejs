@@ -16,4 +16,3 @@ data(flights)
 Global flight example data from Callum Prentice.
 }
 \keyword{datasets}
-

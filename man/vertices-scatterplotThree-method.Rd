@@ -16,4 +16,3 @@ Extract a matrix of vertex coordinates from a threejs widget
 \seealso{
 points3d
 }
-

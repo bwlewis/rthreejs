@@ -153,6 +153,7 @@ Enable crosstalk by supplying the optional agrument \code{crosstalk=df}, where \
 crosstalk-SharedData data.frame-like object with the same number of rows as graph vertices
 (see the examples).
 }
+
 \examples{
 set.seed(1)
 g <- sample_islands(3, 10, 5/10, 1)
@@ -216,4 +217,3 @@ The three.js project \url{http://threejs.org}.
 \seealso{
 \code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 }
-
