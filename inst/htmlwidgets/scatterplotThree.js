@@ -551,7 +551,7 @@ Widget.scatter = function(w, h)
     } else if(x.color) {
       // only a single color specified
       var XC;
-      if(Array.isArray(x.color)) XC = "#" + new THREE.Color(x.color[0]).getHexString();
+      if(Array.isArray(x.color)) XC = new THREE.Color("#" + new THREE.Color(x.color[0]).getHexString());
       else XC = new THREE.Color(x.color);
       _this.datacolor = [];
       _this.datacolor.length = x.NROW;
