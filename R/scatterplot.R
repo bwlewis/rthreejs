@@ -598,8 +598,10 @@ lines3d <- function(s, from, to, lwd=1, alpha=1, color)
     options$to <- to
     if (!missing(color)) options$lcol <- lcol
   } else {
-    options$from[[N]] <- unlist(from)
-    options$to[[N]] <- unlist(to)
+    if(is.list(options$from[[N]])) options$from[[N]] <- c(unlist(options$from[[N]]), unlist(from))
+    else options$from[[N]] <- c(options$from[[N]], unlist(from))
+    if(is.list(options$to[[N]])) options$to[[N]] <- c(unlist(options$to[[N]]), unlist(to))
+    else options$to[[N]] <- c(options$to[[N]], unlist(to))
     if (!missing(color)) options$lcol[[N]] <- unlist(lcol)
   }
   options$lwd <- lwd
