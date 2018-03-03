@@ -108,8 +108,9 @@ frequent_flights <- flights[idx, ]
 ll <- unique(frequent_flights[,3:4])
 # Plot frequent destinations as bars, and the flights to and from
 # them as arcs. Adjust arc width and color by frequency.
-globejs(lat=ll[,1], long=ll[,2], arcs=frequent_flights, bodycolor="#aaaaff",
-        arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
+globejs(lat=ll[, 1], long=ll[, 2], arcs=frequent_flights,
+        bodycolor="#aaaaff", arcsHeight=0.3, arcsLwd=2,
+        arcsColor="#ffff00", arcsOpacity=0.15,
         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
 
 \dontrun{

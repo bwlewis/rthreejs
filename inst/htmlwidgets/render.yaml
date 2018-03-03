@@ -1,0 +1,15 @@
+dependencies:
+  - name: jquery
+    version: 1.12.4
+    src: "htmlwidgets/lib/jquery"
+    script: jquery.min.js
+  - name: threejs
+    version: 85
+    src: "htmlwidgets/lib/threejs-85"
+    script:
+      - three.min.js
+      - Detector.js
+      - Projector.js
+      - CanvasRenderer.js
+      - TrackballControls.js
+      - StateOrbitControls.js

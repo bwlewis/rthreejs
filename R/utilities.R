@@ -122,3 +122,11 @@ indexline <- function(x) # zero index and make sure each element is an array in 
   if (length(a) == 1) a <- list(a)
   a
 }
+
+# internal function to convert x to a JSON dataURI, where x is either character or raw
+# JSON text or a connection or a non-compressed file.
+jsuri <- function(x)
+{
+  if(is.character(x) && file.exists(x)) return(dataURI(file=x, encoding=NULL, mime="application/javascript"))
+  dataURI(data=x, encoding=NULL, mime="application/javascript")
+}
