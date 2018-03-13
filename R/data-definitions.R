@@ -52,8 +52,7 @@ NULL
 #'
 #' @docType data
 #' @name pump
-#' @keywords threejs animation
+#' @keywords threejs animation datasets
 #' @source The threejs.org web site \url{https://threejs.org/examples/#webgl_animation_keyframes_json}
-#' @usage threejs:::render(gzfile(system.file("extdata/pump.json.gz", package="threejs")))
 #' @format A compressed JSON file.
 NULL

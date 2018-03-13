@@ -8,11 +8,9 @@
 \source{
 The threejs.org web site \url{https://threejs.org/examples/#webgl_animation_keyframes_json}
 }
-\usage{
-threejs:::render(gzfile(system.file("extdata/pump.json.gz", package="threejs")))
-}
 \description{
 A keyframe animation example from the threejs.org website.
 }
 \keyword{animation}
+\keyword{datasets}
 \keyword{threejs}

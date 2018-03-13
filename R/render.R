@@ -7,8 +7,8 @@ setClass("pointLight", representation(color="character", position="numeric"))
 #' threejs THREE.animationMixer function.
 #'
 #' @param scene A JSON-encoded threejs scene or object that can be added to a threejs scene (for instance, a group).
-#' @param width The container div width.
 #' @param height The container div height.
+#' @param width The container div width.
 #' @param bg The container background color.
 #' @param camera_position A three-element coordinate position vector of the threejs perspective camera.
 #' @param camera_lookat A three-element coordinate position vector that the camera looks at.
