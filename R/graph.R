@@ -123,7 +123,7 @@
 #' @examples
 #' set.seed(1)
 #' g <- sample_islands(3, 10, 5/10, 1)
-#' i <- cluster_optimal(g)
+#' i <- cluster_louvain(g)
 #' (graphjs(g, vertex.color=c("orange", "green", "blue")[i$membership], vertex.shape="sphere"))
 #'
 #' # Les Miserables Character Co-appearance Data
