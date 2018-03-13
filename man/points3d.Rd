@@ -20,8 +20,7 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 \code{x} is a matrix.}
 
 \item{color}{Either a single hex or named color name (all points same color),
-or a vector of  hex or named color names as long as the number of data
-points to plot.}
+or a vector of  hex or named color names as long as the number of points in \code{x}.}
 
 \item{pch}{Optional point glyphs or text strings, see \code{\link{scatterplot3js}}.}
 

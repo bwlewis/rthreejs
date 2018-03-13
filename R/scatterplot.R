@@ -487,8 +487,7 @@ setMethod("vertices", signature(...="scatterplotThree"),
 #' @param z (Optional) vector of z-coordinate values, not required if
 #' \code{x} is a matrix.
 #' @param color Either a single hex or named color name (all points same color),
-#' or a vector of  hex or named color names as long as the number of data
-#' points to plot.
+#' or a vector of  hex or named color names as long as the number of points in \code{x}.
 #' @param pch Optional point glyphs or text strings, see \code{\link{scatterplot3js}}.
 #' @param size The plot point radius, either as a single number or a
 #' vector of sizes of length \code{nrow(x)}.
@@ -618,26 +617,30 @@ lines3d <- function(s, from, to, lwd=1, alpha=1, color)
 {
   stopifnot("scatterplotThree" %in% class(s))
   options <- s$x
+  lf <- length(from)
+  if(lf != length(to)) stop("`from` and `to` must be the same length")
   N <- length(options$vertices)  # number of animation frames, update last one
   from <- Map(indexline, list(from))
   to <- Map(indexline, list(to))
+  lcol <- NULL
   if (! missing(color)) # discard alpha, normalize line colors
   {
     lcol <- list(color)
     lc <- Map(function(x) col2rgb(x, alpha=FALSE), lcol)
-    lcol <- Map(function(x) apply(x, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), lc)
+    lcol <- unlist(Map(function(x) apply(x, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), lc))
+    lcol <- rep_len(lcol, lf)
   }
   if (is.null(options$from))
   {
-    options$from <- from
-    options$to <- to
-    if (!missing(color)) options$lcol <- lcol
+    options$from <- list(unlist(from))
+    options$to <- list(unlist(to))
+    if (! missing(color)) options$lcol <- list(unlist(lcol))
   } else {
     if(is.list(options$from[[N]])) options$from[[N]] <- c(unlist(options$from[[N]]), unlist(from))
     else options$from[[N]] <- c(options$from[[N]], unlist(from))
     if(is.list(options$to[[N]])) options$to[[N]] <- c(unlist(options$to[[N]]), unlist(to))
     else options$to[[N]] <- c(options$to[[N]], unlist(to))
-    if (!missing(color)) options$lcol[[N]] <- unlist(lcol)
+    if (! missing(color)) options$lcol[[N]] <- c(unlist(options$lcol[[N]]), unlist(lcol))
   }
   options$lwd <- lwd
   options$linealpha <- alpha
