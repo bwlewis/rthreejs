@@ -546,7 +546,8 @@ points3d <- function(s, x, y, z, color="orange", pch="@", size=1, labels="")
 
   # use scatterplot3js to scale/transform vertices as required
   oldlen <- length(options$vertices[[N]]) / 3
-  x <- rbind(s$vcache[[N]], x)
+  if(is.list(s$vcache)) x <- rbind(s$vcache[[N]], x)
+  else x <- rbind(s$vcache, x)
   center <- options$center
   if (is.null(center)) center <- FALSE
   args <- list(x=x, center=center, flip.y=options$flipy, options=TRUE, axis=options$axis,
