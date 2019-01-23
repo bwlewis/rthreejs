@@ -26,16 +26,9 @@ HTMLWidgets.widget(
 
   resize: function(el, width, height, stuff)
   {
-    stuff.renderer.clear();
+    stuff.camera.aspect = width / height;
+    stuff.camera.updateProjectionMatrix();
     stuff.renderer.setSize( width, height );
-    stuff.width = width;
-    stuff.height = height;
-    var ymax = stuff.camera.near * Math.tan((Math.PI / 180) * stuff.camera.fov * 0.5);
-    var ymin = - ymax;
-    var xmin = ymin * stuff.camera.aspect;
-    var xmax = ymax * stuff.camera.aspect;
-    stuff.camera.projectionMatrix = new THREE.Matrix4().makePerspective(xmin, xmax, ymax, ymin, stuff.camera.near, stuff.camera.far);
-    stuff.camera.lookAt(stuff.scene.position);
     stuff.renderer.render( stuff.scene, stuff.camera );
   },
 
