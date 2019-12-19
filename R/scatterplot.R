@@ -227,7 +227,8 @@ scatterplot3js <- function(
   cex.symbols = 1,
   xlim, ylim, zlim,
   axis.scale = c(1,1,1),
-  pch="@", ...)
+  pch="@", 
+  elementId=NULL, ...)
 {
   if(is.null(elementId))
   {

@@ -29,6 +29,7 @@ scatterplot3js(
   zlim,
   axis.scale = c(1, 1, 1),
   pch = "@",
+  elementId = NULL,
   ...
 )
 }
@@ -106,9 +107,9 @@ ratios determined from \code{c(xlim,ylim,zlim)}.}
 
 \item{pch}{Optional point glyphs, see notes.}
 
-\item{...}{Additional options (see note).}
-
 \item{elementId}{Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.}
+
+\item{...}{Additional options (see note).}
 }
 \value{
 An htmlwidget object that is displayed using the object's show or print method.

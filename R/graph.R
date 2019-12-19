@@ -307,7 +307,7 @@ graphjs <- function(g, layout,
 
   options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color, from=from, to=to,
                     lwd=edge.width, linealpha=edge.alpha, axis=FALSE, grid=FALSE, center=TRUE,
-                    bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), opts)
+                    bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), elementId=elementId, opts)
   if (!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if (!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   options$options <- TRUE
