@@ -4,10 +4,24 @@
 \alias{globejs}
 \title{Plot Data on 3D Globes}
 \usage{
-globejs(img = system.file("images/world.jpg", package = "threejs"), lat, long,
-  value = 40, color = "#00ffff", arcs, arcsColor = "#99aaff",
-  arcsHeight = 0.4, arcsLwd = 1, arcsOpacity = 0.2, atmosphere = FALSE,
-  bg = "black", height = NULL, width = NULL, ...)
+globejs(
+  img = system.file("images/world.jpg", package = "threejs"),
+  lat,
+  long,
+  value = 40,
+  color = "#00ffff",
+  arcs,
+  arcsColor = "#99aaff",
+  arcsHeight = 0.4,
+  arcsLwd = 1,
+  arcsOpacity = 0.2,
+  atmosphere = FALSE,
+  bg = "black",
+  height = NULL,
+  width = NULL,
+  elementId = NULL,
+  ...
+)
 }
 \arguments{
 \item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
@@ -44,6 +58,8 @@ the same length as the number of rows of \code{arcs}.}
 \item{height}{The container div height.}
 
 \item{width}{The container div width.}
+
+\item{elementId}{Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.}
 
 \item{...}{Additional arguments to pass to the three.js renderer (see
 below for more information on these options).}

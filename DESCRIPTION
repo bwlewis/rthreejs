@@ -28,4 +28,5 @@ Imports:
 Suggests:
     maps
 Enhances: knitr, shiny
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 7.0.0

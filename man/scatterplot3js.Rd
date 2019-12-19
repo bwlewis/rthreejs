@@ -4,12 +4,33 @@
 \alias{scatterplot3js}
 \title{Interactive 3D Scatterplots}
 \usage{
-scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
-  num.ticks = c(6, 6, 6), x.ticklabs = NULL, y.ticklabs = NULL,
-  z.ticklabs = NULL, color = "steelblue", size = cex.symbols,
-  stroke = "black", flip.y = TRUE, grid = TRUE, renderer = c("auto",
-  "canvas"), signif = 8, bg = "#ffffff", cex.symbols = 1, xlim, ylim,
-  zlim, axis.scale = c(1, 1, 1), pch = "@", ...)
+scatterplot3js(
+  x,
+  y,
+  z,
+  height = NULL,
+  width = NULL,
+  axis = TRUE,
+  num.ticks = c(6, 6, 6),
+  x.ticklabs = NULL,
+  y.ticklabs = NULL,
+  z.ticklabs = NULL,
+  color = "steelblue",
+  size = cex.symbols,
+  stroke = "black",
+  flip.y = TRUE,
+  grid = TRUE,
+  renderer = c("auto", "canvas"),
+  signif = 8,
+  bg = "#ffffff",
+  cex.symbols = 1,
+  xlim,
+  ylim,
+  zlim,
+  axis.scale = c(1, 1, 1),
+  pch = "@",
+  ...
+)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -86,6 +107,8 @@ ratios determined from \code{c(xlim,ylim,zlim)}.}
 \item{pch}{Optional point glyphs, see notes.}
 
 \item{...}{Additional options (see note).}
+
+\item{elementId}{Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.}
 }
 \value{
 An htmlwidget object that is displayed using the object's show or print method.
@@ -245,7 +268,7 @@ scatterplot3js(x, y, z, pch="@") \%>\%
   sd <- SharedData$new(data.frame(x=x, y=y, z=z))
   print(bscols(
     scatterplot3js(x, y, z, color=rainbow(length(z)), brush=TRUE, crosstalk=sd),
-    d3scatter(sd, ~x, ~y, width="100\%", height=300)
+    d3scatter(sd, ~x, ~y, width="100%", height=300)
   ))
 }
 

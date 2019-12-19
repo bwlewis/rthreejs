@@ -4,10 +4,17 @@
 \alias{render}
 \title{Directly render threejs scenes}
 \usage{
-render(scene, height = NULL, width = NULL, bg = "white",
-  camera_position = c(-5, 3, 10), camera_lookat = c(-1, 2, 4),
-  ambient = "#555555", lights = new("pointLight", color = "white", position
-  = c(-5, 3, 10)), ...)
+render(
+  scene,
+  height = NULL,
+  width = NULL,
+  bg = "white",
+  camera_position = c(-5, 3, 10),
+  camera_lookat = c(-1, 2, 4),
+  ambient = "#555555",
+  lights = new("pointLight", color = "white", position = c(-5, 3, 10)),
+  ...
+)
 }
 \arguments{
 \item{scene}{A JSON-encoded threejs scene or object that can be added to a threejs scene (for instance, a group).}
