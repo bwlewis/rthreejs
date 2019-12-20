@@ -359,7 +359,7 @@ scatterplot3js <- function(
     pfmt <- function(x, d=2)
     {
       ans <- sprintf("%.2f", x)
-      i <- (abs(x) < 0.01 && x != 0)
+      i <- (abs(x) < 0.01 & x != 0)
       if (any(i))
       {
         ans[i] <- sprintf("%.2e", x)
