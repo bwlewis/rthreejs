@@ -2,8 +2,8 @@
 % Please edit documentation in R/threejs.R
 \docType{package}
 \name{threejs-package}
-\alias{threejs-package}
 \alias{threejs}
+\alias{threejs-package}
 \title{Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.}
 \description{
 Interactive 3D graphics including point clouds and globes using three.js and htmlwidgets.
@@ -21,3 +21,4 @@ runApp(system.file("examples/scatterplot",package="threejs"))
 \references{
 \url{http://threejs.org}
 }
+

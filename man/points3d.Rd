@@ -54,3 +54,4 @@ graphjs(LeMis) \%>\% points3d(vertices(.), color="red", pch=V(LeMis)$label)
 
 }
 }
+

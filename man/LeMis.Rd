@@ -17,3 +17,4 @@ data(LeMis)
 Les Miserables Character Coappearance Data
 }
 \keyword{datasets}
+

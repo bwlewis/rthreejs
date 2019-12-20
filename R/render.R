@@ -19,9 +19,6 @@ setClass("pointLight", representation(color="character", position="numeric"))
 #' @examples
 #' render(gzfile(system.file("extdata/pump.json.gz", package="threejs")), bg="black")
 #'
-#' # An example from the threejs.org source code:
-#' source <- "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/models/json/scene-animation.json"
-#' render(url(source), camera_position=c(-100, 0, 100))
 #' @importFrom methods new
 #' @export
 render <- function(
