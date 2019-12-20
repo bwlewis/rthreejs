@@ -17,6 +17,8 @@ HTMLWidgets.widget(
   {
     obj.width = width;
     obj.height = height;
+    obj.widget.camera.aspect = obj.width / obj.height;
+    obj.widget.camera.updateProjectionMatrix();
     obj.widget.renderer.setSize(obj.width, obj.height);
     obj.widget.animate();
   },
