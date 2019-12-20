@@ -1,46 +1,17 @@
-language: c
+language: r
 sudo: false
-
-warnings_are_errors: true
-
-addons:
-  apt:
-    sources:
-      - r-packages-precise
-    packages:
-      - r-base-dev
-      - r-recommended
-      - pandoc
-      - texinfo
-      - texlive
-      - texlive-latex-base
-      - texlive-latex-extra
-      - texlive-latex-recommended
-      - texlive-fonts-recommended
-      - texlive-fonts-extra
-      - texlive-math-extra
-      - qpdf
-
+cache: packages
 env:
-  global:
-    - RunRRedisTests=yes
-    - R_LIBS_USER=~/R/library
+  - _R_CHECK_FORCE_SUGGESTS_=FALSE
 
-cache:
-  directories:
-    $R_LIBS_USER
+r:
+  - devel
+  - release
 
-before_script:
-  - mkdir -p "$R_LIBS_USER"
-  - Rscript -e 'if (length(find.package("devtools", quiet = TRUE)) == 0L) { install.packages("devtools", repos = "http://cran.rstudio.com") }'
-  - Rscript -e 'devtools::update_packages("devtools", repos = "http://cran.rstudio.com")'
-  - Rscript -e 'devtools::install_deps(repos = "http://cran.rstudio.com", dependencies = TRUE)'
-  - Rscript -e 'devtools::install_github("jimhester/covr")'
-  - Rscript -e 'devtools::install_github("jimhester/lintr")'
-
-script:
-  - Rscript -e 'devtools::check(document=FALSE, build_args="--resave-data")'
+r_github_packages:
+  - jimhester/covr
+  - jimhester/lintr
 
 after_success:
-  - Rscript -e 'library(threejs); covr::codecov()'
   - Rscript -e 'lintr::lint_package()'
+  - Rscript -e 'covr::codecov()'

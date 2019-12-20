@@ -96,19 +96,37 @@ gopts <- function(g)
   if (!is.null(ans$cumulative) && !ans$cumulative) ans$cumulative <- NULL
   ans <- ans[!vapply(ans, is.null, TRUE)]
   if (!("layout" %in% names(ans))) stop("missing layout")
-  # re-order y, z, flip y, and center
+  # re-order y, z, flip y, convert to vector (centering handled by JavaScript)
   ans$layout <- ans$layout[, c(1, 3, 2), drop=FALSE]
   ans$layout[, 3] <- 1 - ans$layout[, 3]
   ans$layout <- signif(as.vector(t(ans$layout)), 8)
   ans
 }
 
-# internal color format parser
-# return a list of 3-hex-digit color values and scalar numeric alpha values
+#' A basic internal color format parser
+#' @param x a character-valued color name
+#' @return a list of 3-hex-digit color values and scalar numeric alpha values
+#' @importFrom grDevices col2rgb rgb
 gcol <- function(x)
 {
   if (is.null(x)) return(list(color=NULL, alpha=NULL))
   c <- col2rgb(x, alpha=TRUE)
   a <- as.vector(c[4, ] / 255)   # alpha values
   list(color = apply(c, 2, function(x) rgb(x[1], x[2], x[3], maxColorValue=255)), alpha = a)
+}
+
+# internal function used in scatterplot3js
+indexline <- function(x) # zero index and make sure each element is an array in JavaScript
+{
+  a <- as.integer(x) - 1L
+  if (length(a) == 1) a <- list(a)
+  a
+}
+
+# internal function to convert x to a JSON dataURI, where x is either character or raw
+# JSON text or a connection or a non-compressed file.
+jsuri <- function(x)
+{
+  if(is.character(x) && file.exists(x)) return(dataURI(file=x, encoding=NULL, mime="application/javascript"))
+  dataURI(data=x, encoding=NULL, mime="application/javascript")
 }

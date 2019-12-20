@@ -45,3 +45,14 @@ NULL
 #' graph includes a force-directed layout with vertices colored by the \code{\link{cluster_fast_greedy}}
 #' algorithm from the igraph package.
 NULL
+
+#' Pump rendering
+#'
+#' A keyframe animation example from the threejs.org website.
+#'
+#' @docType data
+#' @name pump
+#' @keywords threejs animation datasets
+#' @source The threejs.org web site \url{https://threejs.org/examples/#webgl_animation_keyframes_json}
+#' @format A compressed JSON file.
+NULL

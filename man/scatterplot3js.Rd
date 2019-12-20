@@ -4,12 +4,34 @@
 \alias{scatterplot3js}
 \title{Interactive 3D Scatterplots}
 \usage{
-scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
-  num.ticks = c(6, 6, 6), x.ticklabs = NULL, y.ticklabs = NULL,
-  z.ticklabs = NULL, color = "steelblue", size = cex.symbols,
-  stroke = "black", flip.y = TRUE, grid = TRUE, renderer = c("auto",
-  "canvas"), signif = 8, bg = "#ffffff", cex.symbols = 1, xlim, ylim,
-  zlim, pch = "@", ...)
+scatterplot3js(
+  x,
+  y,
+  z,
+  height = NULL,
+  width = NULL,
+  axis = TRUE,
+  num.ticks = c(6, 6, 6),
+  x.ticklabs = NULL,
+  y.ticklabs = NULL,
+  z.ticklabs = NULL,
+  color = "steelblue",
+  size = cex.symbols,
+  stroke = "black",
+  flip.y = TRUE,
+  grid = TRUE,
+  renderer = c("auto", "canvas"),
+  signif = 8,
+  bg = "#ffffff",
+  cex.symbols = 1,
+  xlim,
+  ylim,
+  zlim,
+  axis.scale = c(1, 1, 1),
+  pch = "@",
+  elementId = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -29,9 +51,11 @@ coordinate axes. Column labels, if present, are used as axis labels.}
 \item{axis}{A logical value that when \code{TRUE} indicates that the
 axes will be displayed.}
 
-\item{num.ticks}{A three-element vector with the suggested number of
-ticks to display per axis. Set to NULL to not display ticks. The number
-of ticks may be adjusted by the program.}
+\item{num.ticks}{A three-element or one-element vector with the suggested number of
+ticks to display per axis. If a one-element vector, this number of ticks will be used
+for the axis with the smallest \code{axis.scale}, and the number of ticks on the remaining 
+axes will be increased proportionally to the \code{axis.scale} values. Set to NULL to not display 
+ticks. The number of ticks may be adjusted by the program.}
 
 \item{x.ticklabs}{A vector of tick labels of length \code{num.ticks[1]}, or
 \code{NULL} to show numeric labels.}
@@ -76,7 +100,14 @@ down.}
 
 \item{zlim}{Optional two-element vector of z-axis limits. Default auto-scales to data.}
 
+\item{axis.scale}{Three-element vector to scale each axis as displayed on the plot,
+after first scaling them all to a unit length. Default \code{c(1,1,1)} thus results
+in the axes of equal length. If \code{NA}, the displayed axes will be scaled to the
+ratios determined from \code{c(xlim,ylim,zlim)}.}
+
 \item{pch}{Optional point glyphs, see notes.}
+
+\item{elementId}{Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.}
 
 \item{...}{Additional options (see note).}
 }
@@ -92,6 +123,14 @@ follow the \code{scatterplot3d} package.
 Points with missing values are omitted from the plot, please try to avoid missing values
 in \code{x, y, z}.
 }
+\section{Scaling the axes}{
+
+With the default values, the displayed axes are scaled to equal one-unit length. If
+you instead need to maintain the relative distances between points in the original data, 
+and the same distance between the tick labels, pass \code{num.ticks=6} (or any other single
+number) and \code{axis.scale=NA}
+}
+
 \section{Interacting with the plot}{
 
 Press and hold the left mouse button (or touch or trackpad equivalent) and move
@@ -102,15 +141,6 @@ a point will display the label.
 }
 
 \section{Detailed plot options}{
-
-Use the \code{renderer} option to manually select from the available
-rendering options.
-The \code{canvas} renderer is the fallback rendering option when WebGL
-is not available. The default setting \code{auto} automatically chooses
-between
-the two. The two renderers produce slightly different-looking output
-and have different available options (see above). The WebGL renderer
-can exhibit much better performance.
 
 Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below. A few additional
@@ -136,12 +166,15 @@ character values are used literally ('+', 'x', '*', etc.) except for the
 following special cases:
 \itemize{
   \item{"o"}{ Plotted points appear as 3-d spheres.}
-  \item{"@"}{ Plotted points appear as nice circles.}
+  \item{"@"}{ Plotted points appear as stroked disks.}
   \item{"."}{ Points appear as tiny squares.}
 }
 Character strings of more than one character are supported--see the examples.
 The \code{@} and {.} option exhibit the best performance, consider using
 one of those to plot large numbers of points.
+
+Set the optional experimental \code{use.orbitcontrols=TRUE} argument to
+use a more CPU-efficient but somewhat less fluid mouse/touch interface.
 }
 
 \section{Plotting lines}{
@@ -153,12 +186,30 @@ the following new plot options.
   \item{"from"}{ A numeric vector of indices of line starting vertices corresponding to entries in \code{x}.}
   \item{"to"}{ A numeric vector exactly as long as \code{from} of indices of line ending vertices corresponding
       to entries in \code{x}.}
-  \item{"lcol"}{ Either a single color value or vector of values as long as \code{from}; line colors
+  \item{"lcol"}{ Either a single color value or vector of values as long as from; line colors
      default to interpolating their vertex point colors.}
   \item{"lwd"}{ A single numeric value of line width (for all lines), defaults to 1.}
   \item{"linealpha"}{ A single numeric value between 0 and 1 inclusive setting the transparency of all plot lines,
      defaulting to 1.}
 }
+}
+
+\section{Highlighting selected points}{
+
+Specify the argument \code{brush=TRUE} to highlight a clicked point (currently
+limited to single-point selection).
+Optionally set the \code{highlight=<color>} and \code{lowlight=<color>}
+to manually control the brushing display colors. This feature works with
+crosstalk.
+}
+
+\section{Crosstalk}{
+
+The \code{scatterplot3js()} and \code{graphjs()} functions work with
+crosstalk selection (but not filtering yet); see https://rstudio.github.io/crosstalk/.
+Enable crosstalk with the optional agrument \code{crosstalk=df}, where \code{df} is a
+crosstalk-SharedData data.frame-like object with the same number of rows as points
+(\code{scatterplot3js()}) or graph vertices (\code{graphjs()}) (see the examples).
 }
 
 \examples{
@@ -197,7 +248,7 @@ col <- c( rainbow(length(phi))[order(i)],
 M <- cbind(x=c(x, x1), y=c(y, y1), z=c(z, h*t))
 scatterplot3js(M, size=0.5, color=col, bg="black", pch=".")
 
-# Plot text using 'pch' (we label some points in this example)
+# Plot generic text using 'pch' (we label some points in this example)
 set.seed(1)
 x <- rnorm(5); y <- rnorm(5); z <- rnorm(5)
 scatterplot3js(x, y, z, pch="@") \%>\%
@@ -206,6 +257,20 @@ scatterplot3js(x, y, z, pch="@") \%>\%
 \dontrun{
   # A shiny example
   shiny::runApp(system.file("examples/scatterplot", package="threejs"))
+}
+
+\dontrun{
+  # A crosstalk example
+  library(crosstalk)
+  library(d3scatter) # devtools::install_github("jcheng5/d3scatter")
+  z <- seq(-10, 10, 0.1)
+  x <- cos(z)
+  y <- sin(z)
+  sd <- SharedData$new(data.frame(x=x, y=y, z=z))
+  print(bscols(
+    scatterplot3js(x, y, z, color=rainbow(length(z)), brush=TRUE, crosstalk=sd),
+    d3scatter(sd, ~x, ~y, width="100%", height=300)
+  ))
 }
 
 }

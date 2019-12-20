@@ -24,6 +24,7 @@
 #' @param bg Plot background color.
 #' @param width The container div width.
 #' @param height The container div height.
+#' @param elementId Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.
 #' @param ... Additional arguments to pass to the three.js renderer (see
 #' below for more information on these options).
 #'
@@ -71,9 +72,6 @@
 #' An excellent overview of available map coordinate reference systems (PDF):
 #' \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 #'
-#' Includes images adapted from the NASA Earth Observatory and NASA Jet Propulsion Laboratory.
-#' World image link: \url{http://goo.gl/GVjxJ}.
-#'
 #' @examples
 #' # Plot flights to frequent destinations from Callum Prentice's
 #' # global flight data set,
@@ -92,10 +90,12 @@
 #' ll <- unique(frequent_flights[,3:4])
 #' # Plot frequent destinations as bars, and the flights to and from
 #' # them as arcs. Adjust arc width and color by frequency.
-#' globejs(lat=ll[,1], long=ll[,2], arcs=frequent_flights, bodycolor="#aaaaff",
-#'         arcsHeight=0.3, arcsLwd=2, arcsColor="#ffff00", arcsOpacity=0.15,
+#' globejs(lat=ll[, 1], long=ll[, 2], arcs=frequent_flights,
+#'         bodycolor="#aaaaff", arcsHeight=0.3, arcsLwd=2,
+#'         arcsColor="#ffff00", arcsOpacity=0.15,
 #'         atmosphere=TRUE, color="#00aaff", pointsize=0.5)
 #'
+#' \dontrun{
 #' # Plot populous world cities from the maps package.
 #' library(threejs)
 #' library(maps)
@@ -110,11 +110,6 @@
 #' globejs(img=moon, bodycolor="#555555", lightcolor="#aaaaaa",
 #'         lat=cities$lat, long=cities$long,
 #'         value=value, color=col)
-#'
-#' \dontrun{
-#' # Plot a high-resolution NASA MODIS globe, setting colors to more closely reproduce
-#' # the natural image colors. Note that this example can can take a while to download!
-#' globejs("http://goo.gl/GVjxJ")
 #'
 #' # Using global plots from the maptools, rworldmap, or sp packages.
 #'
@@ -162,8 +157,15 @@ globejs <- function(
   atmosphere=FALSE,
   bg="black",
   height = NULL,
-  width = NULL, ...)
+  width = NULL, 
+  elementId=NULL,
+  ...)
 {
+  if(is.null(elementId))
+  {
+    elementId <- paste0(sample(c(letters, LETTERS, 0:9), 10, replace=TRUE), collapse="")
+  }
+  
   if (missing(lat) || missing(long))
   {
     lat <- NULL
@@ -231,7 +233,8 @@ globejs <- function(
       width = width,
       height = height,
       htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
-      package = "threejs")
+      package = "threejs",
+      elementId=elementId)
 }
 
 #' @rdname threejs-shiny

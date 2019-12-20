@@ -1,4 +1,3 @@
-/* Standard HTML widgets interface */
 HTMLWidgets.widget(
 {
   name: "scatterplotThree",
@@ -38,12 +37,12 @@ HTMLWidgets.widget(
  * animate()                 internal threejs animation function
  * render()                  internal threejs draw function
  * update()                  internal vertex update function
- * update_lines()            internal lines update function
+ * draw_lines()              internal buffered lines creation function
  * ...  other miscellaneous internal functions
  *
  * The htmlwidgets interface resides in the init() function.
  * The user plot interface is in create_plot() with options JavaScript array:
- * [vertices]  an array of vectors, each vector length a multiple of 3 (flattened out coordinates)
+ * [vertices]  an array of vectors, each vector length a multiple of 3 (flattened out coordinates by xyz triples (byrow))
  *             when vertices.length = 1 no animation, otherwise vertices.length = number of scenes
  * [color]     optional array of colors, one for each scene. each element can be scalar or vector
  * [alpha]     optional array of alphas, one for each scene. each element either scalar or vector
@@ -74,6 +73,7 @@ HTMLWidgets.widget(
  * zlim
  * ztick
  * zticklab
+ * axislength  length of each axis (float[3])
  * top         optional infobox top position (int)
  * left        optional infobox left position (int)
  * fontmain    optional infobox css font
@@ -91,7 +91,10 @@ Widget.scatter = function(w, h)
   this.init_width = w;
   this.init_height = h;
 
-  var controls, scene;
+  var ct_sel = new crosstalk.SelectionHandle();
+  var ct_filter = new crosstalk.FilterHandle();
+
+  var scene;
   var _this = this;
 
   _this.init = function (el, width, height)
@@ -104,6 +107,8 @@ Widget.scatter = function(w, h)
       _this.renderer = new THREE.CanvasRenderer();
       _this.renderer.GL = false;
     }
+    _this.frame = -1;   //  reset animation too,
+    _this.scene = 0;    //  see issue #58
     _this.renderer.sortObjects = false;
     _this.renderer.autoClearColor = false;
     _this.renderer.setSize(width, height);
@@ -124,19 +129,17 @@ Widget.scatter = function(w, h)
 
     if(height > 0) _this.camera = new THREE.PerspectiveCamera(40, width / height, 1e-5, 100);
     else _this.camera = new THREE.PerspectiveCamera(40, 1, 1e-5, 100);
+
     _this.camera.position.z = 2.0;
     _this.camera.position.x = 2.5;
     _this.camera.position.y = 1.2;
 
-    controls = new THREE.TrackballControls(_this.camera, el);
-    controls.rotateSpeed = 0.5;
-    controls.zoomSpeed = 4.2;
-    controls.panSpeed = 1;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = false;
-    controls.dynamicDampingFactor = 0.2;
-    controls.addEventListener('change', render);
+    _this.controls = new THREE.TrackballControls(_this.camera, el);
+    _this.controls.rotateSpeed = 4.6;
+    _this.controls.zoomSpeed = 1.5;
+    _this.controls.panSpeed = 0.8;
+    _this.controls.dynamicDampingFactor = 0.2;
+    _this.controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
     while (el.hasChildNodes()) {
@@ -148,7 +151,6 @@ Widget.scatter = function(w, h)
     info.style.left = "0px";
     el.appendChild(info);
 
-// semi-ugly hack for case:
 // subscribe to custom shown event (fired by ioslides to trigger
 // shiny reactivity but we can use it as well). this is necessary
 // because if a widget starts out as display:none it has height
@@ -161,7 +163,7 @@ Widget.scatter = function(w, h)
         _this.camera.aspect = _this.width / _this.height;
         _this.camera.updateProjectionMatrix();
         _this.renderer.setSize(_this.width, _this.height);
-        controls.handleResize();
+        _this.controls.handleResize();
         _this.animate();
        });
 
@@ -172,34 +174,22 @@ Widget.scatter = function(w, h)
         _this.camera.aspect = _this.width / _this.height;
         _this.camera.updateProjectionMatrix();
         _this.renderer.setSize(_this.width, _this.height);
-        controls.handleResize();
+        _this.controls.handleResize();
         _this.animate();
        });
-    } else {
-// Using 'slideenter' event here as 'show' did not work here. ???
-      if(el.closest('slide') !== null)
-      {
-        el.closest('slide').addEventListener('slideenter', function() {
+
+      // ...and the same for bootstrap tabs
+      $('.nav-tabs a').on('shown.bs.tab', function(event){
+        if (event.target.hash == '#'+$(el).closest('.tab-pane')[0].id) {
           _this.width = _this.el.offsetWidth;
           _this.height = _this.el.offsetHeight;
           _this.camera.aspect = _this.width / _this.height;
           _this.camera.updateProjectionMatrix();
           _this.renderer.setSize(_this.width, _this.height);
-          controls.handleResize();
+          _this.controls.handleResize();
           _this.animate();
-         }, false);
-      } else if(el.closest('section.slide') !== null)
-      {
-        el.closest('slide').addEventListener('slideenter', function() {
-          _this.width = _this.el.offsetWidth;
-          _this.height = _this.el.offsetHeight;
-          _this.camera.aspect = _this.width / _this.height;
-          _this.camera.updateProjectionMatrix();
-          _this.renderer.setSize(_this.width, _this.height);
-          controls.handleResize();
-          _this.animate();
-         }, false);
-      }
+        }
+       });
     }
 
     el.onmousemove = function(ev)
@@ -213,14 +203,16 @@ Widget.scatter = function(w, h)
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
       raycaster.setFromCamera(mouse, _this.camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
-      if(I.length > 0)
+      if(I && I.length > 0)
       {
         if(I[0].object.type == "Points")
         {
           /* discard vertices with tiny alpha */
           var idx = I.map(function(x) {
-            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
-          }).findIndex(function(v) {return(v > 0.1);});
+            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3] > 0.1;
+          }).indexOf(true);
+//            return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
+//          }).findIndex(function(v) {return(v > 0.1);});
           if(idx > -1 && I[idx].object.geometry.labels[I[idx].index].length > 0) printInfo(I[idx].object.geometry.labels[I[idx].index]);
         } else if(I[0].object.type == "Mesh")
         {
@@ -237,12 +229,10 @@ Widget.scatter = function(w, h)
       }
     }
 
-
-//  triggr vertex-specific animation sequence
+//  trigger vertex-specific animation sequence
     el.onclick = function(ev)
     {
       if(ev.preventDefault) ev.preventDefault();
-      if(!_this.options.click) return;
       var mouse = new THREE.Vector2();
       var raycaster = new THREE.Raycaster();
       raycaster.params.Points.threshold = _this.mousethreshold;
@@ -251,16 +241,24 @@ Widget.scatter = function(w, h)
       mouse.y = -2 * (ev.clientY - canvasRect.top) / canvasRect.height + 1;
       raycaster.setFromCamera(mouse, _this.camera);
       var I = raycaster.intersectObject(_this.pointgroup, true);
-      if(I.length > 0 && I[0].object.type == "Points")
+      if(I.length > 0 && (I[0].object.type == "Points" || I[0].object.type == "Mesh"))
       {
         /* ignore vertices with tiny alpha */
-        var idx = I.map(function(x) {
-          return I[0].object.geometry.attributes.color.array[x.index * 4 + 3];
-        }).findIndex(function(v) {return(v > 0.1);});
-        if(idx < 0) return;
-// XXX DEBUG raycasting
-//if(I[idx].object.geometry.labels[I[idx].index].length > 0) console.log("click " +I[idx].index+" "+ I[idx].object.geometry.labels[I[idx].index]);
-        var i = "" + I[idx].index;
+        var idx, i;
+        if(I[0].object.type == "Points")
+        {
+          idx = I.map(function(x) {
+            return I[0].object.geometry.attributes.color.array[x.object.indices[x.index] * 4 + 3] > 0.1;
+          }).indexOf(true);
+          if(idx < 0) return;
+          i = I[idx].object.indices[I[idx].index];
+        } else
+        {
+          idx = I[0].object.index;
+          i = idx;
+        }
+        _this.brush(i);
+        if(!_this.options.click) return;
         if(!_this.options.click[i]) return;
         _this.frame = -1;  // suspend animation
         var N = _this.options.vertices.length - 1;
@@ -325,19 +323,212 @@ Widget.scatter = function(w, h)
           _this.idle = false;
           _this.animate();
         }
+      } else _this.brush(null);
+    }
+  };
+
+
+/* Experimental scene animation transition function. Animate from the
+ * current plot state to the new state in _this.options.defer[i].
+ * TODO Adjust click animation to use this interface and consolidate code.
+ */
+  _this.transition = function(i)
+  {
+    if(!_this.options.defer) return;
+    if(i >= _this.options.defer.vertices.length) return;
+    _this.brush(null);
+    var N = _this.options.vertices.length - 1;
+    _this.options.vertices = [_this.options.vertices[N], _this.options.defer.vertices[i]]; // new animation sequence
+    if(_this.options.defer.alpha.length > 1)
+      _this.options.alpha = [_this.options.alpha[N], _this.options.defer.alpha[i]]; // new alpha sequence
+    if(_this.options.defer.alpha.length > 1)
+      _this.options.color = [_this.options.color[N], _this.options.defer.color[i]]; // new color sequence
+
+    if(_this.options.defer.from && i < _this.options.defer.from.length)
+    {
+      if(_this.options.from)
+      {
+        N = _this.options.from.length - 1;
+        _this.options.from = [_this.options.from[N], _this.options.defer.from[i]]; // new lines
+        _this.options.to = [_this.options.to[N], _this.options.defer.to[i]];
+      } else
+      {
+         _this.options.from = [[], _this.options.defer.from[i]]; // new lines
+         _this.options.to = [[], _this.options.defer.to[i]];
+      }
+      _this.phase = _this.options.from[0].length > _this.options.from[1].length;
+    } else
+    {
+      _this.phase = false;
+      if(_this.options.from)
+      {
+        N = _this.options.from.length - 1;
+        _this.options.from = [_this.options.from[N]];
+        _this.options.to = [_this.options.to[N]];
+      } else
+      {
+        _this.options.from = [[]];
+        _this.options.to = [[]];
       }
     }
-  }
+    if(_this.options.defer.lcol && i < _this.options.defer.lcol.length) 
+      _this.options.lcol = _this.options.defer.lcol[i];
+    if(_this.options.defer.main && Array.isArray(_this.options.defer.main) && i < _this.options.defer.main.length)
+        {
+          _this.options.main = [_this.main, _this.options.defer.main[i]];
+        }
+    _this.scene = 0; // reset animation
+    _this.fps = 50;
+    if(_this.options.deferfps) _this.fps = _this.options.deferfps;
+    _this.frame = 0; // start
+    if(_this.idle)
+    {
+      _this.idle = false;
+      _this.animate();
+    }
+  };
 
-  // create_plot
+// Use (abuse) filter handle to control animation frame
+  ct_filter.on("change", function(e)
+  {
+    var i;
+    if(Array.isArray(e.value) && e.value.length > 0) i = parseInt(e.value[0]);
+    else i = parseInt(e.value);
+    if(isNaN(i)) return;
+    _this.transition(i);
+  });
+
+// The crosstalk select handle operates normally
+  ct_sel.on("change", function(e)
+  {
+    if(e.sender === ct_sel) return;
+    if(e.value.length == 0)
+    {
+      _this.brush(null);
+      return;
+    }
+    // Map crosstalk keys (strings) to integer indices in the key vector
+    _this.brush(e.value.map(function(i){return _this.options.crosstalk_key.indexOf(i)}));
+  });
+
+/* TODO clean this up; consolidate vertex and line color setting code
+ * vertices a vector of int32 vertex ids or null to clear the brush
+ */
+  _this.brush = function(vertices)
+  {
+    if(!_this.options.brush) return;
+    if(!vertices && !_this.brushed) return; // nothing to do
+    if(!vertices) // reset brush and return
+    {
+      for(var j = 0; j < _this.pointgroup.children.length; j++)
+      {
+        if(_this.pointgroup.children[j].type == "Mesh") // spheres
+        {
+          k = _this.pointgroup.children[j].index; // the vertex id
+          _this.pointgroup.children[j].material.color = _this.datacolor[k];
+        } else if(_this.pointgroup.children[j].type == "Points") // buffered
+        {
+          var col;
+          for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
+          {
+            k = _this.pointgroup.children[j].indices[i]; // vertex id
+            col = _this.datacolor[k];
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = col.r;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = col.g;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] = col.b;
+          }
+          _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
+        }
+      }
+      if(_this.options.from) update_line_colors(_this.scene, null);
+      if(_this.options.crosstalk_key)
+      {
+        ct_sel.set([]);
+      }
+      _this.brushed = null;
+      return;
+    }
+    var off = new THREE.Color("lightgray");
+    var on = new THREE.Color("red");
+    if(_this.options.highlight) on = new THREE.Color(_this.options.highlight);
+    if(_this.options.lowlight) off = new THREE.Color(_this.options.lowlight);
+    if(! Array.isArray(vertices)) vertices = [vertices];
+    if(_this.options.crosstalk_key)
+    {
+      ct_sel.set(vertices.map(function(i) {return _this.options.crosstalk_key[i];}));
+    }
+    var k;
+    for(var j = 0; j < _this.pointgroup.children.length; j++)
+    {
+      if(_this.pointgroup.children[j].type == "Mesh") // spheres
+      {
+        k = _this.pointgroup.children[j].index; // the vertex id
+        if(vertices.indexOf(k + "") >= 0) _this.pointgroup.children[j].material.color = on;
+        else _this.pointgroup.children[j].material.color = off;
+      } else if(_this.pointgroup.children[j].type == "Points") // buffered
+      {
+        for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
+        {
+          k = _this.pointgroup.children[j].indices[i]; // vertex id
+          if(vertices.indexOf(k) >= 0)
+          {
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = on.r;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = on.g;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] = on.b;
+          } else
+          {
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4] = off.r;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 1] = off.g;
+            _this.pointgroup.children[j].geometry.attributes.color.array[i * 4 + 2] = off.b;
+          }
+        }
+        _this.pointgroup.children[j].geometry.attributes.color.needsUpdate = true;
+      }
+    }
+    // now brush edges
+    if(_this.options.from)
+    {
+      var s = _this.scene;
+      if(_this.options.from.length <= s)  s = 0;
+      var lcol = [];
+      lcol.length = _this.options.from[s].length;
+      lcol.fill(off);
+      for(var j = 0; j < lcol.length; j++)
+      {
+        if(vertices.indexOf(_this.options.from[s][j] ) >= 0 ||
+           vertices.indexOf(_this.options.to[s][j] ) >= 0) lcol[j] = on;
+      }
+      update_line_colors(_this.scene, lcol);
+    }
+    _this.brushed = true;
+  };
+
   _this.create_plot = function(x)
   {
+    if(x.crosstalk_group)
+    {
+      ct_sel.setGroup(x.crosstalk_group);
+      ct_filter.setGroup(x.crosstalk_group);
+    }
     _this.options = x;
     if(x.renderer == "canvas" && _this.renderer.GL)
     {
       _this.renderer = new THREE.CanvasRenderer();
       _this.renderer.GL = false;
       _this.el.appendChild(_this.renderer.domElement);
+    }
+    if(x.useorbitcontrols)
+    {
+/* *** Alternatively, use OrbitControls. But zoom is not damped and vertical rotation is restricted. */
+      _this.controls = new THREE.StateOrbitControls(_this.camera, _this.el);
+      _this.controls.rotateSpeed = 0.6;
+      _this.controls.zoomSpeed = 1.5;
+      _this.controls.panSpeed = 1;
+      _this.controls.enableZoom = true;
+      _this.controls.enablePan = true;
+      _this.controls.enableDamping = true;
+      _this.controls.dampingFactor = 0.15;
+      _this.controls.addEventListener('change', render);
     }
     var group = new THREE.Object3D();        // contains non-point plot elements (axes, etc.)
     _this.pointgroup = new THREE.Object3D(); // contains plot points
@@ -365,15 +556,32 @@ Widget.scatter = function(w, h)
     if(x.cexlab) cexlab = parseFloat(x.cexlab);
     if(x.fontaxis) fontaxis = x.fontaxis;
     if(x.fontsymbols) fontsymbols = x.fontsymbols;
-    // caching for convenient vertex lookup in update_lines function
+    // caching for convenient vertex lookup in *_lines functions
     _this.data = x.vertices[0].slice();
+    // also cache (current) colors for convenience later
     if(x.color && Array.isArray(x.color[0]))
     {
-      _this.datacolor = x.color[0].slice();
+      // array of colors
+      _this.datacolor = x.color[0].slice().map(function(x) {return new THREE.Color(x);});
+    } else if(x.color) {
+      // only a single color specified
+      var XC;
+      if(Array.isArray(x.color)) XC = new THREE.Color("#" + new THREE.Color(x.color[0]).getHexString());
+      else XC = new THREE.Color(x.color);
+      _this.datacolor = [];
+      _this.datacolor.length = x.NROW;
+      _this.datacolor.fill(XC);
+    } else {
+      // no color specified, use a default data color cache for each vertex
+      _this.datacolor = [];
+      _this.datacolor.length = x.NROW;
+      _this.datacolor.fill(new THREE.Color("#ffa500"));
     }
 
     // circle sprite for pch='@'
     var sz = 512;
+    if(_this.options.strokewidth == null || typeof(_this.options.strokewidth) === undefined) _this.options.strokewidth = 0.75;
+    else _this.options.strokewidth = Math.max(0, Math.min(1, 1 - _this.options.strokewidth));
     var dataColor = new Uint8Array( sz * sz * 4 );
     for(var i = 0; i < sz * sz * 4; i++) dataColor[i] = 0;
     for(var i = 0; i < sz; i++)
@@ -384,7 +592,7 @@ Widget.scatter = function(w, h)
         var dy = 2*j/(sz-1) - 1;
         var dz = dx*dx + dy*dy;
         var k = i*sz + j;
-        if(dz <= 0.75)
+        if(dz <= _this.options.strokewidth)
         {
           dataColor[k*4] = 255;
           dataColor[k*4 + 1] = 255;
@@ -411,6 +619,7 @@ Widget.scatter = function(w, h)
     if(_this.renderer.GL)
     {
       _this.N = x.vertices[0].length / 3;       // number of vertices
+
       if(x.fpl) _this.fps = x.fpl;
       if(x.fps) _this.fps = x.fps;              // alternative notation
       if(!_this.fps) _this.fps = 200;           // default frames per scene
@@ -418,10 +627,10 @@ Widget.scatter = function(w, h)
       // lights
       /* FIXME add user-defined lights */
       light = new THREE.DirectionalLight(0xffffff);
-      light.position.set(1, 1, 1);
+      light.position.set(x.axislength[0],x.axislength[1],x.axislength[3]);
       scene.add(light);
       light = new THREE.DirectionalLight(0x002255);
-      light.position.set(-1, -1, -1);
+      light.position.set(-x.axislength[0], -x.axislength[1], -x.axislength[2]);
       scene.add(light);
       light = new THREE.AmbientLight(0x444444);
       scene.add(light );
@@ -446,11 +655,7 @@ Widget.scatter = function(w, h)
           sphereGeo.applyMatrix (
             new THREE.Matrix4().makeTranslation(x.vertices[0][i*3], x.vertices[0][i*3 + 1], x.vertices[0][i*3 + 2]));
           // Color
-          if(x.color) {
-            if(Array.isArray(x.color[0])) col = new THREE.Color(x.color[0][i]);
-            else col = new THREE.Color(x.color[0]);
-          }
-          else col = new THREE.Color("steelblue");
+          col = _this.datacolor[i];
         /** FIXME: figure out how to embed this mesh in the buffer geometry below
          */
           var mesh = new THREE.Mesh(sphereGeo, new THREE.MeshLambertMaterial({color : col}));
@@ -461,21 +666,34 @@ Widget.scatter = function(w, h)
         }
       } // end of special sphere case
       if(npoints < _this.N)
-      { // more points to draw
-        var unique_pch = [...new Set(x.pch)];
-        if(!Array.isArray(x.pch)) unique_pch = [...new Set([x.pch])];
+      { // more points (that are not spheres)
+//        var unique_pch = [...new Set(x.pch)]; // XXX doesn't work in some versions of RStudio
+//        if(!Array.isArray(x.pch)) unique_pch = [...new Set([x.pch])];
+        var unique_pch;
+        if(Array.isArray(x.pch))
+        {
+          unique_pch = x.pch.filter(function (x, i, a) { 
+            return a.indexOf(x) == i; 
+          }).filter(function(x){return (x != 'o')});
+        } else
+        {
+          unique_pch = [x.pch].filter(function (x, i, a) { 
+            return a.indexOf(x) == i; 
+          }).filter(function(x){return (x != 'o')});
+        }
         for(var j=0; j < unique_pch.length; j++)
         {
-          npoints = 0;
+          var pchpoints = 0;
           for (var i = 0; i < _this.N; i++)
           {
-            if(x.pch[i] == unique_pch[j]) npoints++;
+            if(x.pch[i] == unique_pch[j]) pchpoints++;
           }
           var geometry = new THREE.BufferGeometry();
-          var positions = new Float32Array(npoints * 3);
-          var colors = new Float32Array(npoints * 4);
-          var sizes = new Float32Array(npoints);
-          var col = new THREE.Color("steelblue");
+          var positions = new Float32Array(pchpoints * 3);
+          var colors = new Float32Array(pchpoints * 4);
+          var sizes = new Float32Array(pchpoints);
+          var indices = new Int32Array(pchpoints);
+          var col = new THREE.Color("orange");
           scale = 0.3;
           // generic pch sprite (text)
           var canvas = document.createElement("canvas");
@@ -510,19 +728,18 @@ Widget.scatter = function(w, h)
           var k = 0;
           for (var i = 0; i < _this.N; i++)
           {
-            if(Array.isArray(x.size)) sizes[i] = x.size[i] * scalefactor;
-            else sizes[i] = scale * scalefactor;
             if(x.pch[i] == unique_pch[j])
             {
+              npoints++;
+              if(Array.isArray(x.size)) sizes[k] = x.size[i] * scalefactor;
+              else sizes[k] = scale * scalefactor;
               if(x.labels && Array.isArray(x.labels)) geometry.labels.push(x.labels[i]);
               else geometry.labels.push("");
+              indices[k] = i; // track vertex index
               positions[k * 3 ] = x.vertices[0][i * 3];
               positions[k * 3 + 1 ] = x.vertices[0][i * 3 + 1];
               positions[k * 3 + 2 ] = x.vertices[0][i * 3 + 2];
-              if(x.color) {
-                if(Array.isArray(x.color[0])) col = new THREE.Color(x.color[0][i]);
-                else col = new THREE.Color(x.color[0]);
-              }
+              col = _this.datacolor[i];
               colors[k * 4] = col.r;
               colors[k * 4 + 1] = col.g;
               colors[k * 4 + 2] = col.b;
@@ -538,7 +755,7 @@ Widget.scatter = function(w, h)
 
           var material = new THREE.ShaderMaterial({
               uniforms: {
-                texture: { value: txtur }
+                texture1: { type: 't',  value: txtur }
               },
               vertexShader: [
                 "attribute float size;",
@@ -550,17 +767,18 @@ Widget.scatter = function(w, h)
                   "gl_PointSize = size * ( 300.0 / -mvPosition.z );",
                   "gl_Position = projectionMatrix * mvPosition; }"].join("\n"),
               fragmentShader: [
-                "uniform sampler2D texture;",
+                "uniform sampler2D texture1;",
                 "varying vec4 vColor;",
                 "void main() {",
                   "gl_FragColor = vec4( vColor );",
-                  "gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );",
+                  "gl_FragColor = gl_FragColor * texture2D( texture1, gl_PointCoord.xy );",
                   "if ( gl_FragColor.a < ALPHATEST ) discard; }"].join("\n"),
-              alphaTest: 0.1, // NB ALPHATEST in the shader :(
+              alphaTest: 0.1, // NB ALPHATEST in the shader
               transparent: true
           });
 
           var particleSystem = new THREE.Points(geometry, material);
+          particleSystem.indices = indices; // vertex indices
           _this.pointgroup.add(particleSystem);
         }
       }
@@ -602,13 +820,14 @@ Widget.scatter = function(w, h)
 // helper function to add text to 'object'
     function addText(object, string, scale, x, y, z, color)
     {
+      var log2 = function(x) {return Math.log(x) / Math.log(2);};  // no Math.log2 function in RStudio on Windows :(
       var canvas = document.createElement('canvas');
       var context = canvas.getContext('2d');
       scale = scale / 4;
       context.fillStyle = "#" + color.getHexString();
       context.textAlign = 'center';
       context.font = fontaxis;
-      var size = Math.max(64, Math.pow(2, Math.ceil(Math.log2(context.measureText(string).width))));
+      var size = Math.max(64, Math.pow(2, Math.ceil(log2(context.measureText(string).width))));
       canvas.width = size;
       canvas.height = size;
       scale = scale * (size / 128);
@@ -654,9 +873,9 @@ Widget.scatter = function(w, h)
       var xAxisGeo = new THREE.Geometry();
       var yAxisGeo = new THREE.Geometry();
       var zAxisGeo = new THREE.Geometry();
-      xAxisGeo.vertices.push(v(0, 0, 0), v(1, 0, 0));
-      yAxisGeo.vertices.push(v(0, 0, 0), v(0, 1, 0));
-      zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, 1));
+      xAxisGeo.vertices.push(v(0, 0, 0), v(x.axislength[0], 0, 0));
+      yAxisGeo.vertices.push(v(0, 0, 0), v(0, x.axislength[1], 0));
+      zAxisGeo.vertices.push(v(0, 0, 0), v(0, 0, x.axislength[2]));
       var xAxis = new THREE.Line(xAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
       var yAxis = new THREE.Line(yAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
       var zAxis = new THREE.Line(zAxisGeo, new THREE.LineBasicMaterial({color: axisColor, linewidth: 1}));
@@ -668,9 +887,10 @@ Widget.scatter = function(w, h)
       group.add(zAxis);
       if(x.axisLabels)
       {
-        addText(group, x.axisLabels[0], cexlab, 1.1, 0, 0, axisColor)
-        addText(group, x.axisLabels[1], cexlab, 0, 1.1, 0, axisColor)
-        addText(group, x.axisLabels[2], cexlab, 0, 0, 1.1, axisColor)
+        var dropOff = -0.08;
+        addText(group, x.axisLabels[0], cexlab, x.axislength[0] + .1, dropOff, dropOff, axisColor)
+        addText(group, x.axisLabels[1], cexlab, 0, x.axislength[1] + .1, 0, axisColor)
+        addText(group, x.axisLabels[2], cexlab, dropOff, dropOff, x.axislength[2] + .1, axisColor)
       }
 // Ticks and tick labels
       function tick(length, thickness, axis, ticks, ticklabels)
@@ -697,23 +917,30 @@ Widget.scatter = function(w, h)
     }
 
 // Grid
-    if(x.grid && x.xtick && x.ztick && x.xtick.length == x.ztick.length)
-    {
-      for(var j=1; j < x.xtick.length; j++)
+    function grid(ticks,axis,axislength) {
+      for(var j=1; j < ticks.length; j++)
       {
         var gridline = new THREE.Geometry();
-        gridline.vertices.push(v(x.xtick[j], 0, 0), v(x.xtick[j], 0, 1));
+        if(axis==0) {
+          gridline.vertices.push(v(ticks[j], 0, 0), v(ticks[j], 0, axislength[2]));
+        }
+        else if(axis==2) {
+          gridline.vertices.push(v(0,0,ticks[j]), v(axislength[0],0,ticks[j]));
+        }
         var gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
         gl.type = THREE.Lines;
         group.add(gl);
-        gridline = new THREE.Geometry();
-        gridline.vertices.push(v(0, 0, x.ztick[j]), v(1, 0, x.ztick[j]));
-        gl = new THREE.Line(gridline, new THREE.LineBasicMaterial({color: tickColor, linewidth: 1}));
-        gl.type=THREE.Lines;
-        group.add(gl);
-      }
+      }      
     }
-
+    if(x.grid && x.xtick)
+    {
+      grid(x.xtick,0,x.axislength);
+    }
+    if(x.grid && x.ztick)
+    {
+      grid(x.ztick,2,x.axislength);
+    }
+    
 // Lines
 /* Note that variable line widths are not directly supported by buffered geometry, see for instance:
  * http://stackoverflow.com/questions/32544413/buffergeometry-and-linebasicmaterial-segments-thickness
@@ -722,25 +949,26 @@ Widget.scatter = function(w, h)
  */
     if(x.from && _this.renderer.GL)
     {
-      update_lines();
+      draw_lines(0, null);
     }
-    if(x.vertices.length > 1) _this.frame = 0; // animate
+    if(x.vertices.length > 1 && _this.fps > 0) _this.frame = 0; // animate
     _this.idle = false;
     render();
-  }
+  }; // end of create_plot
 
-/** FIXME There is probably a better/more efficient threejs way to animate, help appreciated */
+/** FIXME Help improving animation performance appreciated */
   _this.update = function()
   {
     if(_this.frame > -1)
     { // animate
       var h = _this.frame / _this.fps;
-      var k = 0; // vertex id
+      var k;
       // update vertices and possibly vertex colors
       for(var j = 0; j < _this.pointgroup.children.length; j++)
       {
         if(_this.pointgroup.children[j].type == "Mesh") // spheres
         {
+          k = _this.pointgroup.children[j].index; // the vertex id
           var x  = _this.options.vertices[_this.scene][k * 3];
           var y  = _this.options.vertices[_this.scene][k * 3 + 1];
           var z  = _this.options.vertices[_this.scene][k * 3 + 2];
@@ -751,15 +979,35 @@ Widget.scatter = function(w, h)
           var dy = (y1 - y) / (_this.fps + 1);
           var dz = (z1 - z) / (_this.fps + 1);
           _this.pointgroup.children[j].geometry.translate(dx, dy, dz);
-          // cache for posterity (easy lookup in update_lines)
+          // cache for posterity (easy lookup in *_lines)
           _this.data[k * 3] = _this.data[k * 3] + dx;
           _this.data[k * 3 + 1] = _this.data[k * 3 + 1] + dy;
           _this.data[k * 3 + 2] = _this.data[k * 3 + 2] + dz;
+          if(_this.options.color.length > 1)
+          {
+            var col1, col2;
+            var a1 = 1; var a2 = 1;
+            if(Array.isArray(_this.options.color[_this.scene]))
+            {
+              col1 = new THREE.Color(_this.options.color[_this.scene][k]);
+            }
+            else col1 = new THREE.Color(_this.options.color[_this.scene]);
+            if(Array.isArray(_this.options.color[_this.scene + 1]))
+            {
+              col2 = new THREE.Color(_this.options.color[_this.scene + 1][k]);
+            } else col2 = new THREE.Color(_this.options.color[_this.scene + 1]);
+            _this.pointgroup.children[j].material.color = new THREE.Color(
+                                         col1.r + (col2.r - col1.r) * h,
+                                         col1.g + (col2.g - col1.g) * h,
+                                         col1.b + (col2.b - col1.b) * h);
+            _this.datacolor[k] = _this.pointgroup.children[j].material.color; // cache vertex color
+          }
           k++;
         } else if(_this.pointgroup.children[j].type == "Points") // buffered
         {
           for(var i = 0; i < _this.pointgroup.children[j].geometry.attributes.position.array.length / 3; i++)
           {
+            k = _this.pointgroup.children[j].indices[i]; // vertex id
             var x  = _this.options.vertices[_this.scene][k * 3];
             var y  = _this.options.vertices[_this.scene][k * 3 + 1];
             var z  = _this.options.vertices[_this.scene][k * 3 + 2];
@@ -769,10 +1017,13 @@ Widget.scatter = function(w, h)
             _this.pointgroup.children[j].geometry.attributes.position.array[i * 3] = x + (x1 - x) * h;
             _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1] = y + (y1 - y) * h;
             _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2] = z + (z1 - z) * h;
-            // cache for posterity (easy lookup in update_lines)
+            // cache for posterity (easy lookup in *_lines)
             _this.data[k*3] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3];
             _this.data[k*3 + 1] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 1];
             _this.data[k*3 + 2] = _this.pointgroup.children[j].geometry.attributes.position.array[i * 3 + 2];
+/* Note: The list of colors and alphas is _either_ length one (same colors for all scenes),
+ * _or_ a list of the same length as the number of scenes specifying per-scene colors.
+ */
             if(_this.options.color.length > 1)
             {
               var col1, col2;
@@ -785,12 +1036,10 @@ Widget.scatter = function(w, h)
               if(Array.isArray(_this.options.color[_this.scene + 1]))
               {
                 col2 = new THREE.Color(_this.options.color[_this.scene + 1][k]);
-                var col3 = new THREE.Color(col1.r + (col2.r - col1.r) * h,
+              } else col2 = new THREE.Color(_this.options.color[_this.scene + 1]);
+              _this.datacolor[k] = new THREE.Color(col1.r + (col2.r - col1.r) * h,
                                            col1.g + (col2.g - col1.g) * h,
-                                           col1.b + (col2.b - col1.b) * h);
-                _this.datacolor[k] = "#" + col3.getHexString(); // cache
-              }
-              else col2 = new THREE.Color(_this.options.color[_this.scene + 1]);
+                                           col1.b + (col2.b - col1.b) * h); // cache color
               if(_this.options.alpha.length > 1)
               {
                 if(Array.isArray(_this.options.alpha[_this.scene])) a1 = parseFloat(_this.options.alpha[_this.scene][k]);
@@ -810,85 +1059,127 @@ Widget.scatter = function(w, h)
         }
       }
 // increase frame and scene counters
+      if(_this.phase && _this.frame == 0) _this.linegroup.children[0].geometry.setDrawRange(0, 0);
       _this.frame++;
       if(_this.frame > _this.fps)
       {
         _this.scene++;
+        s = Math.min(_this.scene, _this.options.from.length - 1);
+        if(_this.options.from) draw_lines(s, null);
         if(_this.options.main && Array.isArray(_this.options.main) && _this.options.main.length > _this.scene)
         {
           _this.main = _this.options.main[_this.scene];
           printInfo(_this.main);
         }
-        if(_this.scene >= _this.options.vertices.length - 1) _this.frame = -1; // done!
-        else _this.frame = 0; // more scenes to animate, reset frame counter
+        if(_this.scene >= _this.options.vertices.length - 1)
+        {
+          _this.frame = -1; // done!
+          return;
+        } else {
+          _this.frame = 0; // more scenes to animate, reset frame counter
+        }
       }
-      if(_this.options.from) update_lines();
+      update_line_positions(_this.scene);
+      update_line_colors(_this.scene, null);
     }
-  }
+  };
 
-  /* buffered lines */
-  function update_lines()
+  /* create or update a set of buffered lines
+   * l: optional array of line colors
+   * s: scene
+   */
+  var draw_lines = function(s, l)
   {
-    var s = _this.scene;
-    if(_this.options.from.length <= s)  s = 0;
+    if(s >= _this.options.from.length)  s = _this.options.from.length - 1;
+
+    if(! _this.linegroup.children || !_this.linegroup.children[0])
+    {
+      // need to create buffers
+      var maxlen = Math.max.apply(Math, _this.options.from.map(function(x) {return x.length;}));
+      if(_this.options.defer && _this.options.defer.from)
+      {
+        maxlen = Math.max.apply(Math, _this.options.defer.from.map(function(x) {return x.length;}).concat(maxlen));
+      }
+      var geometry = new THREE.BufferGeometry();
+      var positions = new Float32Array(maxlen * 6);
+      var colors = new Float32Array(maxlen * 6);
+      geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.computeBoundingSphere();
+      var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.options.lwd, opacity: _this.options.linealpha, transparent: true});
+      var lines = new THREE.LineSegments(geometry, material);
+      _this.linegroup.add(lines);
+    }
     var segments = _this.options.from[s].length;
-    var geometry = new THREE.BufferGeometry();
-    var positions = new Float32Array(segments * 6);
-    var colors = new Float32Array(segments * 6);
+    _this.linegroup.children[0].geometry.setDrawRange(0, 2 * segments);
+    update_line_positions(s);
+    update_line_colors(s, l);
+  };
+
+  /* s: scene index */
+  var update_line_positions = function (s)
+  {
+    var si = Math.min(s, _this.options.from.length - 1);
+    var segments = _this.options.from[si].length;
     for(var i = 0; i < segments; i++)
     {
-      var from = _this.options.from[s][i];
-      var to = _this.options.to[s][i];
+      var from = _this.options.from[si][i];
+      var to = _this.options.to[si][i];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6] = _this.data[from * 3];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 1] = _this.data[from * 3 + 1];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 2] = _this.data[from * 3 + 2];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 3] = _this.data[to * 3];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 4] = _this.data[to * 3 + 1];
+      _this.linegroup.children[0].geometry.attributes.position.array[i * 6 + 5] = _this.data[to * 3 + 2];
+    }
+    _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
+  };
+
+  /* s: scene index, l: optional array of line colors */
+  var update_line_colors = function(s, l)
+  {
+    var si = Math.min(s, _this.options.from.length - 1);
+    var segments = _this.options.from[si].length;
+    for(var i = 0; i < segments; i++)
+    {
+      var from = _this.options.from[si][i];
+      var to = _this.options.to[si][i];
       var c1, c2;
-      if(_this.options.lcol)
+      if(l)
+      {
+        c1 = l[i];
+        c2 = c1;
+      } else if(_this.options.lcol)
       {
         if(Array.isArray(_this.options.lcol))
         {
-          if(Array.isArray(_this.options.lcol[_this.scene]))
-            c1 = new THREE.Color(_this.options.lcol[_this.scene][i]);
+          if(Array.isArray(_this.options.lcol[s]))
+            c1 = new THREE.Color(_this.options.lcol[s][i]);
           else
-            c1 = new THREE.Color(_this.options.lcol[_this.scene]);
+            c1 = new THREE.Color(_this.options.lcol[s]);
         } else c1 = new THREE.Color(_this.options.lcol);
         c2 = c1;
       } else {
         if(_this.datacolor)
         { // interpolate line colors
-          c1 = new THREE.Color(_this.datacolor[from]);
-          c2 = new THREE.Color(_this.datacolor[to]);
+          c1 = _this.datacolor[from];
+          c2 = _this.datacolor[to];
         } else {
           c1 = new THREE.Color(_this.options.color[Math.min(s, _this.options.color.length - 1)]);
           c2 = c1;
         }
       }
-      colors[i * 6] = c1.r;
-      colors[i * 6 + 1] = c1.g;
-      colors[i * 6 + 2] = c1.b;
-      colors[i * 6 + 3] = c2.r;
-      colors[i * 6 + 4] = c2.g;
-      colors[i * 6 + 5] = c2.b;
-      positions[i * 6] = _this.data[from * 3];
-      positions[i * 6 + 1] = _this.data[from * 3 + 1];
-      positions[i * 6 + 2] = _this.data[from * 3 + 2];
-      positions[i * 6 + 3] = _this.data[to * 3];
-      positions[i * 6 + 4] = _this.data[to * 3 + 1];
-      positions[i * 6 + 5] = _this.data[to * 3 + 2];
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6] = c1.r;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 1] = c1.g;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 2] = c1.b;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 3] = c2.r;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 4] = c2.g;
+      _this.linegroup.children[0].geometry.attributes.color.array[i * 6 + 5] = c2.b;
     }
-    geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.computeBoundingSphere();
-    if(_this.linegroup.children && _this.linegroup.children[0])
-    {
-      _this.linegroup.children[0].geometry = geometry;
-      _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
-      _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
-    } else {
-      var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.options.lwd, opacity: _this.options.linealpha, transparent: true});
-      var lines = new THREE.LineSegments(geometry, material);
-      _this.linegroup.add(lines);
-      _this.linegroup.children[0].geometry.attributes.position.needsUpdate = true;
-      _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
-    }
-  }
+    _this.linegroup.children[0].geometry.attributes.color.needsUpdate = true;
+  };
+
+
 
   function printInfo(text)
   {
@@ -905,7 +1196,7 @@ Widget.scatter = function(w, h)
 
   _this.animate = function ()
   {
-    controls.update();
+    _this.controls.update();
     render();
     if(_this.renderer.GL) _this.update();
     if(! _this.idle)  requestAnimationFrame(_this.animate); // (hogs CPU)
@@ -913,7 +1204,10 @@ Widget.scatter = function(w, h)
 
   function render()
   {
-    if(controls.idle && _this.frame < 0) _this.idle = true; // Conserve CPU by terminating render loop when not needed
+    if(_this.controls.state && _this.controls.state < 0 && _this.frame < 0)
+    {
+      _this.idle = true; // Conserve CPU by terminating render loop when not needed
+    }
     // render scenes
     _this.renderer.clear();
     _this.renderer.render(scene, _this.camera);

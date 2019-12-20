@@ -17,7 +17,8 @@ lines3d(s, from, to, lwd = 1, alpha = 1, color)
 
 \item{alpha}{A single numeric value of line alpha (applies to all lines).}
 
-\item{color}{Either a single color value or vector of values as long as ‘from’ of line colors; line colors default to interpolating their vertex point colors.}
+\item{color}{Either a single color value or vector of values as long as \code{from} of line colors;
+line colors default to interpolating their vertex point colors.}
 }
 \value{
 A new scatterplot htmlwidget object.
@@ -33,7 +34,7 @@ This function replaces the old \code{points3d} approach used by \code{scatterplo
  x <- rnorm(5)
  y <- rnorm(5)
  z <- rnorm(5)
- scatterplot3js(x, y, z, pch="@", color=rainbow(5)) \%>\%
+ scatterplot3js(x, y, z, pch="@", color=rainbow(5)) %>%
    lines3d(c(1, 2), c(3, 4), lwd=2)
 }
 }

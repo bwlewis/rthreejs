@@ -15,15 +15,18 @@
 #' @param bg plot background color
 #' @param width the widget container \code{div} width in pixels
 #' @param height the widget container \code{div} height in pixels
+#' @param elementId Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.
 #' @param ... optional additional arguments passed to \code{\link{scatterplot3js}}
 #'
 #' @section Interacting with the plot:
-#' Press and hold the left mouse button (or touch or trackpad equivalent) and move
-#' the mouse to rotate the plot. Press and hold the right mouse button (or touch
-#' equivalent) to pan. Use the mouse scroll wheel or touch equivalent to zoom.
+#' Press and hold the left mouse button, or touch or trackpad equivalent, and move
+#' the mouse to rotate the plot. Press and hold the right mouse button
+#' to pan. Use the mouse scroll wheel to zoom.
 #' If \code{vertex.label}s are specified (see below), moving the mouse pointer over
 #' a point will display the label. Altenatively use \code{vertex.shape} to plot
 #' character names as shown in the examples below.
+#' Set the optional experimental \code{use.orbitcontrols=TRUE} argument to
+#' use a more CPU-efficient but somewhat less fluid mouse/touch interface.
 #'
 #' @section Layout options:
 #' Use the \code{layout} parameter to control the visualization layout by supplying
@@ -53,6 +56,7 @@
 #' a linear interpolation from one layout to the next, providing a simple mechanism
 #' for graph animation. Each layout must have the same number of rows as the number
 #' of vertices in the graph.
+#'
 #' Specify the optional \code{fpl} (frames per layout) parameter to control the
 #' number of interpolating animation frames between layouts. See the examples.
 #'
@@ -60,16 +64,28 @@
 #' and edge colors from one layout to the next, with the restriction that each graph
 #' object must refer to a uniform number of vertices.
 #'
+#' The lists of graphs may optionally include varying vertex and edge colors.
+#' Alternatively, specify a list of \code{vertex.color} vectors (one
+#' for each layout) to animate vertex colors. Similarly, optionally specify a
+#' list of \code{edge.color} vectors to animate edge colors.
+#'
+#' Optionally provide a list of \code{main} title text strings to vary the
+#' title with each animation layout.
+#'
+#' None of the other plot parameters may be animated.
+#'
 #' @section Click animation:
 #' Specify the option \code{click=list} to animate the graph when specified vertices
 #' are clicked interactively, where \code{list} is a named list of animation entries.
 #' Each entry must itself be a list with the following entries
 #' \itemize{
-#' \item{}{ optional a single igraph object with the same number of vertices as \code{g} above (if specified this must be the first entry)}
+#' \item{g}{ optional a single igraph object with the same number of vertices
+#'    as \code{g} above (if specified this must be the first entry)}
 #' \item{layout}{ - optional a single igraph layout, or differential layout if \code{cumulative=TRUE}}
 #' \item{vertex.color}{ - optional single vector of vertex colors}
 #' \item{edge.color}{ - optional single vector of edge colors}
-#' \item{cumulative}{ - optional boolean entry, if \code{TRUE} then vertex positions are added to current plot, default is \code{FALSE}}
+#' \item{cumulative}{ - optional boolean entry, if \code{TRUE} then vertex positions are
+#'   added to current plot, default is \code{FALSE}}
 #' }
 #' At least one of \code{g} or \code{layout} must be specified in each animation list entry.
 #' The layouts and colors may be alternatively imbedded in the igraph object itself.
@@ -78,6 +94,19 @@
 #' vertex is clicked. For instance, to trigger animations when vertices number 1 or 5 are
 #' clicked, include list entries labeled \code{"1"} and \code{"5"}.
 #' See the demos in \code{demo(package="threejs")} for detailed examples.
+#'
+#' @section Other interactions:
+#' Specify the argument \code{brush=TRUE} to highlight a clicked vertex and
+#' its directly connected edges (click off of a vertex to reset the display).
+#' Optionally set the \code{highlight=<hex color>} and \code{lowlight=<hex color>}
+#' to manually control the brushing display colors.
+#'
+#' @section Crosstalk:
+#' \code{graphjs()} works with
+#' crosstalk selection (but not filtering yet); see https://rstudio.github.io/crosstalk/.
+#' Enable crosstalk by supplying the optional agrument \code{crosstalk=df}, where \code{df} is a
+#' crosstalk-SharedData data.frame-like object with the same number of rows as graph vertices
+#' (see the examples).
 #'
 #' @note
 #' Edge transparency values specified as part of \code{edge.color} are ignored, however
@@ -95,7 +124,7 @@
 #' @examples
 #' set.seed(1)
 #' g <- sample_islands(3, 10, 5/10, 1)
-#' i <- cluster_optimal(g)
+#' i <- cluster_louvain(g)
 #' (graphjs(g, vertex.color=c("orange", "green", "blue")[i$membership], vertex.shape="sphere"))
 #'
 #' # Les Miserables Character Co-appearance Data
@@ -105,7 +134,7 @@
 #' # ...plot Character names
 #' (graphjs(LeMis, vertex.shape=V(LeMis)$label))
 #'
-#' # SNAP Facebook ego network dataset (a nice medium-sized network)
+#' # SNAP Facebook ego network dataset
 #' data("ego")
 #' (graphjs(ego, bg="black"))
 #'
@@ -136,6 +165,16 @@
 #'    vertex.color=rainbow(5), vertex.shape="sphere", edge.width=3)
 #'
 #' # see `demo(package="threejs") for more animation demos.
+#'
+#' # A crosstalk example
+#' library(crosstalk)
+#' library(DT)
+#' data(LeMis)
+#' sd = SharedData$new(data.frame(Name = V(LeMis)$label))
+#' print(bscols(
+#'   graphjs(LeMis, brush=TRUE, crosstalk=sd),
+#'   datatable(sd, rownames=FALSE, options=list(dom='tp'))
+#' ))
 #' }
 #'
 #' @importFrom igraph layout_with_fr norm_coords V E as_edgelist
@@ -144,8 +183,58 @@ graphjs <- function(g, layout,
                     vertex.color, vertex.size, vertex.shape, vertex.label,
                     edge.color, edge.width, edge.alpha,
                     main="", bg="white",
-                    width=NULL, height=NULL, ...)
+                    width=NULL, height=NULL,
+                    elementId=NULL, 
+                    ...)
 {
+  if(is.null(elementId))
+  {
+    elementId <- paste0(sample(c(letters, LETTERS, 0:9), 10, replace=TRUE), collapse="")
+  }
+  
+  # Check for package version < 0.3.0 options
+  warn_upgrade <- FALSE
+  nodes <- list(...)$nodes
+  edges <- list(...)$edges
+  if(! missing(g) && is.list(g) && is.data.frame(g[[1]]) && "edges" %in% names(g))
+  {
+    warn_upgrade <- TRUE
+    edges <- g$edges
+    nodes <- g$nodes
+  }
+  if(! missing(g) && is.data.frame(g))
+  {
+    warn_upgrade <- TRUE
+    edges <- g
+  }
+  if(! missing(layout) && is.data.frame(layout))
+  {
+    warn_upgrade <- TRUE
+    nodes <- layout
+    layout <- function(x) layout_with_fr(x, dim=3)
+  }
+  if(! is.null(edges))
+  {
+    warn_upgrade <- TRUE
+    if(! missing(g) && "color" %in% names(g)) edge.color <- g$color
+    g <- igraph::graph_from_data_frame(edges[, 1:2])
+    igraph::V(g)$color <- "orange"
+  }
+  if(! is.null(nodes))
+  {
+    warn_upgrade <- TRUE
+    nodes <- nodes[order(nodes$id), ]
+    igraph::V(g)$name <- nodes$label
+    vertex.label <- nodes$label
+    vertex.size <- nodes$size
+    vertex.color <- nodes$color
+  }
+  tryCatch(rm(list=c("nodes", "edges")), warning=invisible)
+  if(warn_upgrade)
+  {
+    warning("Please upgrade to the new graphjs() interface in version >= 0.3.0 of the threejs package.\n  See ?graphjs for help.")
+  }
+
   # check for list of graphs (edge animation)
   if (is.list(g) && "igraph" %in% class(g[[1]]))
   {
@@ -218,16 +307,21 @@ graphjs <- function(g, layout,
 
   options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color, from=from, to=to,
                     lwd=edge.width, linealpha=edge.alpha, axis=FALSE, grid=FALSE, center=TRUE,
-                    bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), opts)
+                    bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), elementId=elementId, opts)
   if (!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if (!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   options$options <- TRUE
-  options <- do.call("scatterplot3js", args=options)
-  htmlwidgets::createWidget(
+  opt <- do.call("scatterplot3js", args=options)
+  ans <- htmlwidgets::createWidget(
           name = "scatterplotThree",
-          x = options,
+          x = opt,
           width = width,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
-          package = "threejs")
+          dependencies = crosstalk::crosstalkLibs(),
+          package = "threejs",
+          elementId = elementId)
+  ans$call <- match.call()
+  ans$vcache <- layout
+  ans
 }
