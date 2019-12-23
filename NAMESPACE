@@ -3,6 +3,8 @@
 export(globeOutput)
 export(globejs)
 export(graphjs)
+export(light_ambient)
+export(light_directional)
 export(lines3d)
 export(points3d)
 export(render)

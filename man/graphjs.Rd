@@ -159,6 +159,12 @@ g <- sample_islands(3, 10, 5/10, 1)
 i <- cluster_louvain(g)
 (graphjs(g, vertex.color=c("orange", "green", "blue")[i$membership], vertex.shape="sphere"))
 
+# similar example with user-defined directional lighting
+l1 = light_directional(color = "red", position = c(0, -0.8, 0.5))
+l2 = light_directional(color = "yellow", position = c(0, 0.8, -0.5))
+l3 = light_ambient(color = "#555555")
+(graphjs(g, vertex.color="gray", vertex.shape="sphere", lights=list(l1, l2, l3)))
+
 # Les Miserables Character Co-appearance Data
 data("LeMis")
 (graphjs(LeMis))

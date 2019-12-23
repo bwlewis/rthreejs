@@ -122,6 +122,7 @@ Use the optional \code{...} argument to explicitly supply \code{axisLabels}
 as a three-element character vector, see the examples below. A few additional
 plot options are also supported:
 \itemize{
+  \item{"lights"}{ a list of \code{light_ambient} and \code{light_directional} objects}
   \item{"cex.lab"}{ font size scale factor for the axis labels}
   \item{"cex.axis"}{ font size scale factor for the axis tick labels}
   \item{"font.axis"}{ CSS font string used for all axis labels}
@@ -253,6 +254,6 @@ scatterplot3js(x, y, z, pch="@") \%>\%
 The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{http://htmlwidgets.org}.
 }
 \seealso{
-scatterplot3d, rgl, points3d, lines3d
+scatterplot3d, rgl, points3d, lines3d, light_ambient, light_directional
 }
 

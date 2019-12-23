@@ -4,8 +4,8 @@ dependencies:
     src: "htmlwidgets/lib/jquery"
     script: jquery.min.js
   - name: threejs
-    version: 85
-    src: "htmlwidgets/lib/threejs-85"
+    version: 111
+    src: "htmlwidgets/lib/threejs-111"
     script:
       - three.min.js
       - Detector.js

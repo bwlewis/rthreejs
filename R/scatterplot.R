@@ -75,6 +75,7 @@
 #' as a three-element character vector, see the examples below. A few additional
 #' plot options are also supported:
 #' \itemize{
+#'   \item{"lights"}{ a list of \code{light_ambient} and \code{light_directional} objects}
 #'   \item{"cex.lab"}{ font size scale factor for the axis labels}
 #'   \item{"cex.axis"}{ font size scale factor for the axis tick labels}
 #'   \item{"font.axis"}{ CSS font string used for all axis labels}
@@ -202,7 +203,7 @@
 #'   ))
 #' }
 #'
-#' @seealso scatterplot3d, rgl, points3d, lines3d
+#' @seealso scatterplot3d, rgl, points3d, lines3d, light_ambient, light_directional
 #' @importFrom stats na.omit
 #' @importFrom crosstalk is.SharedData
 #' @export
@@ -656,6 +657,26 @@ lines3d <- function(s, from, to, lwd=1, alpha=1, color)
   ans$vcache <- s$vcache
   ans$call <- match.call()
   ans
+}
+
+#' Plot illumination
+#' @param color the light color
+#' @param position the light position as an (x, y, z) coordinate vector with entries in [-1, 1]
+#' @return An object for use with the \code{lights} argument in \code{scatterplot3js} and \code{graphjs}.
+#' @export
+light_directional <- function(color = "#eeeeee", position = c(0, 0, 0))
+{
+  if(length(position) != 3) stop("Specify position as x, y, z coordinate vector, each in range [-1, 1].")
+  list(type = "directional", color = color, position = position)
+}
+
+#' Plot illumination
+#' @param color the ambient light color
+#' @return An object for use with the \code{lights} argument in \code{scatterplot3js} and \code{graphjs}.
+#' @export
+light_ambient <- function(color = "#eeeeee")
+{
+  list(type = "ambient", color = color)
 }
 
 

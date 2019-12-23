@@ -627,15 +627,21 @@ Widget.scatter = function(w, h)
       if(!_this.fps) _this.fps = 200;           // default frames per scene
 
       // lights
-      /* FIXME add user-defined lights */
-      light = new THREE.DirectionalLight(0xffffff);
-      light.position.set(x.axislength[0],x.axislength[1],x.axislength[3]);
-      scene.add(light);
-      light = new THREE.DirectionalLight(0x002255);
-      light.position.set(-x.axislength[0], -x.axislength[1], -x.axislength[2]);
-      scene.add(light);
-      light = new THREE.AmbientLight(0x444444);
-      scene.add(light );
+      if(x.lights) {
+        for(var i = 0; i < x.lights.length; i++) {
+          if(x.lights[i].type == "ambient") {
+            var light = new THREE.AmbientLight(x.lights[i].color);
+            scene.add(light)
+          } else if(x.lights[i].type == "directional") {
+            var light = new THREE.DirectionalLight(x.lights[i].color);
+            light.position.set(x.lights[i].position[0], x.lights[i].position[1], x.lights[i].position[2]);
+            scene.add(light)
+          }
+        }
+      } else {
+        var light = new THREE.AmbientLight(0xa6a6a6);
+        scene.add(light );
+      }
 
       // Handle mupltiple kinds of glyphs
       /* FIXME avoid multiple data scans here and below (pre-sort by pch, for instance) */
@@ -750,9 +756,9 @@ Widget.scatter = function(w, h)
               k++;
             }
           }
-          geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-          geometry.addAttribute('color', new THREE.BufferAttribute(colors, 4));
-          geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
+          geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geometry.setAttribute('color', new THREE.BufferAttribute(colors, 4));
+          geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
           geometry.computeBoundingSphere();
 
           var material = new THREE.ShaderMaterial({
@@ -1105,8 +1111,8 @@ Widget.scatter = function(w, h)
       var geometry = new THREE.BufferGeometry();
       var positions = new Float32Array(maxlen * 6);
       var colors = new Float32Array(maxlen * 6);
-      geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
       geometry.computeBoundingSphere();
       var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors, linewidth: _this.options.lwd, opacity: _this.options.linealpha, transparent: true});
       var lines = new THREE.LineSegments(geometry, material);
