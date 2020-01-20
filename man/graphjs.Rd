@@ -4,9 +4,23 @@
 \alias{graphjs}
 \title{Interactive 3D Graph Visualization}
 \usage{
-graphjs(g, layout, vertex.color, vertex.size, vertex.shape, vertex.label,
-  edge.color, edge.width, edge.alpha, main = "", bg = "white",
-  width = NULL, height = NULL, ...)
+graphjs(
+  g,
+  layout,
+  vertex.color,
+  vertex.size,
+  vertex.shape,
+  vertex.label,
+  edge.color,
+  edge.width,
+  edge.alpha,
+  main = "",
+  bg = "white",
+  width = NULL,
+  height = NULL,
+  elementId = NULL,
+  ...
+)
 }
 \arguments{
 \item{g}{an \code{\link{igraph}} graph object or a list of \code{igraph} objects (see notes)}
@@ -34,6 +48,8 @@ graphjs(g, layout, vertex.color, vertex.size, vertex.shape, vertex.label,
 \item{width}{the widget container \code{div} width in pixels}
 
 \item{height}{the widget container \code{div} height in pixels}
+
+\item{elementId}{Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.}
 
 \item{...}{optional additional arguments passed to \code{\link{scatterplot3js}}}
 }

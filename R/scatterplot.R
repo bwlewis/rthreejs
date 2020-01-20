@@ -52,6 +52,7 @@
 #' after first scaling them all to a unit length. Default \code{c(1,1,1)} thus results
 #' in the axes of equal length. If \code{NA}, the displayed axes will be scaled to the
 #' ratios determined from \code{c(xlim,ylim,zlim)}.
+#' @param elementId Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.
 #' @param ... Additional options (see note).
 #'
 #' @return
@@ -227,8 +228,13 @@ scatterplot3js <- function(
   cex.symbols = 1,
   xlim, ylim, zlim,
   axis.scale = c(1,1,1),
-  pch="@", ...)
+  pch="@", 
+  elementId=NULL, ...)
 {
+  if(is.null(elementId))
+  {
+    elementId <- paste0(sample(c(letters, LETTERS, 0:9), 10, replace=TRUE), collapse="")
+  }
   # validate input
   if (!missing(y) && !missing(z)) {
     if (is.matrix(x))
@@ -456,7 +462,8 @@ scatterplot3js <- function(
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           dependencies = crosstalk::crosstalkLibs(),
-          package = "threejs")
+          package = "threejs",
+          elementId=elementId)
   ans$call <- match.call()
   ans$vcache <- vcache # cached, un-transformed points for re-use (see points3d)
   ans$points3d <- function(...) stop("Syntax for adding points has changed: See ?points3d for examples.")

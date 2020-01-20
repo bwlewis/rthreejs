@@ -15,6 +15,7 @@
 #' @param bg plot background color
 #' @param width the widget container \code{div} width in pixels
 #' @param height the widget container \code{div} height in pixels
+#' @param elementId Use an explicit element ID for the widget (rather than an automatically generated one). Useful if you have other JavaScript that needs to explicitly discover and interact with a specific widget instance.
 #' @param ... optional additional arguments passed to \code{\link{scatterplot3js}}
 #'
 #' @section Interacting with the plot:
@@ -188,8 +189,15 @@ graphjs <- function(g, layout,
                     vertex.color, vertex.size, vertex.shape, vertex.label,
                     edge.color, edge.width, edge.alpha,
                     main="", bg="white",
-                    width=NULL, height=NULL, ...)
+                    width=NULL, height=NULL,
+                    elementId=NULL, 
+                    ...)
 {
+  if(is.null(elementId))
+  {
+    elementId <- paste0(sample(c(letters, LETTERS, 0:9), 10, replace=TRUE), collapse="")
+  }
+  
   # Check for package version < 0.3.0 options
   warn_upgrade <- FALSE
   nodes <- list(...)$nodes
@@ -305,7 +313,7 @@ graphjs <- function(g, layout,
 
   options <- c(list(x=layout, pch=pch, size=vertex.size, color=vertex.color, from=from, to=to,
                     lwd=edge.width, linealpha=edge.alpha, axis=FALSE, grid=FALSE, center=TRUE,
-                    bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), opts)
+                    bg=bg, main=main, xlim=c(-1, 1), ylim=c(-1, 1), zlim=c(-1, 1)), elementId=elementId, opts)
   if (!all(unlist(Map(is.na, edge.color)))) options$lcol <- edge.color
   if (!(length(vertex.label) == 1 && is.na(vertex.label))) options$labels <- vertex.label
   options$options <- TRUE
@@ -317,7 +325,8 @@ graphjs <- function(g, layout,
           height = height,
           htmlwidgets::sizingPolicy(padding = 0, browser.fill = TRUE),
           dependencies = crosstalk::crosstalkLibs(),
-          package = "threejs")
+          package = "threejs",
+          elementId = elementId)
   ans$call <- match.call()
   ans$vcache <- layout
   ans
