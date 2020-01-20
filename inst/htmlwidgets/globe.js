@@ -240,7 +240,10 @@ HTMLWidgets.widget(
               opacity: x.arcsOpacity,
               linewidth: size
          });
-         curve = new THREE.Line(path.createPointsGeometry(20), curveMaterial);
+//         var curve = new THREE.Line(path.createPointsGeometry(20), curveMaterial);
+         var pathgeo = new THREE.Geometry();
+         pathgeo.setFromPoints(path.getPoints(20));
+         var curve = new THREE.Line(pathgeo, curveMaterial);
          arcs.add(curve);
       }
     }
