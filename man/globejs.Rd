@@ -4,10 +4,24 @@
 \alias{globejs}
 \title{Plot Data on 3D Globes}
 \usage{
-globejs(img = system.file("images/world.jpg", package = "threejs"), lat, long,
-  value = 40, color = "#00ffff", arcs, arcsColor = "#99aaff",
-  arcsHeight = 0.4, arcsLwd = 1, arcsOpacity = 0.2, atmosphere = FALSE,
-  bg = "black", height = NULL, width = NULL, elementId = NULL, ...)
+globejs(
+  img = system.file("images/world.jpg", package = "threejs"),
+  lat,
+  long,
+  value = 40,
+  color = "#00ffff",
+  arcs,
+  arcsColor = "#99aaff",
+  arcsHeight = 0.4,
+  arcsLwd = 1,
+  arcsOpacity = 0.2,
+  atmosphere = FALSE,
+  bg = "black",
+  height = NULL,
+  width = NULL,
+  elementId = NULL,
+  ...
+)
 }
 \arguments{
 \item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
@@ -91,6 +105,7 @@ The latitude and longitude rotation values are relative to the center of
 the map image. Their default values of zero radians result in the front of the
 globe corresponding to the center of the flat map image.
 }
+
 \examples{
 # Plot flights to frequent destinations from Callum Prentice's
 # global flight data set,
@@ -170,4 +185,3 @@ The three.js project \url{http://threejs.org}.
 An excellent overview of available map coordinate reference systems (PDF):
 \url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
 }
-

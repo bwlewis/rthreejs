@@ -38,4 +38,3 @@ This function replaces the old \code{points3d} approach used by \code{scatterplo
    lines3d(c(1, 2), c(3, 4), lwd=2)
 }
 }
-

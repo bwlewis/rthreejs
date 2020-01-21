@@ -4,12 +4,34 @@
 \alias{scatterplot3js}
 \title{Interactive 3D Scatterplots}
 \usage{
-scatterplot3js(x, y, z, height = NULL, width = NULL, axis = TRUE,
-  num.ticks = c(6, 6, 6), x.ticklabs = NULL, y.ticklabs = NULL,
-  z.ticklabs = NULL, color = "steelblue", size = cex.symbols,
-  stroke = "black", flip.y = TRUE, grid = TRUE, renderer = c("auto",
-  "canvas"), signif = 8, bg = "#ffffff", cex.symbols = 1, xlim, ylim,
-  zlim, axis.scale = c(1, 1, 1), pch = "@", elementId = NULL, ...)
+scatterplot3js(
+  x,
+  y,
+  z,
+  height = NULL,
+  width = NULL,
+  axis = TRUE,
+  num.ticks = c(6, 6, 6),
+  x.ticklabs = NULL,
+  y.ticklabs = NULL,
+  z.ticklabs = NULL,
+  color = "steelblue",
+  size = cex.symbols,
+  stroke = "black",
+  flip.y = TRUE,
+  grid = TRUE,
+  renderer = c("auto", "canvas"),
+  signif = 8,
+  bg = "#ffffff",
+  cex.symbols = 1,
+  xlim,
+  ylim,
+  zlim,
+  axis.scale = c(1, 1, 1),
+  pch = "@",
+  elementId = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{Either a vector of x-coordinate values or a  three-column
@@ -190,6 +212,7 @@ Enable crosstalk with the optional agrument \code{crosstalk=df}, where \code{df}
 crosstalk-SharedData data.frame-like object with the same number of rows as points
 (\code{scatterplot3js()}) or graph vertices (\code{graphjs()}) (see the examples).
 }
+
 \examples{
 # Example 1 from the scatterplot3d package (cf.)
 z <- seq(-10, 10, 0.1)
@@ -258,4 +281,3 @@ The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{h
 \seealso{
 scatterplot3d, rgl, points3d, lines3d, light_ambient, light_directional
 }
-

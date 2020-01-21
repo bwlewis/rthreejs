@@ -17,4 +17,3 @@ An object for use with the \code{lights} argument in \code{scatterplot3js} and \
 \description{
 Plot illumination
 }
-

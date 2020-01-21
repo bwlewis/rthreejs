@@ -4,9 +4,23 @@
 \alias{graphjs}
 \title{Interactive 3D Graph Visualization}
 \usage{
-graphjs(g, layout, vertex.color, vertex.size, vertex.shape, vertex.label,
-  edge.color, edge.width, edge.alpha, main = "", bg = "white",
-  width = NULL, height = NULL, elementId = NULL, ...)
+graphjs(
+  g,
+  layout,
+  vertex.color,
+  vertex.size,
+  vertex.shape,
+  vertex.label,
+  edge.color,
+  edge.width,
+  edge.alpha,
+  main = "",
+  bg = "white",
+  width = NULL,
+  height = NULL,
+  elementId = NULL,
+  ...
+)
 }
 \arguments{
 \item{g}{an \code{\link{igraph}} graph object or a list of \code{igraph} objects (see notes)}
@@ -155,6 +169,7 @@ Enable crosstalk by supplying the optional agrument \code{crosstalk=df}, where \
 crosstalk-SharedData data.frame-like object with the same number of rows as graph vertices
 (see the examples).
 }
+
 \examples{
 set.seed(1)
 g <- sample_islands(3, 10, 5/10, 1)
@@ -224,4 +239,3 @@ The three.js project \url{http://threejs.org}.
 \seealso{
 \code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 }
-

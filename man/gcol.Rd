@@ -15,4 +15,3 @@ a list of 3-hex-digit color values and scalar numeric alpha values
 \description{
 A basic internal color format parser
 }
-
