@@ -29,4 +29,4 @@ Suggests:
     maps
 Enhances: knitr, shiny
 Encoding: UTF-8
-RoxygenNote: 7.0.0
+RoxygenNote: 5.0.1

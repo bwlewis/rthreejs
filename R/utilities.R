@@ -73,7 +73,7 @@ gopts <- function(g)
   from <- g$from
   to <- g$to
   alpha <- NULL
-  if ("igraph" %in% class(g[[1]]))
+  if (inherits(g[[1]], "igraph"))
   {
     from <- as_edgelist(g[[1]])
     to   <- from[, 2] - 1

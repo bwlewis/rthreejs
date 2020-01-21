@@ -520,7 +520,7 @@ setMethod("vertices", signature(...="scatterplotThree"),
 #' @export
 points3d <- function(s, x, y, z, color="orange", pch="@", size=1, labels="")
 {
-  stopifnot("scatterplotThree" %in% class(s))
+  stopifnot(inherits(s, "scatterplotThree"))
   options <- s$x
   N <- length(options$vertices)  # number of animation frames, update last one
   # validate input
@@ -624,7 +624,7 @@ points3d <- function(s, x, y, z, color="orange", pch="@", size=1, labels="")
 #' @export
 lines3d <- function(s, from, to, lwd=1, alpha=1, color)
 {
-  stopifnot("scatterplotThree" %in% class(s))
+  stopifnot(inherits(s, "scatterplotThree"))
   options <- s$x
   lf <- length(from)
   if(lf != length(to)) stop("`from` and `to` must be the same length")

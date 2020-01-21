@@ -34,7 +34,7 @@ This function replaces the old \code{points3d} approach used by \code{scatterplo
  x <- rnorm(5)
  y <- rnorm(5)
  z <- rnorm(5)
- scatterplot3js(x, y, z, pch="@", color=rainbow(5)) %>%
+ scatterplot3js(x, y, z, pch="@", color=rainbow(5)) \%>\%
    lines3d(c(1, 2), c(3, 4), lwd=2)
 }
 }

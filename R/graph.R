@@ -198,51 +198,8 @@ graphjs <- function(g, layout,
     elementId <- paste0(sample(c(letters, LETTERS, 0:9), 10, replace=TRUE), collapse="")
   }
   
-  # Check for package version < 0.3.0 options
-  warn_upgrade <- FALSE
-  nodes <- list(...)$nodes
-  edges <- list(...)$edges
-  if(! missing(g) && is.list(g) && is.data.frame(g[[1]]) && "edges" %in% names(g))
-  {
-    warn_upgrade <- TRUE
-    edges <- g$edges
-    nodes <- g$nodes
-  }
-  if(! missing(g) && is.data.frame(g))
-  {
-    warn_upgrade <- TRUE
-    edges <- g
-  }
-  if(! missing(layout) && is.data.frame(layout))
-  {
-    warn_upgrade <- TRUE
-    nodes <- layout
-    layout <- function(x) layout_with_fr(x, dim=3)
-  }
-  if(! is.null(edges))
-  {
-    warn_upgrade <- TRUE
-    if(! missing(g) && "color" %in% names(g)) edge.color <- g$color
-    g <- igraph::graph_from_data_frame(edges[, 1:2])
-    igraph::V(g)$color <- "orange"
-  }
-  if(! is.null(nodes))
-  {
-    warn_upgrade <- TRUE
-    nodes <- nodes[order(nodes$id), ]
-    igraph::V(g)$name <- nodes$label
-    vertex.label <- nodes$label
-    vertex.size <- nodes$size
-    vertex.color <- nodes$color
-  }
-  tryCatch(rm(list=c("nodes", "edges")), warning=invisible)
-  if(warn_upgrade)
-  {
-    warning("Please upgrade to the new graphjs() interface in version >= 0.3.0 of the threejs package.\n  See ?graphjs for help.")
-  }
-
   # check for list of graphs (edge animation)
-  if (is.list(g) && "igraph" %in% class(g[[1]]))
+  if (is.list(g) && inherits(g[[1]], "igraph"))
   {
     from <- lapply(g, as_edgelist, names=FALSE)
     to   <- lapply(from, function(x) x[, 2])
@@ -259,7 +216,7 @@ graphjs <- function(g, layout,
     g <- g[[1]]
   } else # single plot
   {
-    if (!("igraph" %in% class(g))) stop("g must be an igraph object")
+    if (!(inherits(g, "igraph"))) stop("g must be an igraph object")
     from <- as_edgelist(g, names=FALSE)
     to   <- from[, 2]
     from <- from[, 1]

@@ -4,23 +4,9 @@
 \alias{graphjs}
 \title{Interactive 3D Graph Visualization}
 \usage{
-graphjs(
-  g,
-  layout,
-  vertex.color,
-  vertex.size,
-  vertex.shape,
-  vertex.label,
-  edge.color,
-  edge.width,
-  edge.alpha,
-  main = "",
-  bg = "white",
-  width = NULL,
-  height = NULL,
-  elementId = NULL,
-  ...
-)
+graphjs(g, layout, vertex.color, vertex.size, vertex.shape, vertex.label,
+  edge.color, edge.width, edge.alpha, main = "", bg = "white",
+  width = NULL, height = NULL, elementId = NULL, ...)
 }
 \arguments{
 \item{g}{an \code{\link{igraph}} graph object or a list of \code{igraph} objects (see notes)}

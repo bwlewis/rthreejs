@@ -4,24 +4,10 @@
 \alias{globejs}
 \title{Plot Data on 3D Globes}
 \usage{
-globejs(
-  img = system.file("images/world.jpg", package = "threejs"),
-  lat,
-  long,
-  value = 40,
-  color = "#00ffff",
-  arcs,
-  arcsColor = "#99aaff",
-  arcsHeight = 0.4,
-  arcsLwd = 1,
-  arcsOpacity = 0.2,
-  atmosphere = FALSE,
-  bg = "black",
-  height = NULL,
-  width = NULL,
-  elementId = NULL,
-  ...
-)
+globejs(img = system.file("images/world.jpg", package = "threejs"), lat, long,
+  value = 40, color = "#00ffff", arcs, arcsColor = "#99aaff",
+  arcsHeight = 0.4, arcsLwd = 1, arcsOpacity = 0.2, atmosphere = FALSE,
+  bg = "black", height = NULL, width = NULL, elementId = NULL, ...)
 }
 \arguments{
 \item{img}{A character string representing a file path or URI of an image to plot on the globe surface.}
