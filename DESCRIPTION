@@ -7,8 +7,8 @@ Version: 0.3.3
 Date: 2020-01-19
 Authors@R: c(
     person("B. W.", "Lewis", role=c("aut","cre","cph"), email="blewis@illposed.net"),
-    person(given="Three.js authors", role="cph", comment="(three.js library)"),
-    person(given="jQuery Foundation", role="cph", comment="(jQuery library)"),
+    person(given="Three.js authors", role="cph", comment="three.js library"),
+    person(given="jQuery Foundation", role="cph", comment="jQuery library"),
     person("Alexey", "Stukalov", role=("ctb"), email="astukalov@gmail.com"),
     person("Yihui","Xie", role=("ctb"), email="xie@yihui.name"),
     person("Andreas", "Briese", role=("ctb"), email="ab@edutoolbox.de"),
