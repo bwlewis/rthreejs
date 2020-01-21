@@ -53,8 +53,8 @@ axes will be displayed.}
 
 \item{num.ticks}{A three-element or one-element vector with the suggested number of
 ticks to display per axis. If a one-element vector, this number of ticks will be used
-for the axis with the smallest \code{axis.scale}, and the number of ticks on the remaining 
-axes will be increased proportionally to the \code{axis.scale} values. Set to NULL to not display 
+for the axis with the smallest \code{axis.scale}, and the number of ticks on the remaining
+axes will be increased proportionally to the \code{axis.scale} values. Set to NULL to not display
 ticks. The number of ticks may be adjusted by the program.}
 
 \item{x.ticklabs}{A vector of tick labels of length \code{num.ticks[1]}, or
@@ -126,7 +126,7 @@ in \code{x, y, z}.
 \section{Scaling the axes}{
 
 With the default values, the displayed axes are scaled to equal one-unit length. If
-you instead need to maintain the relative distances between points in the original data, 
+you instead need to maintain the relative distances between points in the original data,
 and the same distance between the tick labels, pass \code{num.ticks=6} (or any other single
 number) and \code{axis.scale=NA}
 }
