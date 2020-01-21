@@ -1,5 +1,7 @@
-The 'threejs' package for R is licensed under the MIT library,
-Copyright (c) 2015-2020 Bryan W. Lewis.
+The 'threejs' package for R is licensed under the MIT license:
+
+YEAR: 2020
+COPYRIGHT HOLDER: Bryan W. Lewis
 
 The 'threejs' package includes other open source software components. The
 following is a list of these components (full copies of the license agreements
