@@ -16,8 +16,8 @@
 #' axes will be displayed.
 #' @param num.ticks A three-element or one-element vector with the suggested number of
 #' ticks to display per axis. If a one-element vector, this number of ticks will be used
-#' for the axis with the smallest \code{axis.scale}, and the number of ticks on the remaining 
-#' axes will be increased proportionally to the \code{axis.scale} values. Set to NULL to not display 
+#' for the axis with the smallest \code{axis.scale}, and the number of ticks on the remaining
+#' axes will be increased proportionally to the \code{axis.scale} values. Set to NULL to not display
 #' ticks. The number of ticks may be adjusted by the program.
 #' @param x.ticklabs A vector of tick labels of length \code{num.ticks[1]}, or
 #' \code{NULL} to show numeric labels.
@@ -61,7 +61,7 @@
 #'
 #' @section Scaling the axes:
 #' With the default values, the displayed axes are scaled to equal one-unit length. If
-#' you instead need to maintain the relative distances between points in the original data, 
+#' you instead need to maintain the relative distances between points in the original data,
 #' and the same distance between the tick labels, pass \code{num.ticks=6} (or any other single
 #' number) and \code{axis.scale=NA}
 #' @section Interacting with the plot:
@@ -228,7 +228,7 @@ scatterplot3js <- function(
   cex.symbols = 1,
   xlim, ylim, zlim,
   axis.scale = c(1,1,1),
-  pch="@", 
+  pch="@",
   elementId=NULL, ...)
 {
   if(is.null(elementId))
@@ -278,7 +278,7 @@ scatterplot3js <- function(
 
   # javascript does not like dots in names
   names(options) <- gsub("\\.", "", names(options))
-  
+
   if (!is.null(options$highlight)) options$highlight <- gcol(options$highlight)$color
   if (!is.null(options$lowlight)) options$lowlight <- gcol(options$lowlight)$color
 
@@ -384,10 +384,10 @@ scatterplot3js <- function(
     options$ytick <- p2
     options$ztick <- p3
   }
-  
+
   names(axis.scale) <- NULL
   options$axislength <- axis.scale
-  
+
   # lines
   if ("from" %in% names(options))
   {
@@ -515,7 +515,7 @@ setMethod("vertices", signature(...="scatterplotThree"),
 #' # with the `vertices()` function:
 #' data(LeMis)
 #' graphjs(LeMis) %>% points3d(vertices(.), color="red", pch=V(LeMis)$label)
-#' 
+#'
 #' }
 #' @export
 points3d <- function(s, x, y, z, color="orange", pch="@", size=1, labels="")

@@ -190,14 +190,14 @@ graphjs <- function(g, layout,
                     edge.color, edge.width, edge.alpha,
                     main="", bg="white",
                     width=NULL, height=NULL,
-                    elementId=NULL, 
+                    elementId=NULL,
                     ...)
 {
   if(is.null(elementId))
   {
     elementId <- paste0(sample(c(letters, LETTERS, 0:9), 10, replace=TRUE), collapse="")
   }
-  
+
   # check for list of graphs (edge animation)
   if (is.list(g) && inherits(g[[1]], "igraph"))
   {

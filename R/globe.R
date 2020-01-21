@@ -157,7 +157,7 @@ globejs <- function(
   atmosphere=FALSE,
   bg="black",
   height = NULL,
-  width = NULL, 
+  width = NULL,
   elementId=NULL,
   ...)
 {
@@ -165,7 +165,6 @@ globejs <- function(
   {
     elementId <- paste0(sample(c(letters, LETTERS, 0:9), 10, replace=TRUE), collapse="")
   }
-  
   if (missing(lat) || missing(long))
   {
     lat <- NULL
