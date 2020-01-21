@@ -15,7 +15,7 @@ Authors@R: c(
     )
 URL: https://bwlewis.github.io/rthreejs
 BugReports: https://github.com/bwlewis/rthreejs/issues
-License: MIT
+License: MIT + file LICENSE
 Depends:
     R (>= 3.0.0),
     igraph (>= 1.0.0)
