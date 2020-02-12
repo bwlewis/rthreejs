@@ -93,6 +93,7 @@ devtools::install_github("bwlewis/rthreejs")
 
 See `?scatterplot3d` for more examples and detailed help.
 ```r
+library(threejs)
 z <- seq(-10, 10, 0.1)
 x <- cos(z)
 y <- sin(z)
