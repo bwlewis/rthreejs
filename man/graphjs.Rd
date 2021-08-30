@@ -193,10 +193,14 @@ l3 = light_ambient(color = "#555555")
 data("LeMis")
 (graphjs(LeMis))
 
-# The plot legend 'div' element is of class 'infobox'. Use custom JavaScript
-# code to change its orientation to the left edge of the screen (or any other attribute):
+# The plot legend 'div' element is of CSS class 'infobox'. Use custom JavaScript
+# code to change its orientation to the left edge of the screen:
 (graphjs(LeMis, program = 
   "document.getElementsByClassName('infobox')[0].style['text-align'] = 'left';"))
+
+# Use HTML and CSS directly in each vertex label to customize and align the legend:
+(graphjs(LeMis, vertex.label = sprintf("<h2 style='text-align:left;'>\%s</h2>",
+   V(LeMis)$label)))
 
 # ...plot Character names
 (graphjs(LeMis, vertex.shape=V(LeMis)$label))
