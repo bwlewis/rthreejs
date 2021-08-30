@@ -14,17 +14,17 @@ label names from the LeMis igraph graph object.
 ```{r, echo=TRUE, eval=FALSE}
 library(threejs)
 data(LeMis)
-graphjs(LeMis) %>% points3d(vertices(.), color="red", pch=V(LeMis)$label)
+graphjs(LeMis) %>% points3d(vertices(.), color="red", pch=V(LeMis)$label, size=0.2)
 
 # or equivalently without using the pipe:
 g <- graphjs(LeMis)
-points3d(g, vertices(g), color="red", pch=V(LeMis)$label)
+points3d(g, vertices(g), color="red", pch=V(LeMis)$label, size=0.2)
 ```
-```{r, echo=FALSE, eval=TRUE, fig.height=9, fig.width=15}
+```{r, echo=FALSE, eval=TRUE, fig.height=9, fig.width=12}
 suppressMessages(
 {
   library(threejs)
   data(LeMis)
-  graphjs(LeMis) %>% points3d(vertices(.), color="red", pch=V(LeMis)$label)
+  graphjs(LeMis) %>% points3d(vertices(.), color="red", pch=V(LeMis)$label, size=0.2)
 })
 ```
