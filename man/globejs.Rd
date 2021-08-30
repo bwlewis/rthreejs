@@ -112,19 +112,16 @@ globe corresponding to the center of the flat map image.
 # Plot flights to frequent destinations from Callum Prentice's
 # global flight data,
 # http://callumprentice.github.io/apps/flight_stream/index.html
-flights = data.frame(matrix(as.numeric(
-  strsplit(gsub("\\\\]", "", gsub("\\\\[", "", gsub(".*=", "", gsub("\\\\n", "",
-  readChar(flights, 2e6))))),  ",")[[1]]), ncol=4, byrow=TRUE))
-names(flights) = c("origin_lat", "origin_long", "dest_lat", "dest_long")
+f <- flights()
 # Approximate locations as factors
-dest   <- factor(sprintf("\%.2f:\%.2f", flights[,3], flights[,4]))
+dest   <- factor(sprintf("\%.2f:\%.2f", f[,3], f[,4]))
 # A table of destination frequencies
 freq <- sort(table(dest), decreasing=TRUE)
 # The most frequent destinations in these data, possibly hub airports?
 frequent_destinations <- names(freq)[1:10]
 # Subset the flight data by destination frequency
 idx <- dest \%in\% frequent_destinations
-frequent_flights <- flights[idx, ]
+frequent_flights <- f[idx, ]
 # Lat/long and counts of frequent flights
 ll <- unique(frequent_flights[, 3:4])
 # Plot frequent destinations as bars, and the flights to and from

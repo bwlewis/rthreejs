@@ -17,18 +17,25 @@ NULL
 
 #' Global flight example data from Callum Prentice.
 #'
-#' Global flight example data from Callum Prentice.
+#' Global flight example data from Callum Prentice. Data are dynamically downloaded from GitHub.
 #'
 #' @docType data
 #' @name flights
 #' @keywords datasets
 #' @source See Callum Prentice
 #' \url{https://raw.githubusercontent.com/callumprentice/callumprentice.github.io/master/apps/flight_stream/js/flights_one.js}
-#' @usage flights
-#' @format A URL reference to a data frame with 34,296 observations of 4 variables, origin_lat, origin_long, dest_lat, and dest_long.
+#' @usage flights()
+#' @format A data frame with 34,296 observations of 4 variables: origin_lat, origin_long, dest_lat, and dest_long.
 #' @export
-flights = "https://raw.githubusercontent.com/callumprentice/callumprentice.github.io/master/apps/flight_stream/js/flights_one.js"
-NULL
+flights <- function()
+{
+  u <- "https://raw.githubusercontent.com/callumprentice/callumprentice.github.io/master/apps/flight_stream/js/flights_one.js"
+  x <- data.frame(matrix(as.numeric(
+   strsplit(gsub("\\]", "", gsub("\\[", "", gsub(".*=", "", gsub("\\n", "",
+   readChar(u, 2e6))))),  ",")[[1]]), ncol=4, byrow=TRUE))
+  names(x) <- c("origin_lat", "origin_long", "dest_lat", "dest_long")
+  x
+}
 
 
 #' Facebook social circles
