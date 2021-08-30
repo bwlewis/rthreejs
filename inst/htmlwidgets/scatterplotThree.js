@@ -120,6 +120,7 @@ Widget.scatter = function(w, h)
 
     // Info box for mouse-over labels and generic text
     var info = document.createElement("div");
+    info.className = "infobox";
     info.style.textAlign = "center";
     info.style.zIndex = 100;
     info.style.fontFamily = "Sans";
@@ -962,6 +963,7 @@ Widget.scatter = function(w, h)
     if(x.vertices.length > 1 && _this.fps > 0) _this.frame = 0; // animate
     _this.idle = false;
     render();
+    if(!(x.program == undefined)) eval(x.program);
   }; // end of create_plot
 
 /** FIXME Help improving animation performance appreciated */
@@ -1195,10 +1197,10 @@ Widget.scatter = function(w, h)
     {
       _this.infobox.innerHTML = text;
       _this.infobox.style.color = _this.fgcss;
-      _this.infobox.style.top = "-" + _this.el.getBoundingClientRect().height + "px";
-      _this.infobox.style.left = "0px";
-      if(_this.options.top) _this.infobox.style.top = (_this.options.top - _this.el.getBoundingClientRect().height) + "px";
-      if(_this.options.left) _this.infobox.style.left = _this.options.left + "px";
+//      _this.infobox.style.top = "-" + _this.el.getBoundingClientRect().height + "px";
+//      _this.infobox.style.left = "0px";
+//      if(_this.options.top) _this.infobox.style.top = (_this.options.top - _this.el.getBoundingClientRect().height) + "px";
+//      if(_this.options.left) _this.infobox.style.left = _this.options.left + "px";
     }
   }
 

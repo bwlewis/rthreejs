@@ -4,7 +4,9 @@
 \name{LeMis}
 \alias{LeMis}
 \title{Les Miserables Character Coappearance Data}
-\format{An igraph package graph object.}
+\format{
+An igraph package graph object.
+}
 \source{
 Mike Bostock's D3.js force-directed graph example  \url{http://bl.ocks.org/mbostock/4062045}.
 Data based on character coappearence in Victor Hugo's Les Miserables, compiled by Donald Knuth
