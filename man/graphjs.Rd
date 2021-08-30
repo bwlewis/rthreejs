@@ -203,7 +203,7 @@ data("LeMis")
    V(LeMis)$label)))
 
 # ...plot Character names
-(graphjs(LeMis, vertex.shape=V(LeMis)$label))
+(graphjs(LeMis, vertex.shape=V(LeMis)$label), vertex.size=0.3)
 
 # SNAP Facebook ego network dataset
 data("ego")
