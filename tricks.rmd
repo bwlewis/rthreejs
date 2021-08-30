@@ -1,0 +1,65 @@
+---
+title: "graphjs tricks"
+author: "bwlewis"
+date: "8/30/2021"
+output:
+  html_document:
+    css: graphjs.css
+---
+
+
+<br/>
+This vignette explores some ways to customize graphjs
+visualizations using the included `LeMis` data contain character coappearance
+data for Victor Hugo's novel Les Mis&eacute;rables, compiled in the Stanford
+Graph Database by Donaled Knuth (see
+http://www-cs-faculty.stanford.edu/~uno/sgb.html) and taken from the D3.js
+example by Mike Bostock (http://bl.ocks.org/mbostock/4062045).
+
+## Baseline visualization
+
+Let's start with the default LeMis coappearnce graph visualization:
+
+```{r, fig.width=9}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+data(LeMis)
+graphjs(LeMis, vertex.size = 1)
+```
+
+Note that the mouse hover-over text label legend is centered at the top of
+the plot. I'm frequently asked how to customize the legend. It's pretty
+easy!
+<br/><br/>
+The legend is simly an HTML 'div' element. The text in each vertex label
+is placed inside the element as raw HTML. The following example justifies
+the text to the top left of the page using HTML and CSS.
+
+```{r, fig.width=9}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+data(LeMis)
+graphjs(LeMis, vertex.size = 1, vertex.label =
+  sprintf("<h2 style='text-align:left;'>%s</h2>", V(LeMis)$label))
+```
+
+And you can put more than text in the label. The following example includes the label illustrations
+for some of the main characters that I've collected from various places on the web. We download
+the list of illustation URIs from https://bwlewis.github.io/rthreejs/lemis.csv.
+
+```{r, fig.width=9}
+suppressPackageStartupMessages(library(threejs, quietly=TRUE))
+data(LeMis)
+graphjs(LeMis, vertex.size = 1, vertex.label = 
+  sprintf("<h2 style='text-align:left;'>%s<br><img src='%s' style='width:30%%;'/></h2>",
+    V(LeMis)$label, read.csv("https://bwlewis.github.io/rthreejs/lemis.csv")[[2]]))
+```
+
+
+## Custom JavaScript
+
+The R threejs package version 0.3.4 adds a new function parameter called
+`program` that lets users run their own JavaScript code on plot initialization.
+Users may use this parameter to customize nearly any aspect of the plot output,
+although doing so requires some knowledge of the threejs and R HTML widget
+component internals (for instance, by examining the source code of this
+package, or even the source of generated plots in the browser).
+<br/>
