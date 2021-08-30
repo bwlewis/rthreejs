@@ -1197,10 +1197,6 @@ Widget.scatter = function(w, h)
     {
       _this.infobox.innerHTML = text;
       _this.infobox.style.color = _this.fgcss;
-//      _this.infobox.style.top = "-" + _this.el.getBoundingClientRect().height + "px";
-//      _this.infobox.style.left = "0px";
-//      if(_this.options.top) _this.infobox.style.top = (_this.options.top - _this.el.getBoundingClientRect().height) + "px";
-//      if(_this.options.left) _this.infobox.style.left = _this.options.left + "px";
     }
   }
 
