@@ -108,6 +108,11 @@
 #' crosstalk-SharedData data.frame-like object with the same number of rows as graph vertices
 #' (see the examples).
 #'
+#' @section User-defined JavaScript:
+#' Use the optional \code{program} argument (see \code{\link{scatterplot3js}}) to
+#' supply JavaScript code as a character string value.
+#' The code will be run during plot initialization. See the examples.
+#'
 #' @note
 #' Edge transparency values specified as part of \code{edge.color} are ignored, however
 #' you can set an overall transparency for edges with \code{edge.alpha}.
@@ -136,6 +141,11 @@
 #' # Les Miserables Character Co-appearance Data
 #' data("LeMis")
 #' (graphjs(LeMis))
+#'
+#' # The plot legend 'div' element is of class 'infobox'. Use custom JavaScript
+#' # code to change its orientation to the left edge of the screen (or any other attribute):
+#' (graphjs(LeMis, program = 
+#'   "document.getElementsByClassName('infobox')[0].style['text-align'] = 'left';"))
 #'
 #' # ...plot Character names
 #' (graphjs(LeMis, vertex.shape=V(LeMis)$label))

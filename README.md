@@ -20,6 +20,12 @@ See https://bwlewis.github.io/rthreejs for R examples.
 This project is based on the htmlwidgets package. See http://htmlwidgets.org
 for details and links to many other visualization widgets for R.
 
+# Changes in version 0.3.4 (August, 2021)
+
+Added a JavaScript 'program' function argument to run extra user-supplied
+JavaScript initialization code, see the graphjs help for an example.
+
+
 # New in version 0.3.0 (June, 2017)
 
 The new 0.3.0 package version introduces major changes. The `scatterplot3js()`

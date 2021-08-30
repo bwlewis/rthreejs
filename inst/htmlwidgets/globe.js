@@ -302,6 +302,8 @@ HTMLWidgets.widget(
       }
     };
 
+    if(!(x.program == undefined)) eval(x.program);
+
     function render() {
       stuff.renderer.clear();
       stuff.camera.lookAt(stuff.scene.position);

@@ -170,6 +170,13 @@ crosstalk-SharedData data.frame-like object with the same number of rows as grap
 (see the examples).
 }
 
+\section{User-defined JavaScript}{
+
+Use the optional \code{program} argument (see \code{\link{scatterplot3js}}) to
+supply JavaScript code as a character string value.
+The code will be run during plot initialization. See the examples.
+}
+
 \examples{
 set.seed(1)
 g <- sample_islands(3, 10, 5/10, 1)
@@ -185,6 +192,11 @@ l3 = light_ambient(color = "#555555")
 # Les Miserables Character Co-appearance Data
 data("LeMis")
 (graphjs(LeMis))
+
+# The plot legend 'div' element is of class 'infobox'. Use custom JavaScript
+# code to change its orientation to the left edge of the screen (or any other attribute):
+(graphjs(LeMis, program = 
+  "document.getElementsByClassName('infobox')[0].style['text-align'] = 'left';"))
 
 # ...plot Character names
 (graphjs(LeMis, vertex.shape=V(LeMis)$label))

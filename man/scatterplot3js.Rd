@@ -156,6 +156,7 @@ plot options are also supported:
   \item{"main"}{ Plot title text}
   \item{"top"}{ Top location in pixels from top of the plot title text}
   \item{"left"}{ Left location in pixels from center of the plot title text}
+  \item{"program"}{ User-supplied JavaScript run on plot initialization}
 }
 The default CSS font string is "48px Arial". Note that the format of this
 font string differs from, for instance, the usual `par(font.axis)`.

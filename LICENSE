@@ -1,8 +1,63 @@
-YEAR: 2020
+The threejs R package:
+
+LICENSE: MIT
+YEAR: 2021
 COPYRIGHT HOLDER: Bryan W. Lewis
 
-YEAR: 2020
-COPYRIGHT HOLDER: The three.js authors
 
-YEAR: 2020
+The threejs package includes other open source software components. The
+following is a list of these components, their copyrights and licenses.
+
+FILE(S): inst/htmlwidgets/lib/threejs-*/*
+LICENSE: MIT
+YEAR: 2010-2021
+COPYRIGHT HOLDER: The three.js authors, see https://github.com/mrdoob/three.js/
+
+FILES(S): data/LeMis.RData
+LICENSE: GPL-3
+YEAR: 2021
+COPYRIGHT HOLDER: Mike Bostock, see https://bl.ocks.org/mbostock/4062045
+
+FILE(S): inst/images/world.jpg
+LICENSE: Unlimited
+YEAR: 2021
+SOURCE: NASA (Copyright N/A)
+
+FILE(S): inst/images/moon.jpg
+LICENSE: Unlimited
+YEAR: 2021
+SOURCE: NASA (Copyright N/A)
+
+FILE(S): data/ego.RData
+LICENSE: BSD_2_clause
+YEAR: 2007-20012
+COPYRIGHT HOLDER: Jure Leskovec, see http://snap.stanford.edu/data/ego-Facebook.html
+
+FILE(S): inst/htmlwidgets/lib/jquery/jquery.min.js
+LICENSE: jQuery
+YEAR: 2021
 COPYRIGHT HOLDER: JS Foundataion, see https://js.foundation
+
+jQuery license and license for included components from jQuery UI
+----------------------------------------------------------------------
+
+Copyright JS Foundation and other contributors, https://js.foundation/
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

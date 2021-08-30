@@ -5,14 +5,14 @@
 \alias{flights}
 \title{Global flight example data from Callum Prentice.}
 \format{
-A data frame with 34,296 observations of 4 variables, origin_lat, origin_long, dest_lat, and dest_long.
+A URL reference to a data frame with 34,296 observations of 4 variables, origin_lat, origin_long, dest_lat, and dest_long.
 }
 \source{
 See Callum Prentice
 \url{https://raw.githubusercontent.com/callumprentice/callumprentice.github.io/master/apps/flight_stream/js/flights_one.js}
 }
 \usage{
-data(flights)
+flights
 }
 \description{
 Global flight example data from Callum Prentice.
