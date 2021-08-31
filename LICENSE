@@ -31,7 +31,7 @@ SOURCE: NASA (Copyright N/A)
 FILE(S): data/ego.RData
 LICENSE: BSD_2_clause
 YEAR: 2007-20012
-COPYRIGHT HOLDER: Jure Leskovec, see http://snap.stanford.edu/data/ego-Facebook.html
+COPYRIGHT HOLDER: Jure Leskovec, see https://snap.stanford.edu/data/ego-Facebook.html
 
 FILE(S): inst/htmlwidgets/lib/jquery/jquery.min.js
 LICENSE: jQuery
