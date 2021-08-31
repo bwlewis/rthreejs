@@ -11,7 +11,7 @@ algorithm from the igraph package.
 }
 \source{
 Stanford SNAP network repository
-\url{http://snap.stanford.edu/data/facebook_combined.txt.gz}
+\url{https://snap.stanford.edu/data/facebook_combined.txt.gz}
 }
 \usage{
 data(ego)

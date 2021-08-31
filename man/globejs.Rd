@@ -181,10 +181,10 @@ shiny::runApp(system.file("examples/globe",package="threejs"))
 # See http://bwlewis.github.io/rthreejs for additional examples.
 }
 \references{
-The three.js project \url{http://threejs.org}.
+The three.js project \url{https://threejs.org}.
 (The corresponding three.js javascript file is in
 \code{ system.file("htmlwidgets/globejs",package="threejs")}.)
 
 An excellent overview of available map coordinate reference systems (PDF):
-\url{https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf}
+\url{https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf}.
 }

@@ -4,7 +4,7 @@
 #'
 #' @name threejs-package
 #' @references
-#' \url{http://threejs.org}
+#' \url{https://threejs.org}
 #' @aliases threejs
 #' @examples
 #' \dontrun{

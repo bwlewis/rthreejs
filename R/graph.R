@@ -124,35 +124,49 @@
 #' @seealso \code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
 #'
 #' @references
-#' The three.js project \url{http://threejs.org}.
+#' The three.js project \url{https://threejs.org}.
 #'
 #' @examples
 #' set.seed(1)
 #' g <- sample_islands(3, 10, 5/10, 1)
-#' i <- cluster_louvain(g)
-#' (graphjs(g, vertex.color=c("orange", "green", "blue")[i$membership], vertex.shape="sphere"))
+#' i <- membership(cluster_louvain(g))
+#' (graphjs(g, vertex.color=c("orange", "green", "blue")[i],
+#'          vertex.shape="sphere"))
 #'
 #' # similar example with user-defined directional lighting
-#' l1 = light_directional(color = "red", position = c(0, -0.8, 0.5))
-#' l2 = light_directional(color = "yellow", position = c(0, 0.8, -0.5))
-#' l3 = light_ambient(color = "#555555")
-#' (graphjs(g, vertex.color="gray", vertex.shape="sphere", lights=list(l1, l2, l3)))
+#' l1 <- light_directional(color="red", position=c(0, -0.8, 0.5))
+#' l2 <- light_directional(color="yellow", position=c(0, 0.8, -0.5))
+#' l3 <- light_ambient(color="#555555")
+#' (graphjs(g, vertex.color="gray", vertex.shape="sphere",
+#'          lights=list(l1, l2, l3)))
 #'
 #' # Les Miserables Character Co-appearance Data
 #' data("LeMis")
 #' (graphjs(LeMis))
 #'
-#' # The plot legend 'div' element is of CSS class 'infobox'. Use custom JavaScript
-#' # code to change its orientation to the left edge of the screen:
-#' (graphjs(LeMis, program = 
-#'   "document.getElementsByClassName('infobox')[0].style['text-align'] = 'left';"))
+#' # Use HTML and CSS directly in each vertex label to customize
+#' # and align the legend:
+#' (graphjs(LeMis,
+#'          vertex.label=sprintf("<h2 style='text-align:left;'>%s</h2>",
+#'            V(LeMis)$label)))
 #'
-#' # Use HTML and CSS directly in each vertex label to customize and align the legend:
-#' (graphjs(LeMis, vertex.label = sprintf("<h2 style='text-align:left;'>%s</h2>",
-#'    V(LeMis)$label)))
+#' # The plot legend 'div' element is of CSS class 'infobox'. Use JavaScript
+#' # to customize labels to hover near the mouse pointer:
+#' program <- "document.addEventListener('mousemove', function(e) {
+#'   e.preventDefault();
+#'   let x = document.getElementsByClassName('infobox')[0];
+#'   x.style['background'] = '#00c9c2';
+#'   x.style['border-radius'] = '5px';
+#'   x.style['color'] = '#222';
+#'   x.style['font-family'] = 'sans-serif';
+#'   x.style['position'] = 'absolute';
+#'   x.style['top'] = e.pageY + 'px';
+#'   x.style['left'] = e.pageX + 'px';
+#' })"
+#' (graphjs(LeMis, program = program))
 #'
 #' # ...plot Character names
-#' (graphjs(LeMis, vertex.shape=V(LeMis)$label), vertex.size=0.3)
+#' (graphjs(LeMis, vertex.shape=V(LeMis)$label, vertex.size=0.3))
 #'
 #' # SNAP Facebook ego network dataset
 #' data("ego")

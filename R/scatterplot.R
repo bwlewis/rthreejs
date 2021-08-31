@@ -142,7 +142,8 @@
 #' in \code{x, y, z}.
 #'
 #' @references
-#' The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{http://htmlwidgets.org}.
+#' The three.js project: \url{https://threejs.org}. The HTML Widgets project:
+#" \url{https://www.htmlwidgets.org}.
 #'
 #' @examples
 #' # Example 1 from the scatterplot3d package (cf.)

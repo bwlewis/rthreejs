@@ -19,5 +19,5 @@ runApp(system.file("examples/scatterplot",package="threejs"))
 
 }
 \references{
-\url{http://threejs.org}
+\url{https://threejs.org}
 }

@@ -6,9 +6,9 @@
 #' @name LeMis
 #' @keywords datasets
 #' @source
-#' Mike Bostock's D3.js force-directed graph example  \url{http://bl.ocks.org/mbostock/4062045}.
+#' Mike Bostock's D3.js force-directed graph example  \url{https://bl.ocks.org/mbostock/4062045}.
 #' Data based on character coappearence in Victor Hugo's Les Miserables, compiled by Donald Knuth
-#' (\url{http://www-cs-faculty.stanford.edu/~uno/sgb.html}).
+#' (\url{https://www-cs-faculty.stanford.edu/~uno/sgb.html}).
 #' @usage data(LeMis)
 #' @format An igraph package graph object.
 #'
@@ -46,7 +46,7 @@ flights <- function()
 #' @name ego
 #' @keywords datasets
 #' @source Stanford SNAP network repository
-#' \url{http://snap.stanford.edu/data/facebook_combined.txt.gz}
+#' \url{https://snap.stanford.edu/data/facebook_combined.txt.gz}
 #' @references
 #' J. McAuley and J. Leskovec. Learning to Discover Social Circles in Ego Networks. NIPS, 2012.
 #' @usage data(ego)

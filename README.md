@@ -23,8 +23,7 @@ for details and links to many other visualization widgets for R.
 # Changes in version 0.3.4 (August, 2021)
 
 Added a JavaScript 'program' function argument to run extra user-supplied
-JavaScript initialization code, see the graphjs help for an example.
-
+JavaScript initialization code, see the graphjs help for examples.
 
 # New in version 0.3.0 (June, 2017)
 

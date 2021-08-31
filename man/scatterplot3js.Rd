@@ -277,7 +277,7 @@ scatterplot3js(x, y, z, pch="@") \%>\%
 
 }
 \references{
-The three.js project: \url{http://threejs.org}. The HTML Widgets project: \url{http://htmlwidgets.org}.
+The three.js project: \url{https://threejs.org}. The HTML Widgets project:
 }
 \seealso{
 scatterplot3d, rgl, points3d, lines3d, light_ambient, light_directional

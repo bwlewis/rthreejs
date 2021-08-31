@@ -43,6 +43,6 @@ t <- texture(img)
 
 }
 \references{
-The threejs project \url{http://threejs.org}.
+The threejs project \url{https://threejs.org}.
 \url{https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally}.
 }
