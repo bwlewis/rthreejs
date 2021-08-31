@@ -63,3 +63,25 @@ although doing so requires some knowledge of the threejs and R HTML widget
 component internals (for instance, by examining the source code of this
 package, or even the source of generated plots in the browser).
 <br/>
+<br/>
+The next examples shows how to use a small JavaScript initialization program
+to customize hover-over vertex labels so that they appear near the mouse
+pointer.
+
+```{r, fig.width=9}
+library(threejs)
+data(LeMis)
+
+program <- "document.addEventListener('mousemove', function(e) {
+  let x = document.getElementsByClassName('infobox')[3];
+  x.style['background'] = '#00c9c2';
+  x.style['border-radius'] = '5px';
+  x.style['color'] = '#222';
+  x.style['font-family'] = 'sans-serif';
+  x.style['position'] = 'absolute';
+  x.style['top'] = e.pageY + 'px';
+  x.style['left'] = e.pageX + 'px';
+})"
+
+graphjs(LeMis, vertex.size=0.5, program = program)
+```
