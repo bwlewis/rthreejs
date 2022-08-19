@@ -371,7 +371,7 @@ scatterplot3js <- function(
       i <- (abs(x) < 0.01 & x != 0)
       if (any(i))
       {
-        ans[i] <- sprintf("%.2e", x)
+        ans[i] <- sprintf("%.2e", x[i])
       }
       ans
     }
