@@ -4,7 +4,7 @@ Title: Interactive 3D Scatter Plots, Networks and Globes
 Description: Create interactive 3D scatter plots, network plots, and
     globes using the 'three.js' visualization library (<https://threejs.org>).
 Version: 0.3.4
-Date: 2021-08-30
+Date: 2025-04-19
 Authors@R: c(
     person("B. W.", "Lewis", role=c("aut","cre","cph"), email="blewis@illposed.net"),
     person(given="Three.js authors", role="cph", comment="three.js library"),
