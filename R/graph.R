@@ -78,7 +78,7 @@
 #' Specify the option \code{click=list} to animate the graph when specified vertices
 #' are clicked interactively, where \code{list} is a named list of animation entries.
 #' Each entry must itself be a list with the following entries
-#' \itemize{
+#' \describe{
 #' \item{g}{ optional a single igraph object with the same number of vertices
 #'    as \code{g} above (if specified this must be the first entry)}
 #' \item{layout}{ - optional a single igraph layout, or differential layout if \code{cumulative=TRUE}}

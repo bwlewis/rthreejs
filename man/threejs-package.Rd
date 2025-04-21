@@ -21,3 +21,25 @@ runApp(system.file("examples/scatterplot",package="threejs"))
 \references{
 \url{https://threejs.org}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://bwlewis.github.io/rthreejs/}
+  \item Report bugs at \url{https://github.com/bwlewis/rthreejs/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: B. W. Lewis \email{blewis@illposed.net} [copyright holder]
+
+Other contributors:
+\itemize{
+  \item Three.js authors (three.js library) [copyright holder]
+  \item jQuery Foundation (jQuery library) [copyright holder]
+  \item Alexey Stukalov \email{astukalov@gmail.com} [contributor]
+  \item Yihui Xie \email{xie@yihui.name} [contributor]
+  \item Andreas Briese \email{ab@edutoolbox.de} [contributor]
+  \item B. Thieurmel \email{bthieurmel@gmail.com} [contributor]
+}
+
+}

@@ -84,7 +84,7 @@ solar system, and are also easily generated directly in R
 }
 \section{Available rendering options}{
 
-\itemize{
+\describe{
   \item{"bodycolor"}{ The diffuse reflective color of the globe.}
   \item{"emissive"}{ The emissive color of the globe object.}
   \item{"lightcolor"}{ The color of the ambient light in the scene.}
