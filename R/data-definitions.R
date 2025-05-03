@@ -51,6 +51,6 @@ flights <- function()
 #' J. McAuley and J. Leskovec. Learning to Discover Social Circles in Ego Networks. NIPS, 2012.
 #' @usage data(ego)
 #' @format An igraph package undirected graph object with 4039 vertices and 88234 edges. The
-#' graph includes a force-directed layout with vertices colored by the \code{\link{cluster_fast_greedy}}
+#' graph includes a force-directed layout with vertices colored by the \code{cluster_fast_greedy}
 #' algorithm from the igraph package.
 NULL

@@ -23,7 +23,7 @@ graphjs(
 )
 }
 \arguments{
-\item{g}{an \code{\link{igraph}} graph object or a list of \code{igraph} objects (see notes)}
+\item{g}{an \code{igraph} graph object or a list of \code{igraph} objects (see notes)}
 
 \item{layout}{optional graph layout or list of layouts (see notes)}
 
@@ -58,7 +58,7 @@ An htmlwidget object that is displayed using the object's show or print method.
 (If you don't see your widget plot, try printing it with the \code{print} function.)
 }
 \description{
-Make interactive 3D plots of \code{\link{igraph}} objects.
+Make interactive 3D plots of igraph objects.
 }
 \note{
 Edge transparency values specified as part of \code{edge.color} are ignored, however
@@ -80,7 +80,7 @@ use a more CPU-efficient but somewhat less fluid mouse/touch interface.
 
 Use the \code{layout} parameter to control the visualization layout by supplying
 either a three-column matrix of vertex \code{x, y, z} coordinates, or a function
-that returns such a layout. The igraph \code{\link{layout_with_fr}} force-directed
+that returns such a layout. The igraph \code{layout_with_fr} force-directed
 layout is used by default (note that only 3D layouts are supported). Also see
 the animation section below.
 }
@@ -88,7 +88,7 @@ the animation section below.
 \section{Vertex options}{
 
 Optional parameters beginning with \code{vertex.} represent a subset of the igraph package
-vertex visualization options and work similarly, see \code{link{igraph.plotting}}.
+vertex visualization options and work similarly, see \code{igraph.plotting}.
 Vertex shapes in \code{graphjs} act somewhat differently, and are mapped to the
 \code{pch} option in \code{\link{scatterplot3js}}. In particular, \code{pch}
 character symbols or even short text strings may be specified. The \code{vertex.label}
@@ -267,5 +267,5 @@ print(bscols(
 The three.js project \url{https://threejs.org}.
 }
 \seealso{
-\code{\link{igraph.plotting}}, \code{\link{scatterplot3js}}
+\code{igraph.plotting}, \code{\link{scatterplot3js}}
 }

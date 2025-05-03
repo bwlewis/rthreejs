@@ -714,7 +714,7 @@ Widget.scatter = function(w, h)
           context.textAlign = "center";
           context.textBaseline = "middle";
           context.font = fontsymbols;
-          context.fillText(unique_pch[j], cwidth / 2, cwidth / 2);
+          context.fillText(unique_pch[j], cwidth / 2, cwidth / 2, cwidth);
           var sprite = new THREE.Texture(canvas);
           sprite.flipY = false;
           sprite.needsUpdate = true;

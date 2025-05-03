@@ -6,7 +6,7 @@
 \title{Facebook social circles}
 \format{
 An igraph package undirected graph object with 4039 vertices and 88234 edges. The
-graph includes a force-directed layout with vertices colored by the \code{\link{cluster_fast_greedy}}
+graph includes a force-directed layout with vertices colored by the \code{cluster_fast_greedy}
 algorithm from the igraph package.
 }
 \source{
